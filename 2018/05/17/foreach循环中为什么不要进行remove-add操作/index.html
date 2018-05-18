@@ -68,7 +68,7 @@
 
 
 
-  <meta name="keywords" content="Hexo, NexT" />
+  <meta name="keywords" content="JAVA进阶," />
 
 
 
@@ -79,13 +79,18 @@
 
 
 
-<meta property="og:type" content="website">
-<meta property="og:title" content="Hexo">
-<meta property="og:url" content="http://yoursite.com/index.html">
+<meta name="description" content="先来看一段代码，摘自阿里巴巴的java开发手册12345678List&amp;lt;String&amp;gt; a = new ArrayList&amp;lt;String&amp;gt;();  a.add(&quot;1&quot;);  a.add(&quot;2&quot;);  for (String temp : a) &amp;#123;      if(&quot;1&quot;.equals(temp))&amp;#123;          a.remove(temp); &amp;#">
+<meta name="keywords" content="JAVA进阶">
+<meta property="og:type" content="article">
+<meta property="og:title" content="foreach循环中为什么不要进行remove&#x2F;add操作">
+<meta property="og:url" content="http://yoursite.com/2018/05/17/foreach循环中为什么不要进行remove-add操作/index.html">
 <meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="先来看一段代码，摘自阿里巴巴的java开发手册12345678List&amp;lt;String&amp;gt; a = new ArrayList&amp;lt;String&amp;gt;();  a.add(&quot;1&quot;);  a.add(&quot;2&quot;);  for (String temp : a) &amp;#123;      if(&quot;1&quot;.equals(temp))&amp;#123;          a.remove(temp); &amp;#">
 <meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2018-05-18T03:38:42.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Hexo">
+<meta name="twitter:title" content="foreach循环中为什么不要进行remove&#x2F;add操作">
+<meta name="twitter:description" content="先来看一段代码，摘自阿里巴巴的java开发手册12345678List&amp;lt;String&amp;gt; a = new ArrayList&amp;lt;String&amp;gt;();  a.add(&quot;1&quot;);  a.add(&quot;2&quot;);  for (String temp : a) &amp;#123;      if(&quot;1&quot;.equals(temp))&amp;#123;          a.remove(temp); &amp;#">
 
 
 
@@ -115,13 +120,13 @@
 
 
 
-  <link rel="canonical" href="http://yoursite.com/"/>
+  <link rel="canonical" href="http://yoursite.com/2018/05/17/foreach循环中为什么不要进行remove-add操作/"/>
 
 
 
 
 
-  <title>Hexo</title>
+  <title>foreach循环中为什么不要进行remove/add操作 | Hexo</title>
   
 
 
@@ -140,8 +145,7 @@
     
   
 
-  <div class="container sidebar-position-left 
-  page-home">
+  <div class="container sidebar-position-left page-post-detail">
     <div class="headband"></div>
 
     <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
@@ -214,9 +218,9 @@
         <div class="content-wrap">
           <div id="content" class="content">
             
-  <section id="posts" class="posts-expand">
+
+  <div id="posts" class="posts-expand">
     
-      
 
   
 
@@ -246,9 +250,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/05/17/foreach循环中为什么不要进行remove-add操作/" itemprop="url">foreach循环中为什么不要进行remove/add操作</a></h1>
+          <h1 class="post-title" itemprop="name headline">foreach循环中为什么不要进行remove/add操作</h1>
         
 
         <div class="post-meta">
@@ -298,9 +300,7 @@
       
 
       
-        
-          
-            <p>先来看一段代码，摘自阿里巴巴的java开发手册<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">List&lt;String&gt; a = <span class="keyword">new</span> ArrayList&lt;String&gt;();</span><br><span class="line">  a.add(<span class="string">"1"</span>);</span><br><span class="line">  a.add(<span class="string">"2"</span>);</span><br><span class="line">  <span class="keyword">for</span> (String temp : a) &#123;</span><br><span class="line">      <span class="keyword">if</span>(<span class="string">"1"</span>.equals(temp))&#123;</span><br><span class="line">          a.remove(temp);</span><br><span class="line"> &#125; </span><br><span class="line"> &#125;</span><br></pre></td></tr></table></figure></p>
+        <p>先来看一段代码，摘自阿里巴巴的java开发手册<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">List&lt;String&gt; a = <span class="keyword">new</span> ArrayList&lt;String&gt;();</span><br><span class="line">  a.add(<span class="string">"1"</span>);</span><br><span class="line">  a.add(<span class="string">"2"</span>);</span><br><span class="line">  <span class="keyword">for</span> (String temp : a) &#123;</span><br><span class="line">      <span class="keyword">if</span>(<span class="string">"1"</span>.equals(temp))&#123;</span><br><span class="line">          a.remove(temp);</span><br><span class="line"> &#125; </span><br><span class="line"> &#125;</span><br></pre></td></tr></table></figure></p>
 <p>此时执行代码，没有问题，但是需要注意，循环此时只执行了一次。具体过程后面去分析。再来看一段会出问题的代码<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">List&lt;String&gt; a = <span class="keyword">new</span> ArrayList&lt;String&gt;();</span><br><span class="line"> a.add(<span class="string">"1"</span>);</span><br><span class="line"> a.add(<span class="string">"2"</span>);</span><br><span class="line"> <span class="keyword">for</span> (String temp : a) &#123;</span><br><span class="line">     <span class="keyword">if</span>(<span class="string">"2"</span>.equals(temp))&#123;</span><br><span class="line">         a.remove(temp);</span><br><span class="line">&#125; </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
 <p>输出为:<font color="red">Exception in thread “main” java.util.ConcurrentModificationException</font><br>是不是很奇怪？接下来将class文件，反编译下，结果如下<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">List a = <span class="keyword">new</span> ArrayList();</span><br><span class="line"> a.add(<span class="string">"1"</span>);</span><br><span class="line"> a.add(<span class="string">"2"</span>);</span><br><span class="line"> Iterator i$ = a.iterator();</span><br><span class="line"> <span class="keyword">do</span></span><br><span class="line"> &#123;</span><br><span class="line">     <span class="keyword">if</span>(!i$.hasNext())</span><br><span class="line">         <span class="keyword">break</span>;</span><br><span class="line">     String temp = (String)i$.next();</span><br><span class="line">    <span class="keyword">if</span>(<span class="string">"1"</span>.equals(temp))</span><br><span class="line">        a.remove(temp);</span><br><span class="line">&#125; <span class="keyword">while</span>(<span class="keyword">true</span>);</span><br></pre></td></tr></table></figure></p>
 <p>几个需要注意的点：<br>1.foreach遍历集合，实际上内部使用的是iterator。<br>2.代码先判断是否hasNext，然后再去调用next，这两个函数是引起问题的关键。<br>3.这里的remove还是list的remove方法。   </p>
@@ -328,8 +328,6 @@
 <p>平时遍历list，然后删除某个元素的时候，如果仅仅删除第一个且删除之后调用break  //代表着此时不会再去执行iterator.next方法 也就不会触发万恶之源<br>而如果要删除所有的某元素，则会报错，谨记！<br>Ps再来看一个佐证<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">            ArrayList&lt;Integer&gt; list = <span class="keyword">new</span> ArrayList&lt;&gt;();</span><br><span class="line">            list.add(<span class="number">1</span>);</span><br><span class="line">            list.add(<span class="number">2</span>);</span><br><span class="line">            list.add(<span class="number">3</span>);</span><br><span class="line">            <span class="keyword">for</span>(<span class="keyword">int</span> i : list)&#123;</span><br><span class="line">                System.out.println(i);</span><br><span class="line">                <span class="keyword">if</span>(i == <span class="number">2</span>)&#123;</span><br><span class="line">                    list.remove((Object)<span class="number">2</span>);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">        &#125;</span><br></pre></td></tr></table></figure></p>
 <p>此时只会输出<br>1<br>2<br>当把remove对象改为3时候，再次报错。</p>
 
-          
-        
       
     </div>
     
@@ -344,271 +342,36 @@
 
     <footer class="post-footer">
       
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/05/17/how-to-read-a-framework/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="John Doe">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Hexo">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/05/17/how-to-read-a-framework/" itemprop="url">How to Digest a Framework</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-05-17T21:05:43+08:00">
-                2018-05-17
-              </time>
-            
-
-            
-
-            
-          </span>
-
+        <div class="post-tags">
           
-
+            <a href="/tags/JAVA进阶/" rel="tag"># JAVA进阶</a>
           
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
         </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <ul>
-<li>找到入口</li>
-<li>UML画出主流程（纲举目张）</li>
-<li>研究重要细节，推荐新启UML</li>
-<li>沉浸code外，仍需不时跳出code，最好参考说明文档，弄清核心功能实现方式</li>
-<li>全局搜索、查找方法调用处以及debug是好帮手</li>
-<li>除UML外，最好贴上核心code，并附上自己的一些理解与说明</li>
-<li>核心功能，想象一下如果换作你怎么实现，最好用code实现</li>
-<li>最最最后，当然是自己造一个轮子了</li>
-</ul>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
       
 
       
       
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
       
 
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/05/14/hello-world/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="John Doe">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Hexo">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/05/14/hello-world/" itemprop="url">Hello World</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
             
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-05-14T20:44:31+08:00">
-                2018-05-14
-              </time>
+              <a href="/2018/05/17/how-to-read-a-framework/" rel="next" title="How to Digest a Framework">
+                <i class="fa fa-chevron-left"></i> How to Digest a Framework
+              </a>
             
+          </div>
 
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
             
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
+          </div>
         </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
       
 
       
-        
-          
-            <p>Welcome to <a href="https://hexo.io/" target="_blank" rel="noopener">Hexo</a>! This is your very first post. Check <a href="https://hexo.io/docs/" target="_blank" rel="noopener">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a href="https://hexo.io/docs/troubleshooting.html" target="_blank" rel="noopener">troubleshooting</a> or you can ask me on <a href="https://github.com/hexojs/hexo/issues" target="_blank" rel="noopener">GitHub</a>.</p>
-<h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo new <span class="string">"My New Post"</span></span><br></pre></td></tr></table></figure>
-<p>More info: <a href="https://hexo.io/docs/writing.html" target="_blank" rel="noopener">Writing</a></p>
-<h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure>
-<p>More info: <a href="https://hexo.io/docs/server.html" target="_blank" rel="noopener">Server</a></p>
-<h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure>
-<p>More info: <a href="https://hexo.io/docs/generating.html" target="_blank" rel="noopener">Generating</a></p>
-<h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure>
-<p>More info: <a href="https://hexo.io/docs/deployment.html" target="_blank" rel="noopener">Deployment</a></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
       
     </footer>
   </div>
@@ -618,10 +381,11 @@
   </article>
 
 
-    
-  </section>
 
-  
+    <div class="post-spread">
+      
+    </div>
+  </div>
 
 
           </div>
@@ -629,6 +393,10 @@
 
 
           
+
+  
+
+
 
         </div>
         
@@ -834,6 +602,10 @@
   
 
   
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
 
   
 

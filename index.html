@@ -300,7 +300,7 @@
       
         
           
-            <h2 id="一、UML"><a href="#一、UML" class="headerlink" title="一、UML"></a>一、UML</h2><p><img src="/2018/05/23/深入分析ReentrantLock/drawio.svg" align="left"></p>
+            <h2 id="一、UML"><a href="#一、UML" class="headerlink" title="一、UML"></a>一、UML</h2><p><img src="/2018/05/23/深入分析ReentrantLock/drawio.svg"></p>
 <h2 id="二、关键代码分析"><a href="#二、关键代码分析" class="headerlink" title="二、关键代码分析"></a>二、关键代码分析</h2><h3 id="2-0-AQS-acquire"><a href="#2-0-AQS-acquire" class="headerlink" title="2.0 AQS#acquire"></a>2.0 AQS#acquire</h3><h4 id="方法说明"><a href="#方法说明" class="headerlink" title="方法说明"></a>方法说明</h4><ul>
 <li>独占式，同一时刻仅有一个线程持有同步状态</li>
 <li>这是一个模板方法模式，AQS虽然实现了acquire，和release方法，但是里面调用的tryAcquire和tryRelease是由子类来定制的。</li>

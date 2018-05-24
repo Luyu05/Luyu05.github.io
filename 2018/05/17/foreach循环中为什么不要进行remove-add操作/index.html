@@ -5,7 +5,7 @@
   
 
 
-<html class="theme-next muse use-motion" lang="zh-Hans">
+<html class="theme-next mist use-motion" lang="zh-Hans">
 <head>
   <meta charset="UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=edge" />
@@ -87,7 +87,7 @@
 <meta property="og:site_name" content="Luyu&#39;s Blog">
 <meta property="og:description" content="先来看一段代码，摘自阿里巴巴的java开发手册12345678List&amp;lt;String&amp;gt; a = new ArrayList&amp;lt;String&amp;gt;();  a.add(&quot;1&quot;);  a.add(&quot;2&quot;);  for (String temp : a) &amp;#123;      if(&quot;1&quot;.equals(temp))&amp;#123;          a.remove(temp); &amp;#">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2018-05-18T09:03:41.000Z">
+<meta property="og:updated_time" content="2018-05-24T01:03:33.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="foreach循环中为什么不要进行remove&#x2F;add操作">
 <meta name="twitter:description" content="先来看一段代码，摘自阿里巴巴的java开发手册12345678List&amp;lt;String&amp;gt; a = new ArrayList&amp;lt;String&amp;gt;();  a.add(&quot;1&quot;);  a.add(&quot;2&quot;);  for (String temp : a) &amp;#123;      if(&quot;1&quot;.equals(temp))&amp;#123;          a.remove(temp); &amp;#">
@@ -98,7 +98,7 @@
   var NexT = window.NexT || {};
   var CONFIG = {
     root: '/',
-    scheme: 'Muse',
+    scheme: 'Mist',
     version: '5.1.4',
     sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
     fancybox: true,
@@ -191,6 +191,26 @@
         </li>
       
         
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
         <li class="menu-item menu-item-archives">
           <a href="/archives/" rel="section">
             
@@ -273,6 +293,28 @@
           </span>
 
           
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/JAVA进阶/" itemprop="url" rel="index">
+                    <span itemprop="name">JAVA进阶</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
 
           
             
@@ -302,7 +344,7 @@
       
         <p>先来看一段代码，摘自阿里巴巴的java开发手册<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">List&lt;String&gt; a = <span class="keyword">new</span> ArrayList&lt;String&gt;();</span><br><span class="line">  a.add(<span class="string">"1"</span>);</span><br><span class="line">  a.add(<span class="string">"2"</span>);</span><br><span class="line">  <span class="keyword">for</span> (String temp : a) &#123;</span><br><span class="line">      <span class="keyword">if</span>(<span class="string">"1"</span>.equals(temp))&#123;</span><br><span class="line">          a.remove(temp);</span><br><span class="line"> &#125; </span><br><span class="line"> &#125;</span><br></pre></td></tr></table></figure></p>
 <p>此时执行代码，没有问题，但是需要注意，循环此时只执行了一次。具体过程后面去分析。<br>再来看一段会出问题的代码<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">List&lt;String&gt; a = <span class="keyword">new</span> ArrayList&lt;String&gt;();</span><br><span class="line"> a.add(<span class="string">"1"</span>);</span><br><span class="line"> a.add(<span class="string">"2"</span>);</span><br><span class="line"> <span class="keyword">for</span> (String temp : a) &#123;</span><br><span class="line">     <span class="keyword">if</span>(<span class="string">"2"</span>.equals(temp))&#123;</span><br><span class="line">         a.remove(temp);</span><br><span class="line">&#125; </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<p>输出为:<font color="red">Exception in thread “main” java.util.ConcurrentModificationException</font><br>是不是很奇怪？接下来将class文件，反编译下，结果如下<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">List a = <span class="keyword">new</span> ArrayList();</span><br><span class="line"> a.add(<span class="string">"1"</span>);</span><br><span class="line"> a.add(<span class="string">"2"</span>);</span><br><span class="line"> Iterator i$ = a.iterator();</span><br><span class="line"> <span class="keyword">do</span></span><br><span class="line"> &#123;</span><br><span class="line">     <span class="keyword">if</span>(!i$.hasNext())</span><br><span class="line">         <span class="keyword">break</span>;</span><br><span class="line">     String temp = (String)i$.next();</span><br><span class="line">    <span class="keyword">if</span>(<span class="string">"1"</span>.equals(temp))</span><br><span class="line">        a.remove(temp);</span><br><span class="line">&#125; <span class="keyword">while</span>(<span class="keyword">true</span>);</span><br></pre></td></tr></table></figure></p>
+<p>输出为:<font color="red">Exception in thread “main” java.util.ConcurrentModificationException</font><br>是不是很奇怪？接下来将class文件，反编译下，结果如下<br><a id="more"></a><br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">List a = <span class="keyword">new</span> ArrayList();</span><br><span class="line"> a.add(<span class="string">"1"</span>);</span><br><span class="line"> a.add(<span class="string">"2"</span>);</span><br><span class="line"> Iterator i$ = a.iterator();</span><br><span class="line"> <span class="keyword">do</span></span><br><span class="line"> &#123;</span><br><span class="line">     <span class="keyword">if</span>(!i$.hasNext())</span><br><span class="line">         <span class="keyword">break</span>;</span><br><span class="line">     String temp = (String)i$.next();</span><br><span class="line">    <span class="keyword">if</span>(<span class="string">"1"</span>.equals(temp))</span><br><span class="line">        a.remove(temp);</span><br><span class="line">&#125; <span class="keyword">while</span>(<span class="keyword">true</span>);</span><br></pre></td></tr></table></figure></p>
 <p>几个需要注意的点：</p>
 <ol>
 <li>foreach遍历集合，实际上内部使用的是iterator。</li>
@@ -442,22 +484,31 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">5</span>
+                  <span class="site-state-item-count">4</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
             
 
             
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">3</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
 
             
               
               
               <div class="site-state-item site-state-tags">
-                
+                <a href="/tags/index.html">
                   <span class="site-state-item-count">3</span>
                   <span class="site-state-item-name">标签</span>
-                
+                </a>
               </div>
             
 
@@ -510,7 +561,7 @@
 
 
 
-  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div>
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Mist</a> v5.1.4</div>
 
 
 

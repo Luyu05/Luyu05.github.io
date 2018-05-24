@@ -5,7 +5,7 @@
   
 
 
-<html class="theme-next muse use-motion" lang="zh-Hans">
+<html class="theme-next mist use-motion" lang="zh-Hans">
 <head>
   <meta charset="UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=edge" />
@@ -79,20 +79,20 @@
 
 
 
-<meta name="description" content="一、UML 二、关键代码分析2.0 AQS#acquire方法说明 独占式，同一时刻仅有一个线程持有同步状态 这是一个模板方法模式，AQS虽然实现了acquire，和release方法，但是里面调用的tryAcquire和tryRelease是由子类来定制的。 可以认为同步状态的维护、获取、释放动作是由子类实现的功能，而动作成功与否的后续行为由AQS框架来实现 该方法对线程的中断不能及时响应（jd">
+<meta name="description" content="一、UML">
 <meta name="keywords" content="JAVA进阶">
 <meta property="og:type" content="article">
 <meta property="og:title" content="深入分析ReentrantLock">
 <meta property="og:url" content="http://yoursite.com/2018/05/23/深入分析ReentrantLock/index.html">
 <meta property="og:site_name" content="Luyu&#39;s Blog">
-<meta property="og:description" content="一、UML 二、关键代码分析2.0 AQS#acquire方法说明 独占式，同一时刻仅有一个线程持有同步状态 这是一个模板方法模式，AQS虽然实现了acquire，和release方法，但是里面调用的tryAcquire和tryRelease是由子类来定制的。 可以认为同步状态的维护、获取、释放动作是由子类实现的功能，而动作成功与否的后续行为由AQS框架来实现 该方法对线程的中断不能及时响应（jd">
+<meta property="og:description" content="一、UML">
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="http://yoursite.com/2018/05/23/深入分析ReentrantLock/drawio.svg">
 <meta property="og:image" content="http://yoursite.com/2018/05/23/深入分析ReentrantLock/流程图.svg">
-<meta property="og:updated_time" content="2018-05-23T12:27:45.000Z">
+<meta property="og:updated_time" content="2018-05-24T01:03:48.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="深入分析ReentrantLock">
-<meta name="twitter:description" content="一、UML 二、关键代码分析2.0 AQS#acquire方法说明 独占式，同一时刻仅有一个线程持有同步状态 这是一个模板方法模式，AQS虽然实现了acquire，和release方法，但是里面调用的tryAcquire和tryRelease是由子类来定制的。 可以认为同步状态的维护、获取、释放动作是由子类实现的功能，而动作成功与否的后续行为由AQS框架来实现 该方法对线程的中断不能及时响应（jd">
+<meta name="twitter:description" content="一、UML">
 <meta name="twitter:image" content="http://yoursite.com/2018/05/23/深入分析ReentrantLock/drawio.svg">
 
 
@@ -101,7 +101,7 @@
   var NexT = window.NexT || {};
   var CONFIG = {
     root: '/',
-    scheme: 'Muse',
+    scheme: 'Mist',
     version: '5.1.4',
     sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
     fancybox: true,
@@ -194,6 +194,26 @@
         </li>
       
         
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
         <li class="menu-item menu-item-archives">
           <a href="/archives/" rel="section">
             
@@ -276,6 +296,28 @@
           </span>
 
           
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/JAVA进阶/" itemprop="url" rel="index">
+                    <span itemprop="name">JAVA进阶</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
 
           
             
@@ -303,7 +345,7 @@
       
 
       
-        <h2 id="一、UML"><a href="#一、UML" class="headerlink" title="一、UML"></a>一、UML</h2><p><img src="/2018/05/23/深入分析ReentrantLock/drawio.svg"></p>
+        <h2 id="一、UML"><a href="#一、UML" class="headerlink" title="一、UML"></a>一、UML</h2><p><img src="/2018/05/23/深入分析ReentrantLock/drawio.svg"><br><a id="more"></a></p>
 <h2 id="二、关键代码分析"><a href="#二、关键代码分析" class="headerlink" title="二、关键代码分析"></a>二、关键代码分析</h2><h3 id="2-0-AQS-acquire"><a href="#2-0-AQS-acquire" class="headerlink" title="2.0 AQS#acquire"></a>2.0 AQS#acquire</h3><h4 id="方法说明"><a href="#方法说明" class="headerlink" title="方法说明"></a>方法说明</h4><ul>
 <li>独占式，同一时刻仅有一个线程持有同步状态</li>
 <li>这是一个模板方法模式，AQS虽然实现了acquire，和release方法，但是里面调用的tryAcquire和tryRelease是由子类来定制的。</li>
@@ -452,22 +494,31 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">5</span>
+                  <span class="site-state-item-count">4</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
             
 
             
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">3</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
 
             
               
               
               <div class="site-state-item site-state-tags">
-                
+                <a href="/tags/index.html">
                   <span class="site-state-item-count">3</span>
                   <span class="site-state-item-name">标签</span>
-                
+                </a>
               </div>
             
 
@@ -536,7 +587,7 @@
 
 
 
-  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div>
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Mist</a> v5.1.4</div>
 
 
 

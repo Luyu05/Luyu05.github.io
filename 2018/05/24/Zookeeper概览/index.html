@@ -68,7 +68,7 @@
 
 
 
-  <meta name="keywords" content="方法论," />
+  <meta name="keywords" content="zk," />
 
 
 
@@ -79,18 +79,18 @@
 
 
 
-<meta name="description" content="找到入口 UML画出主流程（纲举目张） 研究重要细节，推荐新启UML 沉浸code外，仍需不时跳出code，最好参考说明文档，弄清核心功能实现方式 全局搜索、查找方法调用处以及debug是好帮手 除UML外，最好贴上核心code，并附上自己的一些理解与说明 核心功能，想象一下如果换作你怎么实现，最好用code实现 最最最后，当然是自己造一个轮子了">
-<meta name="keywords" content="方法论">
+<meta name="description" content="首先Zookeeper（下文简称zk）是一种”分布式协调服务”，我们常见的分布式系统中都有zk的影子。zk通过简单的架构和API解决了分布式系统难以协调的问题。这样开发人员可以更专注于核心应用程序的逻辑，而不用为分布式环境下的应用程序的协调而担心。">
+<meta name="keywords" content="zk">
 <meta property="og:type" content="article">
-<meta property="og:title" content="How to Digest a Framework">
-<meta property="og:url" content="http://yoursite.com/2018/05/17/how-to-read-a-framework/index.html">
+<meta property="og:title" content="Zookeeper概览">
+<meta property="og:url" content="http://yoursite.com/2018/05/24/Zookeeper概览/index.html">
 <meta property="og:site_name" content="Luyu&#39;s Blog">
-<meta property="og:description" content="找到入口 UML画出主流程（纲举目张） 研究重要细节，推荐新启UML 沉浸code外，仍需不时跳出code，最好参考说明文档，弄清核心功能实现方式 全局搜索、查找方法调用处以及debug是好帮手 除UML外，最好贴上核心code，并附上自己的一些理解与说明 核心功能，想象一下如果换作你怎么实现，最好用code实现 最最最后，当然是自己造一个轮子了">
+<meta property="og:description" content="首先Zookeeper（下文简称zk）是一种”分布式协调服务”，我们常见的分布式系统中都有zk的影子。zk通过简单的架构和API解决了分布式系统难以协调的问题。这样开发人员可以更专注于核心应用程序的逻辑，而不用为分布式环境下的应用程序的协调而担心。">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2018-05-24T01:03:58.000Z">
+<meta property="og:updated_time" content="2018-05-25T01:58:23.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="How to Digest a Framework">
-<meta name="twitter:description" content="找到入口 UML画出主流程（纲举目张） 研究重要细节，推荐新启UML 沉浸code外，仍需不时跳出code，最好参考说明文档，弄清核心功能实现方式 全局搜索、查找方法调用处以及debug是好帮手 除UML外，最好贴上核心code，并附上自己的一些理解与说明 核心功能，想象一下如果换作你怎么实现，最好用code实现 最最最后，当然是自己造一个轮子了">
+<meta name="twitter:title" content="Zookeeper概览">
+<meta name="twitter:description" content="首先Zookeeper（下文简称zk）是一种”分布式协调服务”，我们常见的分布式系统中都有zk的影子。zk通过简单的架构和API解决了分布式系统难以协调的问题。这样开发人员可以更专注于核心应用程序的逻辑，而不用为分布式环境下的应用程序的协调而担心。">
 
 
 
@@ -120,13 +120,13 @@
 
 
 
-  <link rel="canonical" href="http://yoursite.com/2018/05/17/how-to-read-a-framework/"/>
+  <link rel="canonical" href="http://yoursite.com/2018/05/24/Zookeeper概览/"/>
 
 
 
 
 
-  <title>How to Digest a Framework | Luyu's Blog</title>
+  <title>Zookeeper概览 | Luyu's Blog</title>
   
 
 
@@ -253,7 +253,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/05/17/how-to-read-a-framework/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/05/24/Zookeeper概览/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="John Doe">
@@ -270,7 +270,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">How to Digest a Framework</h1>
+          <h1 class="post-title" itemprop="name headline">Zookeeper概览</h1>
         
 
         <div class="post-meta">
@@ -282,8 +282,8 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-05-17T21:05:43+08:00">
-                2018-05-17
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-05-24T09:50:52+08:00">
+                2018-05-24
               </time>
             
 
@@ -305,8 +305,8 @@
               
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/方法论/" itemprop="url" rel="index">
-                    <span itemprop="name">方法论</span>
+                  <a href="/categories/zk/" itemprop="url" rel="index">
+                    <span itemprop="name">zk</span>
                   </a>
                 </span>
 
@@ -342,16 +342,28 @@
       
 
       
-        <ul>
-<li>找到入口</li>
-<li>UML画出主流程（纲举目张）</li>
-<li>研究重要细节，推荐新启UML</li>
-<li>沉浸code外，仍需不时跳出code，最好参考说明文档，弄清核心功能实现方式</li>
-<li>全局搜索、查找方法调用处以及debug是好帮手</li>
-<li>除UML外，最好贴上核心code，并附上自己的一些理解与说明</li>
-<li>核心功能，想象一下如果换作你怎么实现，最好用code实现</li>
-<li>最最最后，当然是自己造一个轮子了</li>
+        <p>首先Zookeeper（下文简称zk）是一种”分布式协调服务”，我们常见的分布式系统中都有zk的影子。<br>zk通过简单的架构和API解决了分布式系统难以协调的问题。这样开发人员可以更专注于核心应用程序的逻辑，而不用为分布式环境下的应用程序的协调而担心。<br><a id="more"></a></p>
+<h2 id="zk的数据结构"><a href="#zk的数据结构" class="headerlink" title="zk的数据结构"></a>zk的数据结构</h2><p>zk的数据结构类似文件系统，zk的基本存储单元是节点（Znode），每一个Znode具有唯一确定的路径</p>
+<h2 id="Znode的结构"><a href="#Znode的结构" class="headerlink" title="Znode的结构"></a>Znode的结构</h2><p>Znode由data acl child stat组成</p>
+<ul>
+<li>data 代表当前Znode存储的数据信息</li>
+<li>acl 代表当前Znode的访问权限</li>
+<li>stat Znode的元数据<ol>
+<li>版本号 每当和Znode相关联的数据发生变化时，对应的版本号也会增加。当多个zk客户端在同一znode上操作时，版本号很重要。</li>
+<li>ACL 存储当前znode的访问权限</li>
+<li>时间戳 </li>
+<li>数据长度 - 存储在znode中数据总量</li>
+</ol>
+</li>
+<li>child 表示当前节点的子节点们</li>
 </ul>
+<h2 id="Znode的类型"><a href="#Znode的类型" class="headerlink" title="Znode的类型"></a>Znode的类型</h2><ul>
+<li>持久节点(PERSISTENT) 该类型节点只有创建它的客户端主动执行删除操作才会被删除，否则会一直存在</li>
+<li>临时节点(EPHEMERAL) 该类型节点，和客户端会话紧密相关，当客户端和zk集群断开连接时，临时节点会自动删除。临时节点不允许有子节点</li>
+<li>顺序节点(SEQUENTIAL) 创建这个类型的节点时候会自动在其节点名后面追加一个整型数字（该数字由父节点维护）</li>
+</ul>
+<h2 id="zk的事务"><a href="#zk的事务" class="headerlink" title="zk的事务"></a>zk的事务</h2><p>zk的事务是指能够改变zk服务器状态的操作，一般包括节点的创建、删除、节点内容更新、客户端会话创建与失效等。<br>对于每一个事务，zk都会为其分配一个全局唯一的事务ID（ZXID）；每一个ZXID对应一次更新操作</p>
+<h2 id="Session"><a href="#Session" class="headerlink" title="Session"></a>Session</h2><p>客户端连接到服务器，会向客户端分配SessionId，同一个会话中的请求按照FIFO顺序执行。<br>客户端以特定的时间间隔发送心跳，如果时间间隔大于服务器指定的超时时间，那么视为会话过期，将判定客户端死机。</p>
 
       
     </div>
@@ -369,7 +381,7 @@
       
         <div class="post-tags">
           
-            <a href="/tags/方法论/" rel="tag"># 方法论</a>
+            <a href="/tags/zk/" rel="tag"># zk</a>
           
         </div>
       
@@ -382,14 +394,18 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
+              <a href="/2018/05/23/深入分析ReentrantLock/" rel="next" title="深入分析ReentrantLock">
+                <i class="fa fa-chevron-left"></i> 深入分析ReentrantLock
+              </a>
+            
           </div>
 
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2018/05/17/foreach循环中为什么不要进行remove-add操作/" rel="prev" title="foreach循环中为什么不要进行remove/add操作">
-                foreach循环中为什么不要进行remove/add操作 <i class="fa fa-chevron-right"></i>
+              <a href="/2018/05/24/ZAB协议/" rel="prev" title="ZAB协议">
+                ZAB协议 <i class="fa fa-chevron-right"></i>
               </a>
             
           </div>
@@ -442,8 +458,17 @@
       
 
       
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
 
-      <section class="site-overview-wrap sidebar-panel sidebar-panel-active">
+      <section class="site-overview-wrap sidebar-panel">
         <div class="site-overview">
           <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
             
@@ -503,6 +528,22 @@
         </div>
       </section>
 
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#zk的数据结构"><span class="nav-number">1.</span> <span class="nav-text">zk的数据结构</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Znode的结构"><span class="nav-number">2.</span> <span class="nav-text">Znode的结构</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Znode的类型"><span class="nav-number">3.</span> <span class="nav-text">Znode的类型</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#zk的事务"><span class="nav-number">4.</span> <span class="nav-text">zk的事务</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Session"><span class="nav-number">5.</span> <span class="nav-text">Session</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
       
 
       

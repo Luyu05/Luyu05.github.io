@@ -68,7 +68,7 @@
 
 
 
-  <meta name="keywords" content="zk," />
+  <meta name="keywords" content="I/O," />
 
 
 
@@ -79,18 +79,20 @@
 
 
 
-<meta name="description" content="zk的原理和数据结构，在前面已经简单介绍过了，接下来看看如何利用zk的特性实现一些神奇的功能">
-<meta name="keywords" content="zk">
+<meta name="description" content="可以把整个IO分为两个阶段  等待数据到达 从内核拷贝数据到用户空间">
+<meta name="keywords" content="I&#x2F;O">
 <meta property="og:type" content="article">
-<meta property="og:title" content="zk应用场景">
-<meta property="og:url" content="http://yoursite.com/2018/05/25/zk应用场景/index.html">
+<meta property="og:title" content="JAVA中的I&#x2F;O">
+<meta property="og:url" content="http://yoursite.com/2018/05/29/BIO-NIO-AIO浅析/index.html">
 <meta property="og:site_name" content="Luyu&#39;s Blog">
-<meta property="og:description" content="zk的原理和数据结构，在前面已经简单介绍过了，接下来看看如何利用zk的特性实现一些神奇的功能">
+<meta property="og:description" content="可以把整个IO分为两个阶段  等待数据到达 从内核拷贝数据到用户空间">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2018-05-26T02:53:03.000Z">
+<meta property="og:image" content="http://yoursite.com/2018/05/29/BIO-NIO-AIO浅析/nio2.jpg">
+<meta property="og:updated_time" content="2018-05-30T03:26:30.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="zk应用场景">
-<meta name="twitter:description" content="zk的原理和数据结构，在前面已经简单介绍过了，接下来看看如何利用zk的特性实现一些神奇的功能">
+<meta name="twitter:title" content="JAVA中的I&#x2F;O">
+<meta name="twitter:description" content="可以把整个IO分为两个阶段  等待数据到达 从内核拷贝数据到用户空间">
+<meta name="twitter:image" content="http://yoursite.com/2018/05/29/BIO-NIO-AIO浅析/nio2.jpg">
 
 
 
@@ -120,13 +122,13 @@
 
 
 
-  <link rel="canonical" href="http://yoursite.com/2018/05/25/zk应用场景/"/>
+  <link rel="canonical" href="http://yoursite.com/2018/05/29/BIO-NIO-AIO浅析/"/>
 
 
 
 
 
-  <title>zk应用场景 | Luyu's Blog</title>
+  <title>JAVA中的I/O | Luyu's Blog</title>
   
 
 
@@ -253,7 +255,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/05/25/zk应用场景/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/05/29/BIO-NIO-AIO浅析/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="John Doe">
@@ -270,7 +272,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">zk应用场景</h1>
+          <h1 class="post-title" itemprop="name headline">JAVA中的I/O</h1>
         
 
         <div class="post-meta">
@@ -282,8 +284,8 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-05-25T19:38:05+08:00">
-                2018-05-25
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-05-29T21:12:40+08:00">
+                2018-05-29
               </time>
             
 
@@ -305,8 +307,8 @@
               
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/zk/" itemprop="url" rel="index">
-                    <span itemprop="name">zk</span>
+                  <a href="/categories/I-O/" itemprop="url" rel="index">
+                    <span itemprop="name">I/O</span>
                   </a>
                 </span>
 
@@ -342,16 +344,28 @@
       
 
       
-        <p>zk的原理和数据结构，在前面已经简单介绍过了，接下来看看如何利用zk的特性实现一些神奇的功能<br><a id="more"></a></p>
-<h1 id="命名服务"><a href="#命名服务" class="headerlink" title="命名服务"></a>命名服务</h1><p>分布式数据库自增id的唯一性</p>
-<p>利用znode SEQUENTIAL<br>不同的客户端对同一个zk集群调用create方法，创建SEQUENTIAL节点（对于其父节点唯一）</p>
-<h1 id="配置管理"><a href="#配置管理" class="headerlink" title="配置管理"></a>配置管理</h1><p>在web运行过程中，动态的修改一些配置信息，让其立即生效，而不需要重启项目<br>同一个web应用运行在不同的机器上，要保证对配置信息的修改能够对所有机器都可见</p>
-<p>将配置信息保存在某个节点内，一旦配置信息发生变化，会通知客户端（推模式）<br>也可以客户端每次加载配置信息时，读取最新的数据（拉模式）<br>仔细思考下，其实和存放在数据库中效果类似，但是zk集群能够保证服务的稳定性，而如果使用数据库必然使用分布式数据库，此时一样需要zk来协调</p>
-<h1 id="RPC服务的注册与发现"><a href="#RPC服务的注册与发现" class="headerlink" title="RPC服务的注册与发现"></a>RPC服务的注册与发现</h1><p>比如业界知名的dubbo 对于service的注册和发现都是基于zk实现的</p>
-<p>服务提供方：在名为serviceName的父节点下创建ip+port子节点（同一个serviceName的节点下有多个以ip+port为名字的节点）<br>服务消费方：根据serviceName去zk查询可提供服务的ip和port<br>执行rpc调用（tcp方式）</p>
-<h1 id="Master选举"><a href="#Master选举" class="headerlink" title="Master选举"></a>Master选举</h1><p>以分布式数据库为例子，所有的数据库服务器在同一个zk父节点下创建同名的临时节点，举个例子 /master/election/master 存储当前机器的ip和提供数据库服务的port<br>这时候只有一个服务器能够创建成功，这个创建成功的服务器就成为了Master，而其他创建失败的服务器需要在父节点/master/election上注册一个子节点变更的watcher<br>一旦发现master挂了，就重新选举master<br>or<br>每个客户端在 /master/election/下注册临时有序节点 /client1,/client2 etc<br>并且在父节点注册watcher<br>默认选取client序号最小的客户端作为master，加入该客户端宕机，那么对应的节点将被删除，此时父节点下序号最小的节点对应的客户端当选master</p>
-<h1 id="分布式锁"><a href="#分布式锁" class="headerlink" title="分布式锁"></a>分布式锁</h1><p>假设现在有两个不同客户端的线程都要处理某个共享资源，如何保证资源能够被预期地被处理？<br>这时候需要分布式锁，加锁的过程就是在zk指定节点下创建子节点比如/locks/lock<br>创建成功的线程表示获取锁成功，而失败的客户端会对这个父节点进行监听<br>释放锁的时候分为两种情况，第一种情况，机器宕机，此时临时节点被删除；第二种情况，获取锁的线程执行完业务逻辑主动删除该节点<br>接下来其他想要获取锁的线程会得到通知，并再次进行竞争</p>
-<h1 id="分布式队列"><a href="#分布式队列" class="headerlink" title="分布式队列"></a>分布式队列</h1><p>分布式环境，如何保证消息的有序消费，如何保证消息不会重复消费？<br>自己yy的一个方案<br>利用zk实现的FIFO队列，在特定的目录下创建SEQUENTIAL节点，出队列的时候通过getChild()返回当前队列中所有的元素，<br>找到最小序号的节点，如果该节点下有子节点（表示该任务已经被消费），那么再去找次小的节点，假设该节点下无子节点，那么在该节点下创建子节点（表示当前任务已被消费）<br>这样可以保证任务被有序消费，且不会被重复消费 Ps 但是此时的场景仅仅是有序，并非任务1消费过后 再去消费任务2</p>
+        <p>可以把整个IO分为两个阶段</p>
+<ul>
+<li>等待数据到达</li>
+<li>从内核拷贝数据到用户空间<a id="more"></a>
+<h1 id="UNIX的5种I-O模型"><a href="#UNIX的5种I-O模型" class="headerlink" title="UNIX的5种I/O模型"></a>UNIX的5种I/O模型</h1><img src="/2018/05/29/BIO-NIO-AIO浅析/nio2.jpg" align="left"></li>
+<li><strong>阻塞I/O模型</strong><br>  等待数据到达+将数据从内核空间复制到用户空间 Ps进程阻塞于revcfrom调用<br>  Ps下面都是非阻塞的I/O模型（执行revcfrom时候是否需要等待）</li>
+<li><strong>非阻塞I/O模型</strong><br>  不断轮询检查数据是否已经到达 Ps进程反复调用revcfrom（未就绪直接返回）等待返回成功（轮询）</li>
+<li><strong>I/O复用</strong><br>  1）select/poll，阻塞在select操作上，可以同时检查多个fd是否处于就绪状态<br>  2）epoll，基于事件驱动方式代替轮询扫描<br>  都会阻塞进程，不过一个是轮询fd查看状态，另一个是主动通知fd已就绪<br>  就绪之后，调用recvfrom</li>
+<li><strong>信号驱动I/O</strong><br>  通过系统调用sigaction执行一个信号处理函数（此系统调用立即返回，进程继续工作，它是非阻塞的）；当数据准备就绪后，为该进程生成一个SIGIO信号，通知应用程序调用recvfrom读取数据（此时仍然需要进程自身去调用recvfrom）</li>
+<li><strong>异步I/O</strong><br>  告知内核启动某个操作，并让内核在整个操作完成后通知我们（包括将数据从内核复制到用户空间）<br>  Ps异步I/O模型由内核通知我们I/O操作何时已经完成。而信号驱动I/O由内核告诉我们合适可以在进程内执行一个I/O操作</li>
+</ul>
+<h1 id="同步VS异步"><a href="#同步VS异步" class="headerlink" title="同步VS异步"></a>同步VS异步</h1><p>数据从内核到用户空间的复制是否需要当前进程参与</p>
+<h1 id="阻塞VS非阻塞"><a href="#阻塞VS非阻塞" class="headerlink" title="阻塞VS非阻塞"></a>阻塞VS非阻塞</h1><p>调用revcfrom是否需要等待(以I/O复用为例，调用recvfrom时已经收到select的关于数据就绪的通知，此时无须等待所以是非阻塞的)</p>
+<h1 id="JAVA中常用的三种IO"><a href="#JAVA中常用的三种IO" class="headerlink" title="JAVA中常用的三种IO"></a>JAVA中常用的三种IO</h1><h2 id="BIO（阻塞IO）"><a href="#BIO（阻塞IO）" class="headerlink" title="BIO（阻塞IO）"></a>BIO（阻塞IO）</h2><p>同步阻塞：数据从内核到用户空间的复制在进程内且调用recvfrom后需要等待<br>传统的服务器使用的就是BIO，每当客户端过来一个请求便开启一个新的线程，这种方式最大的问题就是过度依赖于线程。而线程是相对昂贵的资源</p>
+<ul>
+<li>线程本身占用较大的内存，如果成千上万个请求发送到服务端，此时JVM的内存会被占用很多</li>
+<li>线程切换的成本很高，甚至比线程本身的业务逻辑花的时间还要多</li>
+<li>线程创建和销毁成本也相对较高</li>
+</ul>
+<p>客户端个数/IO线程数 = 1:1</p>
+<h2 id="NIO（非阻塞IO）"><a href="#NIO（非阻塞IO）" class="headerlink" title="NIO（非阻塞IO）"></a>NIO（非阻塞IO）</h2><p>同步非阻塞：数据从内核到用户空间的复制在进程内且调用recvfrom后无需等待<br>客户端个数/IO线程数 = M:1</p>
+<h2 id="AIO（异步IO）"><a href="#AIO（异步IO）" class="headerlink" title="AIO（异步IO）"></a>AIO（异步IO）</h2><p>异步非阻塞：数据从内核到用户空间的复制不在进程内且当前进程根本无须调用recvfrom也就无须等待<br>客户端个数/IO线程数 = M:0</p>
 
       
     </div>
@@ -369,7 +383,7 @@
       
         <div class="post-tags">
           
-            <a href="/tags/zk/" rel="tag"># zk</a>
+            <a href="/tags/I-O/" rel="tag"># I/O</a>
           
         </div>
       
@@ -382,8 +396,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2018/05/24/ZAB协议/" rel="next" title="ZAB协议">
-                <i class="fa fa-chevron-left"></i> ZAB协议
+              <a href="/2018/05/25/zk应用场景/" rel="next" title="zk应用场景">
+                <i class="fa fa-chevron-left"></i> zk应用场景
               </a>
             
           </div>
@@ -391,10 +405,6 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2018/05/29/BIO-NIO-AIO浅析/" rel="prev" title="JAVA中的I/O">
-                JAVA中的I/O <i class="fa fa-chevron-right"></i>
-              </a>
             
           </div>
         </div>
@@ -526,7 +536,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#命名服务"><span class="nav-number">1.</span> <span class="nav-text">命名服务</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#配置管理"><span class="nav-number">2.</span> <span class="nav-text">配置管理</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#RPC服务的注册与发现"><span class="nav-number">3.</span> <span class="nav-text">RPC服务的注册与发现</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Master选举"><span class="nav-number">4.</span> <span class="nav-text">Master选举</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#分布式锁"><span class="nav-number">5.</span> <span class="nav-text">分布式锁</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#分布式队列"><span class="nav-number">6.</span> <span class="nav-text">分布式队列</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#UNIX的5种I-O模型"><span class="nav-number">1.</span> <span class="nav-text">UNIX的5种I/O模型</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#同步VS异步"><span class="nav-number">2.</span> <span class="nav-text">同步VS异步</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#阻塞VS非阻塞"><span class="nav-number">3.</span> <span class="nav-text">阻塞VS非阻塞</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#JAVA中常用的三种IO"><span class="nav-number">4.</span> <span class="nav-text">JAVA中常用的三种IO</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#BIO（阻塞IO）"><span class="nav-number">4.1.</span> <span class="nav-text">BIO（阻塞IO）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#NIO（非阻塞IO）"><span class="nav-number">4.2.</span> <span class="nav-text">NIO（非阻塞IO）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#AIO（异步IO）"><span class="nav-number">4.3.</span> <span class="nav-text">AIO（异步IO）</span></a></li></ol></li></ol></div>
             
 
           </div>

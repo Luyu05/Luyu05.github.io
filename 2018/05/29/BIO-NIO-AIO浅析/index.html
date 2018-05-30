@@ -88,7 +88,7 @@
 <meta property="og:description" content="可以把整个IO分为两个阶段  等待数据到达 从内核拷贝数据到用户空间">
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="http://yoursite.com/2018/05/29/BIO-NIO-AIO浅析/nio2.jpg">
-<meta property="og:updated_time" content="2018-05-30T03:26:30.000Z">
+<meta property="og:updated_time" content="2018-05-30T03:28:32.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="JAVA中的I&#x2F;O">
 <meta name="twitter:description" content="可以把整个IO分为两个阶段  等待数据到达 从内核拷贝数据到用户空间">
@@ -348,7 +348,10 @@
 <ul>
 <li>等待数据到达</li>
 <li>从内核拷贝数据到用户空间<a id="more"></a>
-<h1 id="UNIX的5种I-O模型"><a href="#UNIX的5种I-O模型" class="headerlink" title="UNIX的5种I/O模型"></a>UNIX的5种I/O模型</h1><img src="/2018/05/29/BIO-NIO-AIO浅析/nio2.jpg" align="left"></li>
+</li>
+</ul>
+<h1 id="UNIX的5种I-O模型"><a href="#UNIX的5种I-O模型" class="headerlink" title="UNIX的5种I/O模型"></a>UNIX的5种I/O模型</h1><p><img src="/2018/05/29/BIO-NIO-AIO浅析/nio2.jpg" align="left"></p>
+<ul>
 <li><strong>阻塞I/O模型</strong><br>  等待数据到达+将数据从内核空间复制到用户空间 Ps进程阻塞于revcfrom调用<br>  Ps下面都是非阻塞的I/O模型（执行revcfrom时候是否需要等待）</li>
 <li><strong>非阻塞I/O模型</strong><br>  不断轮询检查数据是否已经到达 Ps进程反复调用revcfrom（未就绪直接返回）等待返回成功（轮询）</li>
 <li><strong>I/O复用</strong><br>  1）select/poll，阻塞在select操作上，可以同时检查多个fd是否处于就绪状态<br>  2）epoll，基于事件驱动方式代替轮询扫描<br>  都会阻塞进程，不过一个是轮询fd查看状态，另一个是主动通知fd已就绪<br>  就绪之后，调用recvfrom</li>

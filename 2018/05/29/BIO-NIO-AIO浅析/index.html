@@ -88,7 +88,7 @@
 <meta property="og:description" content="可以把整个IO分为两个阶段  等待数据到达 从内核拷贝数据到用户空间">
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="http://yoursite.com/2018/05/29/BIO-NIO-AIO浅析/nio2.jpg">
-<meta property="og:updated_time" content="2018-05-30T03:28:32.000Z">
+<meta property="og:updated_time" content="2018-05-30T03:31:40.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="JAVA中的I&#x2F;O">
 <meta name="twitter:description" content="可以把整个IO分为两个阶段  等待数据到达 从内核拷贝数据到用户空间">
@@ -367,7 +367,7 @@
 <li>线程创建和销毁成本也相对较高</li>
 </ul>
 <p>客户端个数/IO线程数 = 1:1</p>
-<h2 id="NIO（非阻塞IO）"><a href="#NIO（非阻塞IO）" class="headerlink" title="NIO（非阻塞IO）"></a>NIO（非阻塞IO）</h2><p>同步非阻塞：数据从内核到用户空间的复制在进程内且调用recvfrom后无需等待<br>客户端个数/IO线程数 = M:1</p>
+<h2 id="NIO（非阻塞IO）"><a href="#NIO（非阻塞IO）" class="headerlink" title="NIO（非阻塞IO）"></a>NIO（非阻塞IO）</h2><p>同步非阻塞：数据从内核到用户空间的复制在进程内且调用recvfrom后无需等待<br>nginx使用的就是NIO用来接收数以千万计的客户端请求，之后再分发到不同的服务端<br>tomcat容器之前采用bio，现在已经改为nio<br>客户端个数/IO线程数 = M:1</p>
 <h2 id="AIO（异步IO）"><a href="#AIO（异步IO）" class="headerlink" title="AIO（异步IO）"></a>AIO（异步IO）</h2><p>异步非阻塞：数据从内核到用户空间的复制不在进程内且当前进程根本无须调用recvfrom也就无须等待<br>客户端个数/IO线程数 = M:0</p>
 
       

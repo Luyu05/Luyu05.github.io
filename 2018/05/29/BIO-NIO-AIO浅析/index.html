@@ -88,7 +88,7 @@
 <meta property="og:description" content="可以把整个IO分为两个阶段  等待数据到达 从内核拷贝数据到用户空间">
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="http://yoursite.com/2018/05/29/BIO-NIO-AIO浅析/nio2.jpg">
-<meta property="og:updated_time" content="2018-05-30T03:31:40.000Z">
+<meta property="og:updated_time" content="2018-06-04T01:27:49.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="JAVA中的I&#x2F;O">
 <meta name="twitter:description" content="可以把整个IO分为两个阶段  等待数据到达 从内核拷贝数据到用户空间">
@@ -344,7 +344,7 @@
 <ul>
 <li><strong>阻塞I/O模型</strong><br>  等待数据到达+将数据从内核空间复制到用户空间 Ps进程阻塞于revcfrom调用<br>  Ps下面都是非阻塞的I/O模型（执行revcfrom时候是否需要等待）</li>
 <li><strong>非阻塞I/O模型</strong><br>  不断轮询检查数据是否已经到达 Ps进程反复调用revcfrom（未就绪直接返回）等待返回成功（轮询）</li>
-<li><strong>I/O复用</strong><br>  1）select/poll，阻塞在select操作上，可以同时检查多个fd是否处于就绪状态<br>  2）epoll，基于事件驱动方式代替轮询扫描<br>  都会阻塞进程，不过一个是轮询fd查看状态，另一个是主动通知fd已就绪<br>  就绪之后，调用recvfrom</li>
+<li><strong>I/O复用</strong><br>  1）select/poll，前者最大文件描述符为1024；后者为65535<br>  2）epoll，基于事件驱动方式代替轮询扫描，最大文件描述符为65535<br>  都会阻塞进程，不过一个是轮询fd查看状态（O(n)），另一个是主动通知fd已就绪(O(1))<br>  就绪之后，调用recvfrom</li>
 <li><strong>信号驱动I/O</strong><br>  通过系统调用sigaction执行一个信号处理函数（此系统调用立即返回，进程继续工作，它是非阻塞的）；当数据准备就绪后，为该进程生成一个SIGIO信号，通知应用程序调用recvfrom读取数据（此时仍然需要进程自身去调用recvfrom）</li>
 <li><strong>异步I/O</strong><br>  告知内核启动某个操作，并让内核在整个操作完成后通知我们（包括将数据从内核复制到用户空间）<br>  Ps异步I/O模型由内核通知我们I/O操作何时已经完成。而信号驱动I/O由内核告诉我们合适可以在进程内执行一个I/O操作</li>
 </ul>
@@ -398,6 +398,10 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/06/02/读书笔记-暗时间/" rel="prev" title="读书笔记-暗时间">
+                读书笔记-暗时间 <i class="fa fa-chevron-right"></i>
+              </a>
             
           </div>
         </div>
@@ -474,7 +478,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">8</span>
+                  <span class="site-state-item-count">9</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>

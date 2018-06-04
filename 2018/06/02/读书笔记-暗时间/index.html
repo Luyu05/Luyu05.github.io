@@ -68,7 +68,7 @@
 
 
 
-  <meta name="keywords" content="Zookeeper," />
+  <meta name="keywords" content="Hexo, NexT" />
 
 
 
@@ -79,18 +79,17 @@
 
 
 
-<meta name="description" content="zk的原理和数据结构，在前面已经简单介绍过了，接下来看看如何利用zk的特性实现一些神奇的功能">
-<meta name="keywords" content="Zookeeper">
+<meta name="description" content="重视知识的本质   抓住不变量，大量新技术只是一层皮，背后的支撑技术其实都是十多年不变的东西。底层知识永远都不过时；算法数据结构永远不过是；基本程序设计理论永远不过时；分析问题和解决问题的能力永远不过时； 区分手册知识和本质知识，以Netty为例，io/nio以及netty的部分源码就是其本质的知识，而具体的api使用方式就属于手册知识；zk的zab算法和paxos算法就是本质知识，而具体的ap">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Zookeeper应用场景">
-<meta property="og:url" content="http://yoursite.com/2018/05/25/zk应用场景/index.html">
+<meta property="og:title" content="读书笔记-暗时间">
+<meta property="og:url" content="http://yoursite.com/2018/06/02/读书笔记-暗时间/index.html">
 <meta property="og:site_name" content="Luyu&#39;s Blog">
-<meta property="og:description" content="zk的原理和数据结构，在前面已经简单介绍过了，接下来看看如何利用zk的特性实现一些神奇的功能">
+<meta property="og:description" content="重视知识的本质   抓住不变量，大量新技术只是一层皮，背后的支撑技术其实都是十多年不变的东西。底层知识永远都不过时；算法数据结构永远不过是；基本程序设计理论永远不过时；分析问题和解决问题的能力永远不过时； 区分手册知识和本质知识，以Netty为例，io/nio以及netty的部分源码就是其本质的知识，而具体的api使用方式就属于手册知识；zk的zab算法和paxos算法就是本质知识，而具体的ap">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2018-05-30T05:17:53.000Z">
+<meta property="og:updated_time" content="2018-06-02T09:04:08.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Zookeeper应用场景">
-<meta name="twitter:description" content="zk的原理和数据结构，在前面已经简单介绍过了，接下来看看如何利用zk的特性实现一些神奇的功能">
+<meta name="twitter:title" content="读书笔记-暗时间">
+<meta name="twitter:description" content="重视知识的本质   抓住不变量，大量新技术只是一层皮，背后的支撑技术其实都是十多年不变的东西。底层知识永远都不过时；算法数据结构永远不过是；基本程序设计理论永远不过时；分析问题和解决问题的能力永远不过时； 区分手册知识和本质知识，以Netty为例，io/nio以及netty的部分源码就是其本质的知识，而具体的api使用方式就属于手册知识；zk的zab算法和paxos算法就是本质知识，而具体的ap">
 
 
 
@@ -120,13 +119,13 @@
 
 
 
-  <link rel="canonical" href="http://yoursite.com/2018/05/25/zk应用场景/"/>
+  <link rel="canonical" href="http://yoursite.com/2018/06/02/读书笔记-暗时间/"/>
 
 
 
 
 
-  <title>Zookeeper应用场景 | Luyu's Blog</title>
+  <title>读书笔记-暗时间 | Luyu's Blog</title>
   
 
 
@@ -243,7 +242,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/05/25/zk应用场景/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/06/02/读书笔记-暗时间/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Luyu">
@@ -260,7 +259,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">Zookeeper应用场景</h1>
+          <h1 class="post-title" itemprop="name headline">读书笔记-暗时间</h1>
         
 
         <div class="post-meta">
@@ -272,8 +271,8 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-05-25T19:38:05+08:00">
-                2018-05-25
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-06-02T16:43:25+08:00">
+                2018-06-02
               </time>
             
 
@@ -295,8 +294,8 @@
               
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Zookeeper/" itemprop="url" rel="index">
-                    <span itemprop="name">Zookeeper</span>
+                  <a href="/categories/我思故我在/" itemprop="url" rel="index">
+                    <span itemprop="name">我思故我在</span>
                   </a>
                 </span>
 
@@ -332,16 +331,32 @@
       
 
       
-        <p>zk的原理和数据结构，在前面已经简单介绍过了，接下来看看如何利用zk的特性实现一些神奇的功能<br><a id="more"></a></p>
-<h1 id="命名服务"><a href="#命名服务" class="headerlink" title="命名服务"></a>命名服务</h1><p>分布式数据库自增id的唯一性</p>
-<p>利用znode SEQUENTIAL<br>不同的客户端对同一个zk集群调用create方法，创建SEQUENTIAL节点（对于其父节点唯一）</p>
-<h1 id="配置管理"><a href="#配置管理" class="headerlink" title="配置管理"></a>配置管理</h1><p>在web运行过程中，动态的修改一些配置信息，让其立即生效，而不需要重启项目<br>同一个web应用运行在不同的机器上，要保证对配置信息的修改能够对所有机器都可见</p>
-<p>将配置信息保存在某个节点内，一旦配置信息发生变化，会通知客户端（推模式）<br>也可以客户端每次加载配置信息时，读取最新的数据（拉模式）<br>仔细思考下，其实和存放在数据库中效果类似，但是zk集群能够保证服务的稳定性，而如果使用数据库必然使用分布式数据库，此时一样需要zk来协调</p>
-<h1 id="RPC服务的注册与发现"><a href="#RPC服务的注册与发现" class="headerlink" title="RPC服务的注册与发现"></a>RPC服务的注册与发现</h1><p>比如业界知名的dubbo 对于service的注册和发现都是基于zk实现的</p>
-<p>服务提供方：在名为serviceName的父节点下创建ip+port子节点（同一个serviceName的节点下有多个以ip+port为名字的节点）<br>服务消费方：根据serviceName去zk查询可提供服务的ip和port<br>执行rpc调用（tcp方式）</p>
-<h1 id="Master选举"><a href="#Master选举" class="headerlink" title="Master选举"></a>Master选举</h1><p>以分布式数据库为例子，所有的数据库服务器在同一个zk父节点下创建同名的临时节点，举个例子 /master/election/master 存储当前机器的ip和提供数据库服务的port<br>这时候只有一个服务器能够创建成功，这个创建成功的服务器就成为了Master，而其他创建失败的服务器需要在父节点/master/election上注册一个子节点变更的watcher<br>一旦发现master挂了，就重新选举master<br>or<br>每个客户端在 /master/election/下注册临时有序节点 /client1,/client2 etc<br>并且在父节点注册watcher<br>默认选取client序号最小的客户端作为master，加入该客户端宕机，那么对应的节点将被删除，此时父节点下序号最小的节点对应的客户端当选master</p>
-<h1 id="分布式锁"><a href="#分布式锁" class="headerlink" title="分布式锁"></a>分布式锁</h1><p>假设现在有两个不同客户端的线程都要处理某个共享资源，如何保证资源能够被预期地被处理？<br>这时候需要分布式锁，加锁的过程就是在zk指定节点下创建子节点比如/locks/lock<br>创建成功的线程表示获取锁成功，而失败的客户端会对这个父节点进行监听<br>释放锁的时候分为两种情况，第一种情况，机器宕机，此时临时节点被删除；第二种情况，获取锁的线程执行完业务逻辑主动删除该节点<br>接下来其他想要获取锁的线程会得到通知，并再次进行竞争</p>
-<h1 id="分布式队列"><a href="#分布式队列" class="headerlink" title="分布式队列"></a>分布式队列</h1><p>分布式环境，如何保证消息的有序消费，如何保证消息不会重复消费？<br>自己yy的一个方案<br>利用zk实现的FIFO队列，在特定的目录下创建SEQUENTIAL节点，出队列的时候通过getChild()返回当前队列中所有的元素，<br>找到最小序号的节点，如果该节点下有子节点（表示该任务已经被消费），那么再去找次小的节点，假设该节点下无子节点，那么在该节点下创建子节点（表示当前任务已被消费）<br>这样可以保证任务被有序消费，且不会被重复消费 Ps 但是此时的场景仅仅是有序，并非任务1消费过后 再去消费任务2</p>
+        <ol>
+<li>重视知识的本质</li>
+</ol>
+<ul>
+<li>抓住不变量，大量新技术只是一层皮，背后的支撑技术其实都是十多年不变的东西。底层知识永远都不过时；算法数据结构永远不过是；基本程序设计理论永远不过时；分析问题和解决问题的能力永远不过时；</li>
+<li>区分手册知识和本质知识，以Netty为例，io/nio以及netty的部分源码就是其本质的知识，而具体的api使用方式就属于手册知识；zk的zab算法和paxos算法就是本质知识，而具体的api也是手册知识</li>
+</ul>
+<ol start="2">
+<li>关于Writing</li>
+</ol>
+<ul>
+<li>博客应该是思考和学习的副产品，不要为了写文章而写文章</li>
+</ul>
+<ol start="3">
+<li>回顾知识</li>
+</ol>
+<ul>
+<li>老生常谈的一个话题，既然开始写博客，那么就养成回顾博客的习惯好了，这样也督促自己写博客要更加认真</li>
+</ul>
+<ol start="3">
+<li>学习的金钥匙</li>
+</ol>
+<ul>
+<li>组内有分享的习惯，我一般会在其他人分享某个主题之前有意识地去接触相关内容，这样一来自己遇到不懂的可以和分享者讨论，二来带着基础和问题去听分享会收获很多内容</li>
+</ul>
+<p>4. </p>
 
       
     </div>
@@ -357,12 +372,6 @@
 
     <footer class="post-footer">
       
-        <div class="post-tags">
-          
-            <a href="/tags/Zookeeper/" rel="tag"># Zookeeper</a>
-          
-        </div>
-      
 
       
       
@@ -372,8 +381,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2018/05/24/ZAB协议/" rel="next" title="ZAB协议">
-                <i class="fa fa-chevron-left"></i> ZAB协议
+              <a href="/2018/05/29/BIO-NIO-AIO浅析/" rel="next" title="JAVA中的I/O">
+                <i class="fa fa-chevron-left"></i> JAVA中的I/O
               </a>
             
           </div>
@@ -381,10 +390,6 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2018/05/29/BIO-NIO-AIO浅析/" rel="prev" title="JAVA中的I/O">
-                JAVA中的I/O <i class="fa fa-chevron-right"></i>
-              </a>
             
           </div>
         </div>
@@ -436,17 +441,8 @@
       
 
       
-        <ul class="sidebar-nav motion-element">
-          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
-            文章目录
-          </li>
-          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
-            站点概览
-          </li>
-        </ul>
-      
 
-      <section class="site-overview-wrap sidebar-panel">
+      <section class="site-overview-wrap sidebar-panel sidebar-panel-active">
         <div class="site-overview">
           <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
             
@@ -506,22 +502,6 @@
         </div>
       </section>
 
-      
-      <!--noindex-->
-        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
-          <div class="post-toc">
-
-            
-              
-            
-
-            
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#命名服务"><span class="nav-number">1.</span> <span class="nav-text">命名服务</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#配置管理"><span class="nav-number">2.</span> <span class="nav-text">配置管理</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#RPC服务的注册与发现"><span class="nav-number">3.</span> <span class="nav-text">RPC服务的注册与发现</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Master选举"><span class="nav-number">4.</span> <span class="nav-text">Master选举</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#分布式锁"><span class="nav-number">5.</span> <span class="nav-text">分布式锁</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#分布式队列"><span class="nav-number">6.</span> <span class="nav-text">分布式队列</span></a></li></ol></div>
-            
-
-          </div>
-        </section>
-      <!--/noindex-->
       
 
       

@@ -79,21 +79,18 @@
 
 
 
-<meta name="description" content="1.四层模型 &amp;amp; 七层模型2.HTTP3.HTTPS">
+<meta name="description" content="1.GET请求和POST请求2.RESTFUL API3.Session VS Cookie4.Forward VS Redirect">
 <meta name="keywords" content="Java Web">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Java Web专题（二）">
-<meta property="og:url" content="http://yoursite.com/2018/06/26/java-web专题（二）/index.html">
+<meta property="og:title" content="Java Web专题（一）">
+<meta property="og:url" content="http://yoursite.com/2018/06/26/java-web专题（一）/index.html">
 <meta property="og:site_name" content="Luyu&#39;s Blog">
-<meta property="og:description" content="1.四层模型 &amp;amp; 七层模型2.HTTP3.HTTPS">
+<meta property="og:description" content="1.GET请求和POST请求2.RESTFUL API3.Session VS Cookie4.Forward VS Redirect">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:image" content="http://yoursite.com/2018/06/26/java-web专题（二）/model.png">
-<meta property="og:image" content="http://yoursite.com/2018/06/26/java-web专题（二）/http.png">
-<meta property="og:updated_time" content="2018-06-29T11:54:27.000Z">
+<meta property="og:updated_time" content="2018-06-29T12:08:59.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Java Web专题（二）">
-<meta name="twitter:description" content="1.四层模型 &amp;amp; 七层模型2.HTTP3.HTTPS">
-<meta name="twitter:image" content="http://yoursite.com/2018/06/26/java-web专题（二）/model.png">
+<meta name="twitter:title" content="Java Web专题（一）">
+<meta name="twitter:description" content="1.GET请求和POST请求2.RESTFUL API3.Session VS Cookie4.Forward VS Redirect">
 
 
 
@@ -123,13 +120,13 @@
 
 
 
-  <link rel="canonical" href="http://yoursite.com/2018/06/26/java-web专题（二）/"/>
+  <link rel="canonical" href="http://yoursite.com/2018/06/26/java-web专题（一）/"/>
 
 
 
 
 
-  <title>Java Web专题（二） | Luyu's Blog</title>
+  <title>Java Web专题（一） | Luyu's Blog</title>
   
 
 
@@ -246,7 +243,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/06/26/java-web专题（二）/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/06/26/java-web专题（一）/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Luyu">
@@ -263,7 +260,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">Java Web专题（二）</h1>
+          <h1 class="post-title" itemprop="name headline">Java Web专题（一）</h1>
         
 
         <div class="post-meta">
@@ -275,7 +272,7 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-06-26T20:15:53+08:00">
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-06-26T10:02:20+08:00">
                 2018-06-26
               </time>
             
@@ -335,10 +332,44 @@
       
 
       
-        <p>1.四层模型 &amp; 七层模型<br>2.HTTP<br>3.HTTPS<br><a id="more"></a></p>
-<h3 id="四层模型-amp-七层模型"><a href="#四层模型-amp-七层模型" class="headerlink" title="四层模型 &amp; 七层模型"></a><font color="green" size="5">四层模型 &amp; 七层模型</font></h3><p><img src="/2018/06/26/java-web专题（二）/model.png" height="50%" width="50%"><br>网络七层模型是一个标准，而非实现。(OSI:Open Systems Interconnection Model)<br>网络四层模型是一个实现的应用模型。<br>网络四层模型由七层模型简化合并而来。<br>TCP/IP 模型将 OSI 模型由七层简化为四层<br>TCP/IP 协议中每层技术举例：<br>网络访问层（数据链路层）：ARP、RARP<br>互联网层（网络层）：ICMP、IP<br>传输层：TCP、UDP<br>应用层：DNS、FTP、HTTP、SMTP、TELNET、IRC、WHOIS<br>原文链接：<a href="https://juejin.im/post/59a0472f5188251240632f92" target="_blank" rel="noopener">https://juejin.im/post/59a0472f5188251240632f92</a></p>
-<h3 id="HTTP"><a href="#HTTP" class="headerlink" title="HTTP"></a><font color="green" size="5">HTTP</font></h3><p><img src="http.png" height="50%" width="50%"><br>1）首先作为发送端的客户端在应用层 (HTTP 协议)发出一个想看某个 Web 页面的 HTTP 请求。<br>2）接着，为了传输方便，在传输层(TCP 协议)把从应用层处收到的 数据(HTTP 请求报文)进行分割，并在各个报文上打上标记序号及端 口号后转发给网络层。<br>3）在网络层(IP 协议)，增加作为通信目的地的 MAC 地址后转发给 链路层。这样一来，发往网络的通信请求就准备齐全了。<br>4）接收端的服务器在链路层接收到数据，按序往上层发送，一直到应用层。当传输到应用层，才能算真正接收到由客户端发送过来的 HTTP 请求。<br>参考：《图解HTTP》</p>
-<h3 id="HTTPS"><a href="#HTTPS" class="headerlink" title="HTTPS"></a><font color="green" size="5">HTTPS</font></h3><p>HTTPS同时采用两种加密方式，首先通过非对称加密交换稍后要使用的对称加密的密钥；之后再使用对称加密进行正常通信（非对称加密性能较差）<br>Ps:对称加密和非对称加密（公钥加密，私钥解密。私钥加密，公钥解密）<br>此时并不能保证客户端获取到的公钥是值得信赖的，此时需要证书的帮忙<br>一次性工作：<br>1）服务端运营人员将自己的公钥提交到证书认证机构<br>2）认证机构判定申请者身份后，使用机构的私钥对服务端的公钥进行加密并颁发证书<br>正常请求流程：<br>1）双方先确定使用哪种加密算法以及密钥长度<br>2）服务端将(证书+服务端公钥)发送到客户端，客户端通过内置在浏览器内的机构公钥对证书进行解密，如果二者相等表示服务端公钥可信任<br>3）客户端将对称加密密钥通过服务端公钥加密发送到服务端<br>4）服务端使用私钥进行解密获知对称加密的密钥</p>
+        <p>1.GET请求和POST请求<br>2.RESTFUL API<br>3.Session VS Cookie<br>4.Forward VS Redirect<br><a id="more"></a></p>
+<h3 id="GET请求和POST请求"><a href="#GET请求和POST请求" class="headerlink" title="GET请求和POST请求"></a><font color="green" size="5">GET请求和POST请求</font></h3><p>可以简单的认为HHTP中的POST GET PUT DELETE对应着CRUD<br>区别：<br>1）从语义上讲GET更偏向于查询操作，即GET请求不会对后台数据产生影响；而POST则不同<br>2）一般来讲GET请求是幂等的<br>Ps看到一个关于幂等很好的定义 abs(a) = abs(abs(a))<br>3）GET将数据放在url上，而POST将数据放在HTTP body中；POST相对安全<br>4）如果使用POST就无法保存书签</p>
+<h3 id="RESTFUL-API"><a href="#RESTFUL-API" class="headerlink" title="RESTFUL API"></a><font color="green" size="5">RESTFUL API</font></h3><p>参考链接：<a href="https://juejin.im/entry/59e460c951882542f578f2f0" target="_blank" rel="noopener">https://juejin.im/entry/59e460c951882542f578f2f0</a><br>1）URL表示资源；两种方式  /employees &amp; /employees/56<br>2）名词+方法替换动词url /createEmployee -&gt; POST + /employees<br>                    /updateEmployee -&gt; PUT /employees/56<br>3）条件筛选时，使用?添加条件 GET /employees?state=internal&amp;maturity=senior<br>4）非资源请求使用动词url    GET /calculate?para2=23&amp;para2=432</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>POST（创建）</th>
+<th>GET（读取）</th>
+<th>PUT（更新）</th>
+<th>DELETE（删除）</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>/employees</td>
+<td>创建一个新员工</td>
+<td>列出所有员工</td>
+<td>批量更新员工信息</td>
+<td>删除所有员工</td>
+</tr>
+<tr>
+<td>/employees/56</td>
+<td>（错误）</td>
+<td>获取56号员工的信息</td>
+<td>更新56号员工的信息</td>
+<td>删除56号员工</td>
+</tr>
+</tbody>
+</table>
+<h3 id="Session-amp-Cookie"><a href="#Session-amp-Cookie" class="headerlink" title="Session &amp; Cookie"></a><font color="green" size="5">Session &amp; Cookie</font></h3><p><font color="#0099ff">HTTP是一个无状态协议，如何维持同一个用户的会话？</font><br>对于客户的第一个请求，容器会生成一个唯一的sessionId给到客户端，客户再以后的每一个请求中发回这个sessionId，这样容器就知道客户的身份了</p>
+<p><font color="#0099ff">客户端和容器如何交换SessionId？</font><br>最常用的方法是通过cookie，在服务端给到客户端的response中，header中有一个叫Set-Cookie的属性，用于存放JSESSIONID;在客户端到服务端的request中，header中有一个叫Cookie的属性，用于存放JSESSIONID</p>
+<p><font color="#0099ff">如果禁用cookie这套机制怎么玩的转？</font><br>用户禁用cookie后，会忽视response的header中的Set-Cookie；此时需要换一种办法来交换sessionId<br>1）URL重写<br>origin url + ;jsessionid=1231231<br>注意这里是服务端返回给客户端的，在响应发回的html中（比如href）<br>2）表单隐藏</p>
+<p><font color="#0099ff">分布式环境如何实现session共享？</font><br>参考链接：<a href="https://blog.csdn.net/u010028869/article/details/50773174?ref=myread" target="_blank" rel="noopener">https://blog.csdn.net/u010028869/article/details/50773174?ref=myread</a><br>1）nginx对特定的sessionId进行映射，即一个用户的请求只会交给一个固定的机器处理<br>优点：无须对session做任何处理只要存在本机即可<br>缺点：如果某台机器挂掉，那么这台机器保存session的用户都要重新登录<br>2）session复制，即所有的服务器共享session，任何一个服务器上session发生改变，都同步到其他服务器<br>优点：容错性较好，即使机器挂掉也ok<br>缺点：容易造成网络堵塞<br>3）session第三方共享，redis（集群） or db（集群）</p>
+<p><font color="#0099ff">补充</font><br>session的过时是由容器感知到的，可以在web-app下面配置<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;session-timeout/&gt;</span><br></pre></td></tr></table></figure></p>
+<p>当然也可以直接在代码中session.setMaxInactiveInterval()方法设置过期时间</p>
+<p>cookie设计的初衷是为了支持会话状态，不过也可以用来做一些其他事情<br>1）服务器和客户端直接交换key/value<br>2）常用于填写登录用户的用户名</p>
+<h3 id="Forward-VS-Redirect"><a href="#Forward-VS-Redirect" class="headerlink" title="Forward VS Redirect"></a><font color="green" size="5">Forward VS Redirect</font></h3><p>二者都可以称为请求转发，前者称为直接请求转发，后者称为间接请求转发<br>Redirect:客户端发送一个http请求，服务端Servlet1处理，之后执行response.sendRedirect(“target url”)，之后客户端再次向target url发送http请求<br>Forward:客户端发送一个http请求，服务端Servlet1处理，之后调用requestDispatcher.forward(request,response)，进行请求转发，直接转发到Servlet2处理，最后处理完成后将response返回到客户端<br>举个例子：Servlet将模型传递到jsp就是通过forward<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">RequestDispatcher view = request.getRequestDispatcher(<span class="string">"result.jsp"</span>);</span><br><span class="line">view.forward(request,response);</span><br></pre></td></tr></table></figure></p>
 
       
     </div>
@@ -369,8 +400,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2018/06/26/java-web专题（一）/" rel="next" title="Java Web专题（一）">
-                <i class="fa fa-chevron-left"></i> Java Web专题（一）
+              <a href="/2018/06/24/todo-list/" rel="next" title="技术栈">
+                <i class="fa fa-chevron-left"></i> 技术栈
               </a>
             
           </div>
@@ -379,8 +410,8 @@
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2018/06/27/java-web专题（三）/" rel="prev" title="Java Web专题（三）">
-                Java Web专题（三） <i class="fa fa-chevron-right"></i>
+              <a href="/2018/06/26/java-web专题（二）/" rel="prev" title="Java Web专题（二）">
+                Java Web专题（二） <i class="fa fa-chevron-right"></i>
               </a>
             
           </div>
@@ -513,7 +544,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#四层模型-amp-七层模型"><span class="nav-number">1.</span> <span class="nav-text">四层模型 &amp; 七层模型</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#HTTP"><span class="nav-number">2.</span> <span class="nav-text">HTTP</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#HTTPS"><span class="nav-number">3.</span> <span class="nav-text">HTTPS</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#GET请求和POST请求"><span class="nav-number">1.</span> <span class="nav-text">GET请求和POST请求</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#RESTFUL-API"><span class="nav-number">2.</span> <span class="nav-text">RESTFUL API</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Session-amp-Cookie"><span class="nav-number">3.</span> <span class="nav-text">Session &amp; Cookie</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Forward-VS-Redirect"><span class="nav-number">4.</span> <span class="nav-text">Forward VS Redirect</span></a></li></ol></div>
             
 
           </div>

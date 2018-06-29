@@ -79,18 +79,18 @@
 
 
 
-<meta name="description" content="1.Servlet2.Filter3.Listener">
+<meta name="description" content="1.Servlet2.Filter3.Listener参考《Head First Servlets and JSP》">
 <meta name="keywords" content="Java Web">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Java Web专题（三）">
 <meta property="og:url" content="http://yoursite.com/2018/06/27/java-web专题（三）/index.html">
 <meta property="og:site_name" content="Luyu&#39;s Blog">
-<meta property="og:description" content="1.Servlet2.Filter3.Listener">
+<meta property="og:description" content="1.Servlet2.Filter3.Listener参考《Head First Servlets and JSP》">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2018-06-27T01:50:42.000Z">
+<meta property="og:updated_time" content="2018-06-29T12:05:53.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Java Web专题（三）">
-<meta name="twitter:description" content="1.Servlet2.Filter3.Listener">
+<meta name="twitter:description" content="1.Servlet2.Filter3.Listener参考《Head First Servlets and JSP》">
 
 
 
@@ -332,8 +332,18 @@
       
 
       
-        <p>1.Servlet<br>2.Filter<br>3.Listener<br><a id="more"></a></p>
-<h3 id="Servlet"><a href="#Servlet" class="headerlink" title="Servlet"></a>Servlet</h3><h3 id="Filter"><a href="#Filter" class="headerlink" title="Filter"></a>Filter</h3><h3 id="Listener"><a href="#Listener" class="headerlink" title="Listener"></a>Listener</h3>
+        <p>1.Servlet<br>2.Filter<br>3.Listener<br>参考《Head First Servlets and JSP》<br><a id="more"></a></p>
+<h3 id="Servlet"><a href="#Servlet" class="headerlink" title="Servlet"></a><font color="green" size="5">Servlet</font></h3><p><strong><font color="#0099ff">简单的MVC</font></strong><br>Servlet充当Controller，JSP充当View，具体的业务逻辑以及数据库的操作充当Model<br><strong><font color="#0099ff">Servlet的生命周期</font></strong><br>1)容器加载Servlet类<br>2)实例化Servlet Ps容器让其成为一个普通的对象<br>3)init(servletConfig)（可以覆盖该无参的init方法，执行一些初始化逻辑，比如数据库连接）<br>4)service()-&gt;doPost()/doGet() etc<br>5)destroy()<br><strong><font color="#0099ff">HttpServletRequest中的属性</font></strong><br>举几个常见的例子<br>1)cookies<br>2)session<br>3)localPort/Addr tomcat配置的地址端口号<br>4)serverPort/Addr apache的地址和端口号<br>5)remotePort/Addr 客户端的地址和端口号<br>5)parameterValues/parameter<br><strong><font color="#0099ff">HttpServletResponse</font></strong><br>1)setContentType 通知客户端浏览器当前消息类型<br>2)getWriter/getOutputStream 获取输出流将内容输出到客户端浏览器<br>3)sendRedirect 重定向<br><strong><font color="#0099ff">ServletConfig VS ServletContext</font></strong><br>每个servlet有一个ServletConfig<br>每个Web应用有一个ServletContext</p>
+<p><font color="red">ServletConfig：</font><br>执行Servlet的init方法时会为该Servlet创建一个唯一的ServletConfig，容器从Servlet的配置项中读取初始化参数并封装到ServletConfig中,并传递给init方法<br><figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&lt;Servlet&gt;</span><br><span class="line"> &lt;init-param&gt; key value &lt;/init-param&gt;</span><br><span class="line">&lt;/Servlet&gt;</span><br></pre></td></tr></table></figure></p>
+<p>容器只能读取一次ServletConfig，就是在执行init方法的时候（这意味着如果修改servlet配置，包括initParam，需要重启容器）<br>直接在doXX()方法中调用getServletConfig().getInitParamterNames()&amp;getInitParamter()即可获取initParam<br>此时如果想要将initParam传递到某个Servlet或者JSP，可以利用forward指定目标，此时的模式是点对点，并不是整个应用所有部分都能访问到这些参数<br>这时候引出ServletContext</p>
+<p><font color="red">ServletContext：</font><br>针对整个应用，所以下面的配置并未嵌套在某个servlet中，而是位于web-app中<br>在每一个Servlet中，都可以这样调用getServletContext().getInitParamter(“paramName”)<br><figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&lt;context-param&gt;</span><br><span class="line">key value</span><br><span class="line">&lt;/context-param&gt;</span><br></pre></td></tr></table></figure></p>
+<p>Ps二者都没有setInitParamter方法（getInitParamter），意味着无法动态改变内容<br><strong><font color="#0099ff">如何保证ServletContext的线程安全？</font></strong><br>1）如果对ServletA的doXX()加synchronized,此时ServletB仍然可以修改context，即使该方法有加synchronized。<br>synchronized关键字此时的作用范围是对象，如果Servlet非单例，此时如果new ServletA加的锁也是不生效的<br>2）synchronized(getServletContext())<br><strong><font color="#0099ff">补充</font></strong><br>Servlet是单例的</p>
+<h3 id="Filter"><a href="#Filter" class="headerlink" title="Filter"></a><font color="green" size="5">Filter</font></h3><p>Filter</p>
+<h3 id="Listener"><a href="#Listener" class="headerlink" title="Listener"></a><font color="green" size="5">Listener</font></h3><p>Java Web的main函数—Listener,在Servlet之前,完成某些全局的初始化工作<br>Ps我们当然也可以将listener的工作，放在某个servlet中执行，前提是你确保这个servlet能够最先运行，这明显不靠谱</p>
+<p>ServletContextListener监听ServletContext的初始化和撤销<br>初始化时：从ServletContext得到上下文初始化参数<br>        使用初始化参数（String）建立一个dog或者数据库连接（Object）<br>        把数据库连接或者dog(Object)存储为一个ServletContext属性，供整个Web应用使用<br>撤销时：关闭数据库连接</p>
+<p>1）创建监听者类<br>2）在web.xml中放置一个listener元素<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&lt;listener&gt;</span><br><span class="line">listener <span class="class"><span class="keyword">class</span></span></span><br><span class="line"><span class="class">&lt;/<span class="title">listener</span>&gt;</span></span><br></pre></td></tr></table></figure></p>
+<p>Ps 容器根据listener class实现的接口类型得知监听的目标</p>
+
       
     </div>
     

@@ -87,7 +87,7 @@
 <meta property="og:site_name" content="Luyu&#39;s Blog">
 <meta property="og:description" content="1.GET请求和POST请求2.RESTFUL API3.Session VS Cookie4.Forward VS Redirect">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2018-06-28T04:25:11.000Z">
+<meta property="og:updated_time" content="2018-06-29T12:08:59.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Java Web专题（一）">
 <meta name="twitter:description" content="1.GET请求和POST请求2.RESTFUL API3.Session VS Cookie4.Forward VS Redirect">
@@ -333,8 +333,8 @@
 
       
         <p>1.GET请求和POST请求<br>2.RESTFUL API<br>3.Session VS Cookie<br>4.Forward VS Redirect<br><a id="more"></a></p>
-<h3 id="GET请求和POST请求"><a href="#GET请求和POST请求" class="headerlink" title="GET请求和POST请求"></a>GET请求和POST请求</h3><p>可以简单的认为HHTP中的POST GET PUT DELETE对应着CRUD<br>区别：<br>1）从语义上讲GET更偏向于查询操作，即GET请求不会对后台数据产生影响；而POST则不同<br>2）一般来讲GET请求是幂等的<br>Ps看到一个关于幂等很好的定义 abs(a) = abs(abs(a))<br>3）GET将数据放在url上，而POST将数据放在HTTP body中；POST相对安全<br>4）如果使用POST就无法保存书签</p>
-<h3 id="RESTFUL-API"><a href="#RESTFUL-API" class="headerlink" title="RESTFUL API"></a>RESTFUL API</h3><p><a href="https://juejin.im/entry/59e460c951882542f578f2f0" target="_blank" rel="noopener">https://juejin.im/entry/59e460c951882542f578f2f0</a><br>1）URL表示资源；两种方式  /employees &amp; /employees/56<br>2）名词+方法替换动词url /createEmployee -&gt; POST + /employees /updateEmployee -&gt; PUT /employees/56<br>3）条件筛选时，使用?添加条件 GET /employees?state=internal&amp;maturity=senior<br>4）非资源请求使用动词url    GET /calculate?para2=23&amp;para2=432</p>
+<h3 id="GET请求和POST请求"><a href="#GET请求和POST请求" class="headerlink" title="GET请求和POST请求"></a><font color="green" size="5">GET请求和POST请求</font></h3><p>可以简单的认为HHTP中的POST GET PUT DELETE对应着CRUD<br>区别：<br>1）从语义上讲GET更偏向于查询操作，即GET请求不会对后台数据产生影响；而POST则不同<br>2）一般来讲GET请求是幂等的<br>Ps看到一个关于幂等很好的定义 abs(a) = abs(abs(a))<br>3）GET将数据放在url上，而POST将数据放在HTTP body中；POST相对安全<br>4）如果使用POST就无法保存书签</p>
+<h3 id="RESTFUL-API"><a href="#RESTFUL-API" class="headerlink" title="RESTFUL API"></a><font color="green" size="5">RESTFUL API</font></h3><p>参考链接：<a href="https://juejin.im/entry/59e460c951882542f578f2f0" target="_blank" rel="noopener">https://juejin.im/entry/59e460c951882542f578f2f0</a><br>1）URL表示资源；两种方式  /employees &amp; /employees/56<br>2）名词+方法替换动词url /createEmployee -&gt; POST + /employees<br>                    /updateEmployee -&gt; PUT /employees/56<br>3）条件筛选时，使用?添加条件 GET /employees?state=internal&amp;maturity=senior<br>4）非资源请求使用动词url    GET /calculate?para2=23&amp;para2=432</p>
 <table>
 <thead>
 <tr>
@@ -362,7 +362,14 @@
 </tr>
 </tbody>
 </table>
-<h3 id="Session-VS-Cookie"><a href="#Session-VS-Cookie" class="headerlink" title="Session VS Cookie"></a>Session VS Cookie</h3><h3 id="Forward-VS-Redirect"><a href="#Forward-VS-Redirect" class="headerlink" title="Forward VS Redirect"></a>Forward VS Redirect</h3><p>二者都可以称为请求转发，前者称为直接请求转发，后者称为间接请求转发<br>Redirect:客户端发送一个http请求，服务端Servlet1处理，之后执行response.sendRedirect(“target url”)，之后客户端再次向target url发送http请求<br>Forward:客户端发送一个http请求，服务端Servlet1处理，之后调用requestDispatcher.forward(request,response)，进行请求转发，直接转发到Servlet2处理，最后处理完成后将response返回到客户端</p>
+<h3 id="Session-amp-Cookie"><a href="#Session-amp-Cookie" class="headerlink" title="Session &amp; Cookie"></a><font color="green" size="5">Session &amp; Cookie</font></h3><p><font color="#0099ff">HTTP是一个无状态协议，如何维持同一个用户的会话？</font><br>对于客户的第一个请求，容器会生成一个唯一的sessionId给到客户端，客户再以后的每一个请求中发回这个sessionId，这样容器就知道客户的身份了</p>
+<p><font color="#0099ff">客户端和容器如何交换SessionId？</font><br>最常用的方法是通过cookie，在服务端给到客户端的response中，header中有一个叫Set-Cookie的属性，用于存放JSESSIONID;在客户端到服务端的request中，header中有一个叫Cookie的属性，用于存放JSESSIONID</p>
+<p><font color="#0099ff">如果禁用cookie这套机制怎么玩的转？</font><br>用户禁用cookie后，会忽视response的header中的Set-Cookie；此时需要换一种办法来交换sessionId<br>1）URL重写<br>origin url + ;jsessionid=1231231<br>注意这里是服务端返回给客户端的，在响应发回的html中（比如href）<br>2）表单隐藏</p>
+<p><font color="#0099ff">分布式环境如何实现session共享？</font><br>参考链接：<a href="https://blog.csdn.net/u010028869/article/details/50773174?ref=myread" target="_blank" rel="noopener">https://blog.csdn.net/u010028869/article/details/50773174?ref=myread</a><br>1）nginx对特定的sessionId进行映射，即一个用户的请求只会交给一个固定的机器处理<br>优点：无须对session做任何处理只要存在本机即可<br>缺点：如果某台机器挂掉，那么这台机器保存session的用户都要重新登录<br>2）session复制，即所有的服务器共享session，任何一个服务器上session发生改变，都同步到其他服务器<br>优点：容错性较好，即使机器挂掉也ok<br>缺点：容易造成网络堵塞<br>3）session第三方共享，redis（集群） or db（集群）</p>
+<p><font color="#0099ff">补充</font><br>session的过时是由容器感知到的，可以在web-app下面配置<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;session-timeout/&gt;</span><br></pre></td></tr></table></figure></p>
+<p>当然也可以直接在代码中session.setMaxInactiveInterval()方法设置过期时间</p>
+<p>cookie设计的初衷是为了支持会话状态，不过也可以用来做一些其他事情<br>1）服务器和客户端直接交换key/value<br>2）常用于填写登录用户的用户名</p>
+<h3 id="Forward-VS-Redirect"><a href="#Forward-VS-Redirect" class="headerlink" title="Forward VS Redirect"></a><font color="green" size="5">Forward VS Redirect</font></h3><p>二者都可以称为请求转发，前者称为直接请求转发，后者称为间接请求转发<br>Redirect:客户端发送一个http请求，服务端Servlet1处理，之后执行response.sendRedirect(“target url”)，之后客户端再次向target url发送http请求<br>Forward:客户端发送一个http请求，服务端Servlet1处理，之后调用requestDispatcher.forward(request,response)，进行请求转发，直接转发到Servlet2处理，最后处理完成后将response返回到客户端<br>举个例子：Servlet将模型传递到jsp就是通过forward<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">RequestDispatcher view = request.getRequestDispatcher(<span class="string">"result.jsp"</span>);</span><br><span class="line">view.forward(request,response);</span><br></pre></td></tr></table></figure></p>
 
       
     </div>
@@ -537,7 +544,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#GET请求和POST请求"><span class="nav-number">1.</span> <span class="nav-text">GET请求和POST请求</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#RESTFUL-API"><span class="nav-number">2.</span> <span class="nav-text">RESTFUL API</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Session-VS-Cookie"><span class="nav-number">3.</span> <span class="nav-text">Session VS Cookie</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Forward-VS-Redirect"><span class="nav-number">4.</span> <span class="nav-text">Forward VS Redirect</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#GET请求和POST请求"><span class="nav-number">1.</span> <span class="nav-text">GET请求和POST请求</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#RESTFUL-API"><span class="nav-number">2.</span> <span class="nav-text">RESTFUL API</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Session-amp-Cookie"><span class="nav-number">3.</span> <span class="nav-text">Session &amp; Cookie</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Forward-VS-Redirect"><span class="nav-number">4.</span> <span class="nav-text">Forward VS Redirect</span></a></li></ol></div>
             
 
           </div>

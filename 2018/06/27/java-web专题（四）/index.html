@@ -87,7 +87,7 @@
 <meta property="og:site_name" content="Luyu&#39;s Blog">
 <meta property="og:description" content="1.前后端分离 VS 不分离2.Apache VS Tomcat3.Tomcat的基本原理">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2018-06-27T01:51:00.000Z">
+<meta property="og:updated_time" content="2018-06-29T11:53:13.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Java Web专题（四）">
 <meta name="twitter:description" content="1.前后端分离 VS 不分离2.Apache VS Tomcat3.Tomcat的基本原理">
@@ -333,7 +333,8 @@
 
       
         <p>1.前后端分离 VS 不分离<br>2.Apache VS Tomcat<br>3.Tomcat的基本原理<br><a id="more"></a></p>
-<h3 id="前后端分离-VS-不分离"><a href="#前后端分离-VS-不分离" class="headerlink" title="前后端分离 VS 不分离"></a>前后端分离 VS 不分离</h3><h3 id="Apache-VS-Tomcat"><a href="#Apache-VS-Tomcat" class="headerlink" title="Apache VS Tomcat"></a>Apache VS Tomcat</h3><h3 id="Tomcat的基本原理"><a href="#Tomcat的基本原理" class="headerlink" title="Tomcat的基本原理"></a>Tomcat的基本原理</h3>
+<h3 id="前后端分离-VS-不分离"><a href="#前后端分离-VS-不分离" class="headerlink" title="前后端分离 VS 不分离"></a><font color="green" size="5">前后端分离 VS 不分离</font></h3><h3 id="Web容器"><a href="#Web容器" class="headerlink" title="Web容器"></a><font color="green" size="5">Web容器</font></h3><p>当一个请求到达服务端后，需要有人来实例化Servlet、新建线程处理请求、调用Servlet的doPost()和doGet()方法、管理Servlet的生死，这个人就是Web容器（ Servlet容器）<br>Servlet没有main方法，它们受控于另一个Java应用（Web容器or Servlet容器）<br>Web服务器应用（apache）接收HTTP请求，如果该请求需要某个Servlet处理，那么将其交给Servlet容器<br>web.xml实际上是给容器用的(告诉容器如何使用Servlet和JSP)<br>生撸一个web容器？<br>1）main函数<br>2）创建和服务器的socket连接<br>3）采用BIO/NIO等<br>4）管理并运行Servlet<br>5）线程管理<br>6）翻译JSP</p>
+<h3 id="Apache-VS-Tomcat"><a href="#Apache-VS-Tomcat" class="headerlink" title="Apache VS Tomcat"></a><font color="green" size="5">Apache VS Tomcat</font></h3><h3 id="Tomcat的基本原理"><a href="#Tomcat的基本原理" class="headerlink" title="Tomcat的基本原理"></a><font color="green" size="5">Tomcat的基本原理</font></h3>
       
     </div>
     
@@ -503,7 +504,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#前后端分离-VS-不分离"><span class="nav-number">1.</span> <span class="nav-text">前后端分离 VS 不分离</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Apache-VS-Tomcat"><span class="nav-number">2.</span> <span class="nav-text">Apache VS Tomcat</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Tomcat的基本原理"><span class="nav-number">3.</span> <span class="nav-text">Tomcat的基本原理</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#前后端分离-VS-不分离"><span class="nav-number">1.</span> <span class="nav-text">前后端分离 VS 不分离</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Web容器"><span class="nav-number">2.</span> <span class="nav-text">Web容器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Apache-VS-Tomcat"><span class="nav-number">3.</span> <span class="nav-text">Apache VS Tomcat</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Tomcat的基本原理"><span class="nav-number">4.</span> <span class="nav-text">Tomcat的基本原理</span></a></li></ol></div>
             
 
           </div>

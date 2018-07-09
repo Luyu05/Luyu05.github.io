@@ -89,7 +89,7 @@
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="http://yoursite.com/2018/07/02/synchronized-and-reentrantlock/monitor.png">
 <meta property="og:image" content="http://yoursite.com/2018/07/02/synchronized-and-reentrantlock/synchronized.png">
-<meta property="og:updated_time" content="2018-07-04T13:32:44.000Z">
+<meta property="og:updated_time" content="2018-07-09T03:00:32.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="synchronized and reentrantlock">
 <meta name="twitter:description" content="1.Synchronized2.ReentrantLock3.二者异同4.高效并发">
@@ -346,6 +346,7 @@
 <h3 id="二者的异同"><a href="#二者的异同" class="headerlink" title="二者的异同"></a><font color="red" size="5">二者的异同</font></h3><p>1）ReentrantLock代码正常结束需要手动释放锁，发生异常时候要在finally中释放锁；synchronized发生异常时会自动释放锁<br>2）Lock是一个接口，synchronized是Java中的关键字<br>3）ReentrantLock可以绑定多个条件，而synchronized默认只有一个条件<br>4）JDK 1.5之前，synchronized性能较差（用户态到内核态的切换+阻塞引起的线程切换）；而从1.6开始synchronized进行了一系列的优化措施(比如自旋)，官方推荐使用synchronized</p>
 <h3 id="高效并发"><a href="#高效并发" class="headerlink" title="高效并发"></a><font color="red" size="5">高效并发</font></h3><p>参考《深入理解JVM虚拟机》<br>高效并发是jdk1.6的重要主题，这里面很多方式都是synchronized优化措施<br><strong><font color="#0099ff">1.自旋</font></strong><br>互斥同步对性能最大的影响是阻塞的实现，挂起线程和恢复线程都需要转入内核态中完成，这些操作给系统的并发性能带来了很大的压力。<br>有的时候持有锁的线程真正的逻辑很简单很快就会释放锁，为了这段时间去挂起和恢复线程并不值得，这个时候可以让第二个线程cpu空转一段时间，等到第一个线程释放锁之后立刻获取到锁，无须进行状态的切换；如果获取锁的线程逻辑较为复杂，那么自旋的线程在自旋一定次数之后进入阻塞状态<br>Ps前提是多个处理器，否则如果只有一个处理器，在一个线程自旋的时候cpu空转，另一个获取锁的线程也无法执行逻辑<br><strong><font color="#0099ff">2.自适应自旋</font></strong><br>如果在同一个锁对象上，自旋等待刚刚获取过锁，虚拟机会认为本次自旋获取锁的概率也比较大，此时会延长自旋等待时间；反之，如果某一个锁对象，自旋很少获取成功，那么就会缩短等待时间<br><strong><font color="#0099ff">3.锁消除（JIT即时编译器）</font></strong><br>对一些代码上要求同步，但是被检测到不可能存在共享数据竞争的锁进行消除<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> String <span class="title">concatString</span><span class="params">(String s1, String s2)</span></span>&#123;</span><br><span class="line">    StringBuffer sb = <span class="keyword">new</span> StringBuffer();</span><br><span class="line">    sb.append(s1);</span><br><span class="line">    sb.append(s2);</span><br><span class="line">    <span class="keyword">return</span> sb.toString();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
 <p>这里append方法会对sb进行加锁，但是显然sb无法从该方法内逃逸，此时的堆变量可视为栈变量，即使编译后会忽略同步而直接执行<br><strong><font color="#0099ff">4.锁粗化</font></strong><br>防止代码多次对一个对象重复加锁解锁，比如上面的例子，虚拟机会把monitorenter置于sb.append(s1)前，monitorexit置于sb.append(s2)后<br><strong><font color="#0099ff">5.锁的膨胀</font></strong><br>偏向锁（无竞争，只有第一个申请锁的线程会使用锁，所以只有初始化时的一次CAS操作）-&gt;轻量级锁（无竞争，多个线程交替使用锁，每个线程申请释放都需要一次CAS）-&gt;自旋锁-&gt;重量级锁<br><img src="/2018/07/02/synchronized-and-reentrantlock/synchronized.png"><br>原图链接：<a href="https://blog.dreamtobe.cn/" target="_blank" rel="noopener">https://blog.dreamtobe.cn/</a></p>
+<h3 id="sleep-vs-wait"><a href="#sleep-vs-wait" class="headerlink" title="sleep vs wait"></a><font color="red" size="5">sleep vs wait</font></h3><p>最后再看看多线程中常用的sleep和wait的区别<br>sleep是当前线程让出cpu时间，给予其他线程执行的机会，sleep的使用几乎无限制<br>wait方法的使用需要在同步块内部，即只有获取到锁的代码块才能执行wait方法（否则会抛IllegalMonitorStateException错误），此时会释放锁。经常和notify/notifyAll配合使用</p>
 
       
     </div>
@@ -465,7 +466,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">19</span>
+                  <span class="site-state-item-count">20</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -520,7 +521,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#Synchronized关键字"><span class="nav-number">1.</span> <span class="nav-text">Synchronized关键字</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ReentrantLock"><span class="nav-number">2.</span> <span class="nav-text">ReentrantLock</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#二者的异同"><span class="nav-number">3.</span> <span class="nav-text">二者的异同</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#高效并发"><span class="nav-number">4.</span> <span class="nav-text">高效并发</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#Synchronized关键字"><span class="nav-number">1.</span> <span class="nav-text">Synchronized关键字</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ReentrantLock"><span class="nav-number">2.</span> <span class="nav-text">ReentrantLock</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#二者的异同"><span class="nav-number">3.</span> <span class="nav-text">二者的异同</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#高效并发"><span class="nav-number">4.</span> <span class="nav-text">高效并发</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#sleep-vs-wait"><span class="nav-number">5.</span> <span class="nav-text">sleep vs wait</span></a></li></ol></div>
             
 
           </div>

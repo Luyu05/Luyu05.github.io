@@ -79,20 +79,20 @@
 
 
 
-<meta name="description" content="带着问题深入分析HashMap ConcurrentHashMapPs有任何问题请在下方评论，或者邮箱联系我luyucareer@163.com">
+<meta name="description" content="带着问题深入分析HashMapPs有任何问题请在下方评论，或者邮箱联系我luyucareer@163.com">
 <meta name="keywords" content="多线程">
 <meta property="og:type" content="article">
 <meta property="og:title" content="深入分析HashMap">
 <meta property="og:url" content="http://yoursite.com/2018/07/10/HashMap/index.html">
 <meta property="og:site_name" content="Luyu&#39;s Blog">
-<meta property="og:description" content="带着问题深入分析HashMap ConcurrentHashMapPs有任何问题请在下方评论，或者邮箱联系我luyucareer@163.com">
+<meta property="og:description" content="带着问题深入分析HashMapPs有任何问题请在下方评论，或者邮箱联系我luyucareer@163.com">
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="http://yoursite.com/2018/07/10/HashMap/resize.png">
 <meta property="og:image" content="http://yoursite.com/2018/07/10/HashMap/loop.png">
-<meta property="og:updated_time" content="2018-07-11T09:42:15.000Z">
+<meta property="og:updated_time" content="2018-07-11T09:44:39.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="深入分析HashMap">
-<meta name="twitter:description" content="带着问题深入分析HashMap ConcurrentHashMapPs有任何问题请在下方评论，或者邮箱联系我luyucareer@163.com">
+<meta name="twitter:description" content="带着问题深入分析HashMapPs有任何问题请在下方评论，或者邮箱联系我luyucareer@163.com">
 <meta name="twitter:image" content="http://yoursite.com/2018/07/10/HashMap/resize.png">
 
 
@@ -335,7 +335,7 @@
       
 
       
-        <p>带着问题深入分析HashMap ConcurrentHashMap<br>Ps有任何问题请在下方评论，或者邮箱联系我<a href="mailto:luyucareer@163.com" target="_blank" rel="noopener">luyucareer@163.com</a><br><a id="more"></a></p>
+        <p>带着问题深入分析HashMap<br>Ps有任何问题请在下方评论，或者邮箱联系我<a href="mailto:luyucareer@163.com" target="_blank" rel="noopener">luyucareer@163.com</a><br><a id="more"></a></p>
 <p><font color="blue">Q:HashMap的数据结构</font><br>Node[] table<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">Node</span>&lt;<span class="title">K</span>,<span class="title">V</span>&gt; <span class="keyword">implements</span> <span class="title">Map</span>.<span class="title">Entry</span>&lt;<span class="title">K</span>,<span class="title">V</span>&gt; </span>&#123;</span><br><span class="line">    <span class="keyword">final</span> <span class="keyword">int</span> hash;</span><br><span class="line">    <span class="keyword">final</span> K key;</span><br><span class="line">    V value;</span><br><span class="line">    Node&lt;K,V&gt; next;</span><br><span class="line">    Node(<span class="keyword">int</span> hash, K key, V value, Node&lt;K,V&gt; next) &#123;</span><br><span class="line">        <span class="keyword">this</span>.hash = hash;</span><br><span class="line">        <span class="keyword">this</span>.key = key;</span><br><span class="line">        <span class="keyword">this</span>.value = value;</span><br><span class="line">        <span class="keyword">this</span>.next = next;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
 <p><font color="blue">Q:HashMap的threshold/factor/length/size这些参数的含义</font><br>size:最常用的属性，表示map中k/v的个数<br>length:表示table的长度，默认是16<br>facotr:负载因子，默认为0.75<br>threshold:等于length*factor,当map的size超过threshold时进行扩容(2倍)</p>
 <p><font color="blue">Q:1.7和1.8 HashMap的区别</font><br>1)hash方式<br>在JDK1.8的实现中，优化了高位运算的算法，通过hashCode()的高16位异或低16位实现的：(h = k.hashCode()) ^ (h &gt;&gt;&gt; 16)，主要是从速度、功效、质量来考虑的，这么做可以在数组table的length比较小的时候，也能保证考虑到高低Bit都参与到Hash的计算中，同时不会有太大的开销。<br>JDK1.7中hash计算相对复杂这里不做分析<br>2)红黑树的引入<br>JDK1.7中，当NODE变得特别长的时候，get和put操作复杂度最差会变为O(n)<br>JDK1.8中，当NODE长度超过设定值（默认8）时候，会调用treeifyBin方法，将链表转为红黑树，最差的情况时间复杂度为O(log n)<br>3)扩容时的优化<br>每次扩容都是扩大为原来的2倍，所以只需要看原来的hash值新增的那个bit位是1还是0，是0索引不变，是1索引变为”原索引+oldCap”<br>不需要像1.7一样每次都重新计算hash</p>

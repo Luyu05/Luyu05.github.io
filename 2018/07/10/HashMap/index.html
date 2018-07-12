@@ -89,7 +89,7 @@
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="http://yoursite.com/2018/07/10/HashMap/resize.png">
 <meta property="og:image" content="http://yoursite.com/2018/07/10/HashMap/loop.png">
-<meta property="og:updated_time" content="2018-07-11T09:44:39.000Z">
+<meta property="og:updated_time" content="2018-07-12T07:27:25.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="深入分析HashMap">
 <meta name="twitter:description" content="带着问题深入分析HashMapPs有任何问题请在下方评论，或者邮箱联系我luyucareer@163.com">
@@ -338,7 +338,7 @@
         <p>带着问题深入分析HashMap<br>Ps有任何问题请在下方评论，或者邮箱联系我<a href="mailto:luyucareer@163.com" target="_blank" rel="noopener">luyucareer@163.com</a><br><a id="more"></a></p>
 <p><font color="blue">Q:HashMap的数据结构</font><br>Node[] table<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">Node</span>&lt;<span class="title">K</span>,<span class="title">V</span>&gt; <span class="keyword">implements</span> <span class="title">Map</span>.<span class="title">Entry</span>&lt;<span class="title">K</span>,<span class="title">V</span>&gt; </span>&#123;</span><br><span class="line">    <span class="keyword">final</span> <span class="keyword">int</span> hash;</span><br><span class="line">    <span class="keyword">final</span> K key;</span><br><span class="line">    V value;</span><br><span class="line">    Node&lt;K,V&gt; next;</span><br><span class="line">    Node(<span class="keyword">int</span> hash, K key, V value, Node&lt;K,V&gt; next) &#123;</span><br><span class="line">        <span class="keyword">this</span>.hash = hash;</span><br><span class="line">        <span class="keyword">this</span>.key = key;</span><br><span class="line">        <span class="keyword">this</span>.value = value;</span><br><span class="line">        <span class="keyword">this</span>.next = next;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
 <p><font color="blue">Q:HashMap的threshold/factor/length/size这些参数的含义</font><br>size:最常用的属性，表示map中k/v的个数<br>length:表示table的长度，默认是16<br>facotr:负载因子，默认为0.75<br>threshold:等于length*factor,当map的size超过threshold时进行扩容(2倍)</p>
-<p><font color="blue">Q:1.7和1.8 HashMap的区别</font><br>1)hash方式<br>在JDK1.8的实现中，优化了高位运算的算法，通过hashCode()的高16位异或低16位实现的：(h = k.hashCode()) ^ (h &gt;&gt;&gt; 16)，主要是从速度、功效、质量来考虑的，这么做可以在数组table的length比较小的时候，也能保证考虑到高低Bit都参与到Hash的计算中，同时不会有太大的开销。<br>JDK1.7中hash计算相对复杂这里不做分析<br>2)红黑树的引入<br>JDK1.7中，当NODE变得特别长的时候，get和put操作复杂度最差会变为O(n)<br>JDK1.8中，当NODE长度超过设定值（默认8）时候，会调用treeifyBin方法，将链表转为红黑树，最差的情况时间复杂度为O(log n)<br>3)扩容时的优化<br>每次扩容都是扩大为原来的2倍，所以只需要看原来的hash值新增的那个bit位是1还是0，是0索引不变，是1索引变为”原索引+oldCap”<br>不需要像1.7一样每次都重新计算hash</p>
+<p><font color="blue">Q:1.7和1.8 HashMap的区别</font><br>1)hash方式<br>在JDK1.8的实现中，优化了高位运算的算法，通过hashCode()的高16位异或低16位实现的：(h = k.hashCode()) ^ (h &gt;&gt;&gt; 16)，主要是从速度、功效、质量来考虑的，这么做可以在数组table的length比较小的时候，也能保证考虑到高低Bit都参与到Hash的计算中，同时不会有太大的开销。<br>JDK1.7中hash计算相对复杂这里不做分析<br>Ps这里实际上1.8的hash更为简化了，因为此时即使发生碰撞也会有红黑树保证效率<br>2)红黑树的引入<br>JDK1.7中，当NODE变得特别长的时候，get和put操作复杂度最差会变为O(n)<br>JDK1.8中，当NODE长度超过设定值（默认8）时候，会调用treeifyBin方法，将链表转为红黑树，最差的情况时间复杂度为O(log n)<br>3)扩容时的优化<br>每次扩容都是扩大为原来的2倍，所以只需要看原来的hash值新增的那个bit位是1还是0，是0索引不变，是1索引变为”原索引+oldCap”<br>不需要像1.7一样每次都重新计算hash</p>
 <p><font color="blue">Q:以1.8为例，简要说明HashMap put操作和get操作的流程</font><br>put操作:<br>1)根据key计算hash值，再对bucket的length取模（&amp;操作）,定位到bucket的位置i<br>2)判断bucket[i]是否是null，如果是执行resize进行扩容<br>3)定位到bucket，之后遍历node，如果有key相同的则覆盖<br>4)如果没有key相同的node，此时判断该bucket中node的个数，如果个数大于等于8，那么对链表进行树化并插入到树中；反之直接插入到链表末尾<br>5)插入成功后，判断size是否大于threshold，如果大于进行resize操作<br>get操作：<br>1）根据key计算hash值，再对bucket的length取模（&amp;操作）,定位到bucket的位置i<br>2）如果直接命中，那么直接返回即可<br>3）未命中，如果是树则在树中查找当前key（O(log n)）;如果是链表那么在链表中查找当前key(O(n))<br>4）如果没找到返回null</p>
 <p><font color="blue">Q:为什么HashMap的bucket数目要取2^n?而不是对hash更为友好的素数？</font><br>对bucket的数量取模的操作，当bucket数量为2^n时候，可以转化为bucket&amp;(2^n-1),对计算机来说&amp;比%具有更高的效率</p>
 <p><font color="blue">Q:为什么说hashMap是线程不安全的</font><br>问题表现为<br>多线程一起执行put操作，另外的线程执行get操作可能会导致死循环及使用迭代器时的fast-fail上（参考之前写过的一篇文章:foreach循环中为什么不要进行remove/add操作）<br>这个要从hashMap的resize操作说起,resize操作最核心的方法是transfer方法 JDK1.7<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">transfer</span><span class="params">(Entry[] newTable, <span class="keyword">boolean</span> rehash)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">int</span> newCapacity = newTable.length;</span><br><span class="line">    <span class="keyword">for</span> (Entry&lt;K,V&gt; e : table) &#123;</span><br><span class="line">        <span class="keyword">while</span>(<span class="keyword">null</span> != e) &#123;</span><br><span class="line">            Entry&lt;K,V&gt; next = e.next;</span><br><span class="line">            <span class="keyword">if</span> (rehash) &#123;</span><br><span class="line">                e.hash = <span class="keyword">null</span> == e.key ? <span class="number">0</span> : hash(e.key);</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">int</span> i = indexFor(e.hash, newCapacity);</span><br><span class="line">            e.next = newTable[i];</span><br><span class="line">            newTable[i] = e;</span><br><span class="line">            e = next;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
@@ -396,6 +396,10 @@ gitment.render('container')
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/07/11/深入分析ConcurrentHashMap/" rel="prev" title="深入分析ConcurrentHashMap">
+                深入分析ConcurrentHashMap <i class="fa fa-chevron-right"></i>
+              </a>
             
           </div>
         </div>
@@ -463,7 +467,7 @@ gitment.render('container')
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">22</span>
+                  <span class="site-state-item-count">23</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>

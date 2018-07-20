@@ -1,0 +1,730 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Java Web," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="1.Servlet2.Filter3.Listener参考《Head First Servlets and JSP》">
+<meta name="keywords" content="Java Web">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Java Web专题（三）">
+<meta property="og:url" content="http://yoursite.com/2018/06/27/java-web-3/index.html">
+<meta property="og:site_name" content="Luyu&#39;s Blog">
+<meta property="og:description" content="1.Servlet2.Filter3.Listener参考《Head First Servlets and JSP》">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2018-07-02T10:17:44.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Java Web专题（三）">
+<meta name="twitter:description" content="1.Servlet2.Filter3.Listener参考《Head First Servlets and JSP》">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2018/06/27/java-web-3/"/>
+
+
+
+
+
+  <title>Java Web专题（三） | Luyu's Blog</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Luyu's Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/06/27/java-web-3/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Luyu">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Luyu's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Java Web专题（三）</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-06-27T09:40:52+08:00">
+                2018-06-27
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Java-Web/" itemprop="url" rel="index">
+                    <span itemprop="name">Java Web</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>1.Servlet<br>2.Filter<br>3.Listener<br>参考《Head First Servlets and JSP》<br><a id="more"></a></p>
+<h3 id="Servlet"><a href="#Servlet" class="headerlink" title="Servlet"></a><font color="green" size="5">Servlet</font></h3><p><strong><font color="#0099ff">简单的MVC</font></strong><br>Servlet充当Controller，JSP充当View，具体的业务逻辑以及数据库的操作充当Model<br><strong><font color="#0099ff">Servlet的生命周期</font></strong><br>1)容器加载Servlet类<br>2)实例化Servlet Ps容器让其成为一个普通的对象<br>3)init(servletConfig)（可以覆盖该无参的init方法，执行一些初始化逻辑，比如数据库连接）<br>4)service()-&gt;doPost()/doGet() etc<br>5)destroy()<br><strong><font color="#0099ff">HttpServletRequest中的属性</font></strong><br>举几个常见的例子<br>1)cookies<br>2)session<br>3)localPort/Addr tomcat配置的地址端口号<br>4)serverPort/Addr apache的地址和端口号<br>5)remotePort/Addr 客户端的地址和端口号<br>5)parameterValues/parameter<br><strong><font color="#0099ff">HttpServletResponse</font></strong><br>1)setContentType 通知客户端浏览器当前消息类型<br>2)getWriter/getOutputStream 获取输出流将内容输出到客户端浏览器<br>3)sendRedirect 重定向<br><strong><font color="#0099ff">ServletConfig VS ServletContext</font></strong><br>每个servlet有一个ServletConfig<br>每个Web应用有一个ServletContext</p>
+<p><font color="red">ServletConfig：</font><br>执行Servlet的init方法时会为该Servlet创建一个唯一的ServletConfig，容器从Servlet的配置项中读取初始化参数并封装到ServletConfig中,并传递给init方法<br><figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&lt;Servlet&gt;</span><br><span class="line"> &lt;init-param&gt; key value &lt;/init-param&gt;</span><br><span class="line">&lt;/Servlet&gt;</span><br></pre></td></tr></table></figure></p>
+<p>容器只能读取一次ServletConfig，就是在执行init方法的时候（这意味着如果修改servlet配置，包括initParam，需要重启容器）<br>直接在doXX()方法中调用getServletConfig().getInitParamterNames()&amp;getInitParamter()即可获取initParam<br>此时如果想要将initParam传递到某个Servlet或者JSP，可以利用forward指定目标，此时的模式是点对点，并不是整个应用所有部分都能访问到这些参数<br>这时候引出ServletContext</p>
+<p><font color="red">ServletContext：</font><br>针对整个应用，所以下面的配置并未嵌套在某个servlet中，而是位于web-app中<br>在每一个Servlet中，都可以这样调用getServletContext().getInitParamter(“paramName”)<br><figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&lt;context-param&gt;</span><br><span class="line">key value</span><br><span class="line">&lt;/context-param&gt;</span><br></pre></td></tr></table></figure></p>
+<p>Ps二者都没有setInitParamter方法（getInitParamter），意味着无法动态改变内容<br><strong><font color="#0099ff">如何保证ServletContext的线程安全？</font></strong><br>1）如果对ServletA的doXX()加synchronized,此时ServletB仍然可以修改context，即使该方法有加synchronized。<br>synchronized关键字此时的作用范围是对象，如果Servlet非单例，此时如果new ServletA加的锁也是不生效的<br>2）synchronized(getServletContext())<br><strong><font color="#0099ff">补充</font></strong><br>Servlet是单例的<br>param更贴近于初始化阶段（get）<br>attribute更贴近于动态配置（set/get）</p>
+<h3 id="Filter"><a href="#Filter" class="headerlink" title="Filter"></a><font color="green" size="5">Filter</font></h3><p>Filter最主要的几个方法<br>init(FilterConfig)<br>doFilter(ServletRequest,ServletResponse)<br>destroy()<br>Filter们通过chain连接在一起，在doFilter中有一个重要的方法chain.doFilter(ServletRequest,ServletResponse)<br>为了防止servlet直接将response（HttpServletResponse）返回给容器而不经过filter执行doFilter后面的代码，一般将response进行包装后传递给下一个filter或者servlet</p>
+<p>举个栗子<br>Filter<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">doFilter</span><span class="params">(ServletRequest request, ServletResponse response,</span></span></span><br><span class="line"><span class="function"><span class="params"> FilterChain chain)</span> </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">"hello filter"</span>);</span><br><span class="line">        chain.doFilter(request, response);</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            Thread.sleep(<span class="number">3000</span>);</span><br><span class="line">        &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">        System.out.println(<span class="string">"bye filter"</span>);    </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>Servlet<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">PrintWriter out = response.getWriter();</span><br><span class="line">        out.println(<span class="string">"&lt;!DOCTYPE HTML PUBLIC \"-//W3C HTML 4.01 Transitional//EN\"&gt;"</span>);</span><br><span class="line">        out.println(<span class="string">"&lt;HTML&gt;"</span>);</span><br><span class="line">        out.println(<span class="string">" &lt;HEAD&gt;&lt;TITLE&gt;A Servlet Written By Milk&lt;/TITLE&gt;&lt;/HEAD&gt;"</span>);</span><br><span class="line">        out.println(<span class="string">"&lt;BODY&gt;"</span>);</span><br><span class="line">        out.println(<span class="string">"Filter test"</span>);</span><br><span class="line">        out.println(<span class="string">"&lt;/BODY&gt;"</span>);</span><br><span class="line">        out.println(<span class="string">"&lt;/HTML&gt;"</span>);</span><br><span class="line">        out.flush();</span><br><span class="line">        out.close();</span><br></pre></td></tr></table></figure></p>
+<p>此时浏览器几乎立刻显示html内容，而控制台过了3s后才打印”bye filter”<br>可见此时doFilter后面的代码，对返回到客户端的response没任何影响<br>如何想要先执行chain.doFilter之后的代码，再返回结果给客户端应该怎么办？<br>思路：这时候需要自己造一个假的response给到servlet,filter还要将加的response中的内容写到真的response中，再返回给客户端<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MyResponse</span> <span class="keyword">extends</span> <span class="title">HttpServletResponseWrapper</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> PrintWriter cachedWriter;</span><br><span class="line">    <span class="keyword">private</span> CharArrayWriter bufferedWriter;</span><br><span class="line">    </span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">MyResponse</span><span class="params">(HttpServletResponse response)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">super</span>(response);</span><br><span class="line">        bufferedWriter = <span class="keyword">new</span> CharArrayWriter();</span><br><span class="line">        cachedWriter = <span class="keyword">new</span> PrintWriter(bufferedWriter);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> PrintWriter <span class="title">getWriter</span><span class="params">()</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> cachedWriter;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> CharArrayWriter <span class="title">getBufferedWriter</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> bufferedWriter;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">doFilter</span><span class="params">(ServletRequest request, ServletResponse response, </span></span></span><br><span class="line"><span class="function"><span class="params">FilterChain chain)</span> </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">"hello filter"</span>);</span><br><span class="line">        HttpServletResponse httpResponse = (HttpServletResponse) response;</span><br><span class="line">        MyResponse myResponse = <span class="keyword">new</span> MyResponse(httpResponse);</span><br><span class="line">        chain.doFilter(request,myResponse);</span><br><span class="line">        response.getWriter().write(myResponse.getBufferedWriter().toString());</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            Thread.sleep(<span class="number">3000</span>);</span><br><span class="line">        &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">        System.out.println(<span class="string">"bye filter"</span>);</span><br><span class="line">        &#125;</span><br></pre></td></tr></table></figure>
+<h3 id="Listener"><a href="#Listener" class="headerlink" title="Listener"></a><font color="green" size="5">Listener</font></h3><p>Java Web的main函数—Listener,在Servlet之前,完成某些全局的初始化工作<br>Ps我们当然也可以将listener的工作，放在某个servlet中执行，前提是你确保这个servlet能够最先运行，这明显不靠谱</p>
+<p>ServletContextListener监听ServletContext的初始化和撤销<br>初始化时：从ServletContext得到上下文初始化参数<br>        使用初始化参数（String）建立一个dog或者数据库连接（Object）<br>        把数据库连接或者dog(Object)存储为一个ServletContext属性，供整个Web应用使用<br>撤销时：关闭数据库连接</p>
+<p>1）创建监听者类<br>2）在web.xml中放置一个listener元素<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&lt;listener&gt;</span><br><span class="line">listener <span class="class"><span class="keyword">class</span></span></span><br><span class="line"><span class="class">&lt;/<span class="title">listener</span>&gt;</span></span><br></pre></td></tr></table></figure></p>
+<p>Ps 容器根据listener class实现的接口类型得知监听的目标</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Java-Web/" rel="tag"># Java Web</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/06/26/java-web-2/" rel="next" title="Java Web专题（二）">
+                <i class="fa fa-chevron-left"></i> Java Web专题（二）
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/06/27/java-web-4/" rel="prev" title="Java Web专题（四）">
+                Java Web专题（四） <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">Luyu</p>
+              <p class="site-description motion-element" itemprop="description">知识广度是深度的副产品</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">25</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">8</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">8</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#Servlet"><span class="nav-number">1.</span> <span class="nav-text">Servlet</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Filter"><span class="nav-number">2.</span> <span class="nav-text">Filter</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Listener"><span class="nav-number">3.</span> <span class="nav-text">Listener</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Luyu</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Mist</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

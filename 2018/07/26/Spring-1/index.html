@@ -89,7 +89,7 @@
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="http://yoursite.com/2018/07/26/Spring-1/order.png">
 <meta property="og:image" content="http://yoursite.com/2018/07/26/Spring-1/ioc.png">
-<meta property="og:updated_time" content="2018-07-27T10:30:02.000Z">
+<meta property="og:updated_time" content="2018-07-28T09:21:22.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Spring-IOC专题">
 <meta name="twitter:description" content="Spring-IOC专题">
@@ -356,7 +356,7 @@
 <p><code>2.对bean进行初始化+依赖注入</code><br>容器采用策略模式来决定采用何种方式初始化bean实例（反射 or CGLIB默认）<br>实例化后的产物是BeanWrapper实例，它是对bean的包裹，接下来对这个包裹设置属性值<br>Ps借助Wrapper可以用统一的方式对对象属性进行注入，BeanWrapper会使用PropertyEditor进行属性的类型转换</p>
 <p><code>3.检查是否实现Aware接口(BeanFactory独有)</code><br>BeanNameAware:将BeanName设置到当前实例中<br>BeanClassLoaderAware:将加载当前bean的ClassLoader设置到当前实例中<br>BeanFactoryAware:将BeanFactory设置到当前实例中</p>
 <p><code>4.BeanPostProcessor.postProcessBeforeInitialization</code><br>BeanPostProcessor处理容器内所有符合条件的BeanDefinition<br>很多ApplicationContext独有的Aware接口也是通过BeanPostPorcessor实现属性注入的<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> Object <span class="title">postProcessBeforeInitialization</span><span class="params">(Object bean, String beanName)</span> <span class="keyword">throws</span>  BeansException </span>&#123;</span><br><span class="line"> <span class="keyword">if</span> (bean <span class="keyword">instanceof</span> ResourceLoaderAware) &#123;</span><br><span class="line">((ResourceLoaderAware) bean).setResourceLoader(<span class="keyword">this</span>.applicationContext);</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">if</span> (bean <span class="keyword">instanceof</span> ApplicationEventPublisherAware) &#123;</span><br><span class="line">((ApplicationEventPublisherAware) bean).setApplicationEventPublisher </span><br><span class="line">(<span class="keyword">this</span>.applicationContext); &#125;</span><br><span class="line"><span class="keyword">if</span> (bean <span class="keyword">instanceof</span> MessageSourceAware) &#123;</span><br><span class="line">((MessageSourceAware) bean).setMessageSource(<span class="keyword">this</span>.applicationContext);</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">if</span> (bean <span class="keyword">instanceof</span> ApplicationContextAware) &#123;</span><br><span class="line">   ((ApplicationContextAware) bean).setApplicationContext(<span class="keyword">this</span>.applicationContext); &#125;</span><br><span class="line">    <span class="keyword">return</span> bean;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<p><code>5.InititalizingBean.afterPropertiesSet()</code><br><code>6.init-method</code><br><code>7.BeanPostProcessor.postProcessAfterInitialization()</code><br><code>8.InstantiationAwareBeanPostProcessor.postProcessAfterInitialization()</code><br><code>9.正常执行业务逻辑</code><br><code>10.DisposableBean.destroy()</code><br><code>11.destroy-method</code></p>
+<p><code>5.InititalizingBean.afterPropertiesSet()</code><br><code>6.init-method</code><br><code>7.BeanPostProcessor.postProcessAfterInitialization()</code><br><code>8.InstantiationAwareBeanPostProcessor.postProcessAfterInitialization()</code><br>aop的代理对象就是在这一步骤返回给调用端的，”偷梁换柱”<br><code>9.正常执行业务逻辑</code><br><code>10.DisposableBean.destroy()</code><br><code>11.destroy-method</code></p>
 <p><div id="container"></div></p>
 <p><link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css"></p>
 <script src="https://imsun.github.io/gitment/dist/gitment.browser.js"></script>
@@ -410,6 +410,10 @@ gitment.render('container')
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/07/28/Spring-2/" rel="prev" title="Spring-2">
+                Spring-2 <i class="fa fa-chevron-right"></i>
+              </a>
             
           </div>
         </div>
@@ -486,7 +490,7 @@ gitment.render('container')
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">25</span>
+                  <span class="site-state-item-count">26</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>

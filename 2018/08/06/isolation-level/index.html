@@ -79,18 +79,18 @@
 
 
 
-<meta name="description" content="讨论了数据库几种事务隔离机制参考简书上的文章，该文章有一些细节错误，对其进行了修正并且讨论了Mysql对幻读的消除">
+<meta name="description" content="Outline1.讨论了数据库几种事务隔离机制2.参考简书上的文章，该文章有一些细节错误，对其进行了修正3.并且讨论了Mysql对幻读的消除">
 <meta name="keywords" content="数据库">
 <meta property="og:type" content="article">
 <meta property="og:title" content="数据库隔离级别">
 <meta property="og:url" content="http://yoursite.com/2018/08/06/isolation-level/index.html">
 <meta property="og:site_name" content="Luyu&#39;s Blog">
-<meta property="og:description" content="讨论了数据库几种事务隔离机制参考简书上的文章，该文章有一些细节错误，对其进行了修正并且讨论了Mysql对幻读的消除">
+<meta property="og:description" content="Outline1.讨论了数据库几种事务隔离机制2.参考简书上的文章，该文章有一些细节错误，对其进行了修正3.并且讨论了Mysql对幻读的消除">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2018-08-06T10:01:57.000Z">
+<meta property="og:updated_time" content="2018-08-07T01:26:06.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="数据库隔离级别">
-<meta name="twitter:description" content="讨论了数据库几种事务隔离机制参考简书上的文章，该文章有一些细节错误，对其进行了修正并且讨论了Mysql对幻读的消除">
+<meta name="twitter:description" content="Outline1.讨论了数据库几种事务隔离机制2.参考简书上的文章，该文章有一些细节错误，对其进行了修正3.并且讨论了Mysql对幻读的消除">
 
 
 
@@ -332,7 +332,7 @@
       
 
       
-        <p>讨论了数据库几种事务隔离机制<br>参考简书上的文章，该文章有一些细节错误，对其进行了修正<br>并且讨论了Mysql对幻读的消除<br><a id="more"></a><br>新建表account如下</p>
+        <p>Outline<br>1.讨论了数据库几种事务隔离机制<br>2.参考简书上的文章，该文章有一些细节错误，对其进行了修正<br>3.并且讨论了Mysql对幻读的消除<br><a id="more"></a><br>新建表account如下</p>
 <table>
 <thead>
 <tr>
@@ -451,7 +451,7 @@
 </tr>
 </tbody>
 </table>
-<p>这种现象叫不可<code>重复读</code>，即在同一个事务中两次读取结果不相同</p>
+<p>这种现象叫<code>不可重复读</code>，即在同一个事务中两次读取结果不相同</p>
 <h3 id="repeatable-read"><a href="#repeatable-read" class="headerlink" title="repeatable read"></a><font color="red" size="5">repeatable read</font></h3><p><code>Mysql默认的隔离级别</code><br>同样table置为初始状态<br>用户A的操作<br><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">set</span> <span class="keyword">session</span> <span class="keyword">transaction</span> <span class="keyword">isolation</span> <span class="keyword">level</span> repeatable <span class="keyword">read</span>;</span><br><span class="line"><span class="keyword">start</span> <span class="keyword">transaction</span>;</span><br><span class="line"><span class="keyword">update</span> <span class="keyword">account</span> <span class="keyword">set</span> <span class="keyword">account</span>=<span class="keyword">account</span><span class="number">-200</span> <span class="keyword">where</span> <span class="keyword">id</span>=<span class="number">1</span>;</span><br></pre></td></tr></table></figure></p>
 <p>用户B的操作<br><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">set</span> <span class="keyword">session</span> <span class="keyword">transaction</span> <span class="keyword">isolation</span> <span class="keyword">level</span> <span class="keyword">read</span> commited;</span><br><span class="line"><span class="keyword">start</span> <span class="keyword">transaction</span>;</span><br><span class="line"><span class="keyword">select</span> * <span class="keyword">from</span> <span class="keyword">account</span> <span class="keyword">where</span> <span class="keyword">id</span>=<span class="number">1</span>;</span><br></pre></td></tr></table></figure></p>
 <table>

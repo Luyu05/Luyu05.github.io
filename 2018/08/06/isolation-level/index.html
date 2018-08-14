@@ -87,7 +87,7 @@
 <meta property="og:site_name" content="Luyu&#39;s Blog">
 <meta property="og:description" content="Outline1.讨论了数据库几种事务隔离机制2.参考简书上的文章，该文章有一些细节错误，对其进行了修正3.并且讨论了Mysql对幻读的消除">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2018-08-07T01:55:38.000Z">
+<meta property="og:updated_time" content="2018-08-14T12:21:36.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="数据库隔离级别">
 <meta name="twitter:description" content="Outline1.讨论了数据库几种事务隔离机制2.参考简书上的文章，该文章有一些细节错误，对其进行了修正3.并且讨论了Mysql对幻读的消除">
@@ -484,7 +484,7 @@
 </tr>
 </tbody>
 </table>
-<p>此时用户B的同一个事务中对于account的读取是相同的，但是这个时候可能会出现幻象读，所谓幻象读是指用户A在其事务过程中新增了一条记录，而用户B在用户A提交事务前执行count操作返回为n，在用户A提交事务后执行count操作返回为n+1，这种现象称为<code>幻象读</code><br>幻象读的两个必要条件是，第一是insert/delete操作；第二是做了范围查询<br>具体幻象读较难复现，因为Mysql innodb的RR级别，使用GAP锁解决了幻象读的问题<br><code><font color="blue">在事务中的相同的查询语句，最终返回的结果始终相同</font></code><br>但是会有这种情况，用户A插入了一条新的记录，此时表中共有5条数据，而用户B在事务中先对表进行了全量查询，此时为4条数据，接下来用户A提交事务，用户B再次查询仍然为4条，但是接下来用户B对表进行了全量的update操作，会发现该操作影响了5条数据，而不是select显示的4条。</p>
+<p>此时用户B的同一个事务中对于account的读取是相同的，但是这个时候可能会出现幻象读，所谓幻象读是指用户A在其事务过程中新增了一条记录，而用户B在用户A提交事务前执行count操作返回为n，在用户A提交事务后执行count操作返回为n+1，这种现象称为<code>幻象读</code><br>幻象读的两个必要条件是，第一是insert/delete操作；第二是做了范围查询<br>具体幻象读较难复现，因为Mysql innodb的RR级别，使用Next-Key Lock锁解决了幻象读的问题<br>InnoDB存储引擎在默认的REPEATABLE READ的事务隔离级别下已经达到SQL标准的SERIALIZABLE蛤蜊级别<br><code><font color="blue">在事务中的相同的查询语句，最终返回的结果始终相同</font></code><br>但是会有这种情况，用户A插入了一条新的记录，此时表中共有5条数据，而用户B在事务中先对表进行了全量查询，此时为4条数据，接下来用户A提交事务，用户B再次查询仍然为4条，但是接下来用户B对表进行了全量的update操作，会发现该操作影响了5条数据，而不是select显示的4条。</p>
 <p>Ps还有很重要的一点，如果上面的例子中，用户A第一次操作后，用户B不执行查询操作，用户A提交事务后，用户B再执行查询操作，此时是可以读取到A的那次操作的~</p>
 <h3 id="serializable"><a href="#serializable" class="headerlink" title="serializable"></a><font color="red" size="5">serializable</font></h3><p>用户A的操作<br><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">set</span> <span class="keyword">session</span> <span class="keyword">transaction</span> <span class="keyword">isolation</span> <span class="keyword">level</span> <span class="keyword">serializable</span>;</span><br><span class="line"><span class="keyword">start</span> <span class="keyword">transaction</span>;</span><br></pre></td></tr></table></figure></p>
 <p>用户B的操作<br><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">set</span> <span class="keyword">session</span> <span class="keyword">transaction</span> <span class="keyword">isolation</span> <span class="keyword">level</span> <span class="keyword">serializable</span>;</span><br><span class="line"><span class="keyword">start</span> <span class="keyword">transaction</span>;</span><br><span class="line"><span class="keyword">select</span> * <span class="keyword">from</span> <span class="keyword">account</span>;</span><br></pre></td></tr></table></figure></p>
@@ -530,6 +530,10 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/08/11/Spring-3/" rel="prev" title="Spring官方文档拾遗">
+                Spring官方文档拾遗 <i class="fa fa-chevron-right"></i>
+              </a>
             
           </div>
         </div>
@@ -606,7 +610,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">28</span>
+                  <span class="site-state-item-count">30</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>

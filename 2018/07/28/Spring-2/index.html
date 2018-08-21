@@ -88,7 +88,7 @@
 <meta property="og:description" content="Spring AOP专题AOP解决程序开发里事务性，和核心业务无关的问题，但这些问题对于业务场景的实现是很有必要的。">
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="http://yoursite.com/2018/07/28/Spring-2/aop.png">
-<meta property="og:updated_time" content="2018-08-15T03:23:02.000Z">
+<meta property="og:updated_time" content="2018-08-15T03:35:40.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Spring-AOP专题">
 <meta name="twitter:description" content="Spring AOP专题AOP解决程序开发里事务性，和核心业务无关的问题，但这些问题对于业务场景的实现是很有必要的。">
@@ -349,6 +349,7 @@
 <li>如果目标对象没有实现接口，必须采用CGLIB库</li>
 </ul>
 <p><font color="blue">动态代理后的对象是如何偷梁换柱的？</font><br>这里描述一些源码细节，AOP代理对象是通过AnnotationAwareAspectJAutoProxyCreator创建的，而该类实现了BeanPostProcessor方法，在该接口的postProcessAfterInitialization方法中实现了偷梁换柱，这部分可以参考下Bean的生命周期  <a href="https://luyu05.github.io/2018/07/26/Spring-1/" target="_blank" rel="noopener">https://luyu05.github.io/2018/07/26/Spring-1/</a></p>
+<p><font color="blue">AOP的应用？</font><br>最常用的一个地方就是数据库事务，除了本身的业务逻辑代码只需一个注解就ok。建立在 AOP 的基础之上的。其本质是对方法前后进行拦截，然后在目标方法开始之前创建或者加入一个事务，在执行完目标方法之后根据执行情况提交或者回滚事务。</p>
 
       
     </div>
@@ -468,7 +469,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">30</span>
+                  <span class="site-state-item-count">31</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -479,7 +480,7 @@
               
               <div class="site-state-item site-state-categories">
                 <a href="/categories/index.html">
-                  <span class="site-state-item-count">9</span>
+                  <span class="site-state-item-count">10</span>
                   <span class="site-state-item-name">分类</span>
                 </a>
               </div>
@@ -490,7 +491,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">9</span>
+                  <span class="site-state-item-count">10</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>

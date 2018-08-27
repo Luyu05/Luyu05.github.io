@@ -87,7 +87,7 @@
 <meta property="og:site_name" content="Luyu&#39;s Blog">
 <meta property="og:description" content="1.前后端分离 VS 不分离2.Web容器3.Apache VS Tomcat4.Web应用的部署">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2018-08-23T04:02:36.000Z">
+<meta property="og:updated_time" content="2018-08-27T01:28:32.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Java Web专题（四）">
 <meta name="twitter:description" content="1.前后端分离 VS 不分离2.Web容器3.Apache VS Tomcat4.Web应用的部署">
@@ -333,7 +333,7 @@
 
       
         <p>1.前后端分离 VS 不分离<br>2.Web容器<br>3.Apache VS Tomcat<br>4.Web应用的部署<br><a id="more"></a></p>
-<h3 id="前后端分离-VS-不分离"><a href="#前后端分离-VS-不分离" class="headerlink" title="前后端分离 VS 不分离"></a><font color="green" size="5">前后端分离 VS 不分离</font></h3><p>a）不分离<br>Controller(Servlet)/Model(JavaBean)/View(JSP可以使用fm等模板引擎)<br>此时JSP=前端写的html+后端写的接口<br>b）分离<br>    1）客户端发送一个http请求（GET 最普通的请求只是获得静态资源），首先会先去CDN节点获取静态资源（html js css etc） Ps:CDN节点一般是web服务器<br>    2）之后在客户端本地执行js调用后端接口（也是http请求）<br>    3）这时候http请求一般会被nginx/apache/Tengine等web服务器接收到（在这一层可以实现负载均衡）<br>    4）之后web服务器通过AJP发送请求到tomcat<br>    5）tomcat具体执行后端代码逻辑<br>    6）最后将response（一般是json），返回到js<br>    7）客户端渲染页面，呈现到用户面前<br>前后端分离与不分离最大的区别在于，是客户端拼接最终的html还是服务端拼接最终的html<br>c）node.js<br>将controller层转移到前端，此时后端只负责mvc中的model层<br>减少沟通成本，前端可自行封装json</p>
+<h3 id="前后端分离-VS-不分离"><a href="#前后端分离-VS-不分离" class="headerlink" title="前后端分离 VS 不分离"></a><font color="green" size="5">前后端分离 VS 不分离</font></h3><p>a）不分离<br>Controller(Servlet)/Model(JavaBean)/View(JSP可以使用fm等模板引擎)<br>此时JSP=前端写的html+后端写的接口<br>b）分离<br>    1）客户端发送一个http请求（GET 最普通的请求只是获得静态资源），首先会先去CDN节点获取静态资源（html js css etc） Ps:CDN节点一般是web服务器<br>    2）之后在客户端本地执行js调用后端接口（也是http请求）<br>    3）这时候http请求一般会被nginx/apache/Tengine等web服务器接收到（在这一层可以实现负载均衡）<br>    4）之后web服务器发送请求到tomcat<br>    5）tomcat具体执行后端代码逻辑<br>    6）最后将response（一般是json），返回到js<br>    7）客户端渲染页面，呈现到用户面前<br>前后端分离与不分离最大的区别在于，是客户端拼接最终的html还是服务端拼接最终的html<br>c）node.js<br>将controller层转移到前端，此时后端只负责mvc中的model层<br>减少沟通成本，前端可自行封装json</p>
 <h3 id="Web容器"><a href="#Web容器" class="headerlink" title="Web容器"></a><font color="green" size="5">Web容器</font></h3><p>当一个请求到达服务端后，需要有人来实例化Servlet、新建线程处理请求、调用Servlet的doPost()和doGet()方法、管理Servlet的生死，这个人就是Web容器（ Servlet容器）<br>Servlet没有main方法，它们受控于另一个Java应用（Web容器or Servlet容器）<br>Web服务器应用（apache）接收HTTP请求，如果该请求需要某个Servlet处理，那么将其交给Servlet容器<br>web.xml实际上是给容器用的(告诉容器如何使用Servlet和JSP)<br>生撸一个web容器？<br>1）main函数<br>2）创建和服务器的socket连接<br>3）采用BIO/NIO等<br>4）管理并运行Servlet<br>5）线程管理<br>6）翻译JSP</p>
 <h3 id="Apache-VS-Tomcat"><a href="#Apache-VS-Tomcat" class="headerlink" title="Apache VS Tomcat"></a><font color="green" size="5">Apache VS Tomcat</font></h3><p>apache是web服务器，tomcat是servlet容器（也可做web服务器，性能较差）<br>apache只支持静态页面（html），tomcat支持动态页面（asp、jsp）<br>apache可以访问tomcat的资源，反之不可（一般通过AJP协议进行通讯）</p>
 <p>为什么不单独使用tomcat？<br>1.tomcat对静态文件支持不好，需要web服务器来提升对静态文件的处理性能<br>2.利用web服务器进行负载均衡以及容错</p>
@@ -347,8 +347,8 @@
 <p>Ps<br>http1.1适用于解决包含多张图片的html页面（串行）<br>http2.0在同一个tcp连接中，可以并行发送多个请求（IO多路复用）</p>
 <h3 id="tomcat如何与客户端建立的tcp连接"><a href="#tomcat如何与客户端建立的tcp连接" class="headerlink" title="tomcat如何与客户端建立的tcp连接"></a><font color="green" size="5">tomcat如何与客户端建立的tcp连接</font></h3><p>客户端发送http请求（包括TCP头，用于建立TCP连接）<br>通过浏览器与tomcat开放的端口，进行连接<br>接下来在这条通道进行数据的收发<br>Ps可以把http请求视为，具有特定格式的数据（符合http协议）通过tcp进行传递</p>
 <h3 id="tomcat-jetty-netty"><a href="#tomcat-jetty-netty" class="headerlink" title="tomcat/jetty/netty"></a><font color="green" size="5">tomcat/jetty/netty</font></h3><p>tomcat和jetty是一个层面上的，可以称为servlet容器<br>而servlet容器，通信部分要么是bio ，要么是nio<br>netty就是对java原生的nio都一种封装，大概就是这样吧</p>
-<p>就想如果用bio生撸一个servlet容器一样，你也可以机智一些通过nio生撸一个servlet容器<br>当然如果你聪明绝顶，你会想到使用netty生撸一个servlet容器</p>
-<p>简单地将tomcat/jetty = bio/nio/netty + 管理并运行Servlet</p>
+<p>就像如果用bio生撸一个servlet容器一样，你也可以机智一些通过nio生撸一个servlet容器<br>当然如果你聪明绝顶，你会想到使用netty生撸一个servlet容器</p>
+<p>简单地讲tomcat/jetty = bio/nio/netty + 管理并运行Servlet</p>
 
       
     </div>

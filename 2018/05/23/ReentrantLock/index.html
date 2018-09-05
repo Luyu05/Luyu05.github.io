@@ -89,7 +89,7 @@
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="http://yoursite.com/2018/05/23/ReentrantLock/drawio.svg">
 <meta property="og:image" content="http://yoursite.com/2018/05/23/ReentrantLock/流程图.svg">
-<meta property="og:updated_time" content="2018-07-12T09:19:28.000Z">
+<meta property="og:updated_time" content="2018-09-05T07:45:40.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="深入分析ReentrantLock">
 <meta name="twitter:description" content="本文分析了ReentrantLock结合AQS加锁的全过程 Ps为啥看完concurrentHashMap的源码觉得这个也不过如此。。。 Ps有任何问题请在下方评论，或者邮箱联系我luyucareer@163.com">
@@ -368,8 +368,9 @@
 <li>ReentrantLock调用lock方法时候，底层依赖的实际上是AQS(AbstractQueuedSynchronizer) </li>
 <li>首先调用tryAcquire方法，如果获取锁成功，就可以在当前线程继续执行；反之，调用addWaiter方法进入FIFO队列中</li>
 <li>接着，进入队列后，不会立刻挂起，而是会执行自旋，如果恰好自旋成功就不需要被挂起；</li>
-<li>当前node的前置node状态被置为signal时，挂起当前线程</li>
+<li>当前node的前置node状态被置为signal时，挂起当前线程<h2 id="五、ReentrantLock自问自答"><a href="#五、ReentrantLock自问自答" class="headerlink" title="五、ReentrantLock自问自答"></a>五、ReentrantLock自问自答</h2>1.如何竞争一把锁？<br>ReentrantLock内部使用AQS来维持一整套锁机制，在两个线程同时调用lock方法时，会通过CAS同时对state状态进行更新（此时为0，欲更新为1）<br>compareAndSetState(0, acquires)；<br>更新失败的线程会进入AQS『监狱』-Node链中，会放到队尾；但是此时该线程不会被立刻挂起，还会执行一段时间的自旋<br>,直到当前的node的前置node状态(volatile status)被置为SIGNAL</li>
 </ul>
+<p>2.为什么说是非公平的？公平锁如何实现有啥缺点？<br>因为之前获取锁失败的线程可能正在queue（node链）中排队，而新来的一个线程直接调用cas操作去获取锁；公平锁相对非公平锁很简单，就是在新线程执行CAS之前<br>判断下queue中是否有等待的线程，如果没有才能执行CAS操作，公平锁效率可能会低一些，可能每个线程都要经历从内核态到用户态的切换比较耗时</p>
 <p><div id="container"></div></p>
 <p><link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css"></p>
 <script src="https://imsun.github.io/gitment/dist/gitment.browser.js"></script>
@@ -503,7 +504,7 @@ gitment.render('container')
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">32</span>
+                  <span class="site-state-item-count">33</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -558,7 +559,7 @@ gitment.render('container')
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#一、UML"><span class="nav-number">1.</span> <span class="nav-text">一、UML</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#二、关键代码分析"><span class="nav-number">2.</span> <span class="nav-text">二、关键代码分析</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#2-0-AQS-acquire"><span class="nav-number">2.1.</span> <span class="nav-text">2.0 AQS#acquire</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#方法说明"><span class="nav-number">2.1.1.</span> <span class="nav-text">方法说明</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#整体流程"><span class="nav-number">2.1.2.</span> <span class="nav-text">整体流程</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-1-ReentrantLock-NonfairSync-nonfairTryAcquire"><span class="nav-number">2.2.</span> <span class="nav-text">2.1 ReentrantLock#NonfairSync#nonfairTryAcquire</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-2-AQS-Node"><span class="nav-number">2.3.</span> <span class="nav-text">2.2 AQS#Node</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-3AQS-addWaiter、AQS-enq"><span class="nav-number">2.4.</span> <span class="nav-text">2.3AQS#addWaiter、AQS#enq</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-4AQS-acquireQueued"><span class="nav-number">2.5.</span> <span class="nav-text">2.4AQS#acquireQueued()</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-5-AQS-shouldParkAfterFailedAcquire"><span class="nav-number">2.6.</span> <span class="nav-text">2.5 AQS#shouldParkAfterFailedAcquire</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-6-AQS-parkAndCheckInterrupt"><span class="nav-number">2.7.</span> <span class="nav-text">2.6 AQS#parkAndCheckInterrupt</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#三、执行流程图"><span class="nav-number">3.</span> <span class="nav-text">三、执行流程图</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#四、总结"><span class="nav-number">4.</span> <span class="nav-text">四、总结</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#一、UML"><span class="nav-number">1.</span> <span class="nav-text">一、UML</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#二、关键代码分析"><span class="nav-number">2.</span> <span class="nav-text">二、关键代码分析</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#2-0-AQS-acquire"><span class="nav-number">2.1.</span> <span class="nav-text">2.0 AQS#acquire</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#方法说明"><span class="nav-number">2.1.1.</span> <span class="nav-text">方法说明</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#整体流程"><span class="nav-number">2.1.2.</span> <span class="nav-text">整体流程</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-1-ReentrantLock-NonfairSync-nonfairTryAcquire"><span class="nav-number">2.2.</span> <span class="nav-text">2.1 ReentrantLock#NonfairSync#nonfairTryAcquire</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-2-AQS-Node"><span class="nav-number">2.3.</span> <span class="nav-text">2.2 AQS#Node</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-3AQS-addWaiter、AQS-enq"><span class="nav-number">2.4.</span> <span class="nav-text">2.3AQS#addWaiter、AQS#enq</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-4AQS-acquireQueued"><span class="nav-number">2.5.</span> <span class="nav-text">2.4AQS#acquireQueued()</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-5-AQS-shouldParkAfterFailedAcquire"><span class="nav-number">2.6.</span> <span class="nav-text">2.5 AQS#shouldParkAfterFailedAcquire</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-6-AQS-parkAndCheckInterrupt"><span class="nav-number">2.7.</span> <span class="nav-text">2.6 AQS#parkAndCheckInterrupt</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#三、执行流程图"><span class="nav-number">3.</span> <span class="nav-text">三、执行流程图</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#四、总结"><span class="nav-number">4.</span> <span class="nav-text">四、总结</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#五、ReentrantLock自问自答"><span class="nav-number">5.</span> <span class="nav-text">五、ReentrantLock自问自答</span></a></li></ol></div>
             
 
           </div>

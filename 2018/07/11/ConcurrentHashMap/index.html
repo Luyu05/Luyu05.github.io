@@ -88,7 +88,7 @@
 <meta property="og:description" content="本文重点分析JDK1.7的ConcurrentHashMap说实话挺复杂的，硬着头皮啃吧~通过和1.7进行比较，简要分析了1.8中的ConcurrentHashMapPs有任何问题请在下方评论，或者邮箱联系我luyucareer@163.com">
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="http://yoursite.com/2018/07/11/ConcurrentHashMap/structure.png">
-<meta property="og:updated_time" content="2018-09-05T04:07:31.000Z">
+<meta property="og:updated_time" content="2018-09-05T04:10:54.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="深入分析ConcurrentHashMap">
 <meta name="twitter:description" content="本文重点分析JDK1.7的ConcurrentHashMap说实话挺复杂的，硬着头皮啃吧~通过和1.7进行比较，简要分析了1.8中的ConcurrentHashMapPs有任何问题请在下方评论，或者邮箱联系我luyucareer@163.com">
@@ -353,7 +353,7 @@
 <h3 id="ConcurrentHashMap自问自答"><a href="#ConcurrentHashMap自问自答" class="headerlink" title="ConcurrentHashMap自问自答"></a><font color="red" size="5">ConcurrentHashMap自问自答</font></h3><p>1.为何get方法不需要加锁？<br>在HashEntry类中，key，hash域都被声明为final的，value，next域被volatile所修饰，<br>因此HashEntry对象几乎是不可变的，这是ConcurrentHashmap读操作并不需要加锁的一个重要原因</p>
 <p>2.size()的原理？<br>会去统计每个segment的modCount和，如果下次循环统计的modCount和跟上次统计的一样，认为此时的size（每个segment的count和）就是一个准确的值<br>反之如果和上次统计的不一样，当循环执行到一定次数的时候会对每个segment进行加锁操作，再去统计size</p>
 <p>3.rehash触发的条件？<br>默认segment为16（不会再变动），每个segment中的HashEntry数组是扩容的目标，当segment中的元素size &gt; length(数组的长度)<em>factor<br>这个时候开始扩容，将length</em>2</p>
-<p>4.一些细节<br>segment其实是懒加载的，只有用到的时候才会初始化，不过当调用size方法的时候会全部初始化<br>1.6中HashEntry的next是final修饰的，所以新增的时候只能在最前面新增且删除的时候比较笨重需要全量复制；1.7中改为了volatile修饰<br>在进行rehash过程中，不会被其他get方法读取到中间状态，因为是一个新的复制操作，只有老table和新table</p>
+<p>4.一些细节<br>segment其实是懒加载的，只有用到的时候才会初始化，不过当调用size方法的时候会全部初始化<br>1.6中HashEntry的next是final修饰的，所以新增的时候只能在最前面新增且删除的时候比较笨重需要全量复制；1.7中改为了volatile修饰<br>在进行rehash过程中，不会被其他get方法读取到中间状态，因为是一个新的复制操作，只有老table和新table<br>put的时候分段加锁，如果加锁失败会有一个自旋的过程<br>put操作node是插入到entry的头部<br>在put操作触发rehash的时候（resize）因为put本身已经保证了线程安全，所以resize的时候也是线程安全的，不会出现hashmap的环形链</p>
 <p>参考链接:<br><a href="http://www.jasongj.com/java/concurrenthashmap/" target="_blank" rel="noopener">http://www.jasongj.com/java/concurrenthashmap/</a><br><a href="http://www.importnew.com/28263.html" target="_blank" rel="noopener">http://www.importnew.com/28263.html</a></p>
 <p><div id="container"></div></p>
 <p><link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css"></p>
@@ -488,7 +488,7 @@ gitment.render('container')
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">32</span>
+                  <span class="site-state-item-count">33</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>

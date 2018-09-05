@@ -92,7 +92,7 @@
 <meta property="og:image" content="http://yoursite.com/2018/09/05/tomcat-all/tomcat3.jpg">
 <meta property="og:image" content="http://yoursite.com/2018/09/05/tomcat-all/tomcat4.jpg">
 <meta property="og:image" content="http://yoursite.com/2018/09/05/tomcat-all/tomcat5.jpg">
-<meta property="og:updated_time" content="2018-09-05T13:22:25.000Z">
+<meta property="og:updated_time" content="2018-09-05T13:26:33.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="关于Tomcat">
 <meta name="twitter:description" content="Tomcat真是不能言说的伤，看了好几遍了总是再门外徘徊本来想着以后再也不看了，但是前阵子在掘金上又看了一篇讲解的特别清晰的文章自己也想把Tomcat的内容总结下（搬运下）">
@@ -359,7 +359,7 @@
 </ol>
 <p>再看看我们的问题：Tomcat 如果使用默认的类加载机制行不行？<br>答案是不行的。为什么？我们看，第一个问题，如果使用默认的类加载器机制，那么是无法加载两个相同类库的不同版本的，默认的类加载器是不管你是什么版本的，只在乎你的全限定类名，并且只有一份。第二个问题，默认的类加载器是能够实现的，因为他的职责就是保证唯一性。第三个问题和第一个问题一样。我们再看第四个问题，我们想我们要怎么实现jsp文件的热修改（楼主起的名字），jsp 文件其实也就是class文件，那么如果修改了，但类名还是一样，类加载器会直接取方法区中已经存在的，修改后的jsp是不会重新加载的。那么怎么办呢？我们可以直接卸载掉这jsp文件的类加载器，所以你应该想到了，每个jsp文件对应一个唯一的类加载器，当一个jsp文件修改了，就直接卸载这个jsp类加载器。重新创建类加载器，重新加载jsp文件。</p>
 <p>Tomcat的类加载器<br><img src="/2018/09/05/tomcat-all/tomcat5.jpg"><br>我们看到，前面3个类加载和默认的一致，CommonClassLoader、CatalinaClassLoader、SharedClassLoader和WebappClassLoader则是Tomcat自己定义的类加载器，它们分别加载/common/<em>、/server/</em>、/shared/<em>（在tomcat 6之后已经合并到根目录下的lib目录下）和/WebApp/WEB-INF/</em>中的Java类库。其中WebApp类加载器和Jsp类加载器通常会存在多个实例，每一个Web应用程序对应一个WebApp类加载器，每一个JSP文件对应一个Jsp类加载器。</p>
-<p>WebApp可以视为一个个web应用程序使用的加载器，Jsp类加载器视为一个个Jsp页面使用的加载器<br><code>CommonClassLoader能加载的类都可以被Catalina ClassLoader和SharedClassLoader使用，从而实现了公有类库的共用，而CatalinaClassLoader和Shared ClassLoader自己能加载的类则与对方相互隔离。<br>WebAppClassLoader可以使用SharedClassLoader加载到的类，但各个WebAppClassLoader实例之间相互隔离。<br>而JasperLoader的加载范围仅仅是这个JSP文件所编译出来的那一个.Class文件，它出现的目的就是为了被丢弃：当Web容器检测到JSP文件被修改时，会替换掉目前的JasperLoader的实例，并通过再建立一个新的Jsp类加载器来实现JSP文件的HotSwap功能。</code></p>
+<p>WebApp可以视为一个个web应用程序使用的加载器，Jsp类加载器视为一个个Jsp页面使用的加载器<br><code>CommonClassLoader能加载的类都可以被Catalina ClassLoader和SharedClassLoader使用，从而实现了公有类库的共用，而CatalinaClass Loader和Shared ClassLoader自己能加载的类则与对方相互隔离。<br>WebAppClassLoader可以使用SharedClassLoader加载到的类，但各个WebAppClassLoader实例之间相互隔离。<br>而JasperLoader的加载范围仅仅是这个JSP文件所编译出来的那一个.Class文件，它出现的目的就是为了被丢弃：当Web容器检测到JSP文件被修改时，会替换掉目前的JasperLoader的实例，并通过再建立一个新的Jsp类加载器来实现JSP文件的HotSwap功能。</code></p>
 <p>后记：<br>其实破坏双亲委派模型很简单，只要覆写父类中的loadClass方法就行了，把委派的逻辑去掉改为自己去加载类。<br>至于破坏的目的，拿tomcat来讲，主要是<code>隔离（类的不同版本）、热插拔</code></p>
 <p>参考链接：<br><a href="https://blog.csdn.net/xlgen157387/article/details/79006434" target="_blank" rel="noopener">https://blog.csdn.net/xlgen157387/article/details/79006434</a><br><a href="https://blog.csdn.net/qq_38182963/article/details/78660779" target="_blank" rel="noopener">https://blog.csdn.net/qq_38182963/article/details/78660779</a></p>
 

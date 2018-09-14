@@ -1,0 +1,724 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Java中间件," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="Outline1.Redis常用的数据结构2.Redis的持久化3.Redis主从复制4.Redis集群5.Redis应用场景">
+<meta name="keywords" content="Java中间件">
+<meta property="og:type" content="article">
+<meta property="og:title" content="内存数据库-Redis">
+<meta property="og:url" content="http://yoursite.com/2018/09/13/Redis/index.html">
+<meta property="og:site_name" content="Luyu&#39;s Blog">
+<meta property="og:description" content="Outline1.Redis常用的数据结构2.Redis的持久化3.Redis主从复制4.Redis集群5.Redis应用场景">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2018-09-14T06:19:48.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="内存数据库-Redis">
+<meta name="twitter:description" content="Outline1.Redis常用的数据结构2.Redis的持久化3.Redis主从复制4.Redis集群5.Redis应用场景">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2018/09/13/Redis/"/>
+
+
+
+
+
+  <title>内存数据库-Redis | Luyu's Blog</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Luyu's Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/09/13/Redis/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Luyu">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Luyu's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">内存数据库-Redis</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-09-13T17:25:03+08:00">
+                2018-09-13
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Java中间件/" itemprop="url" rel="index">
+                    <span itemprop="name">Java中间件</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>Outline<br>1.Redis常用的数据结构<br>2.Redis的持久化<br>3.Redis主从复制<br>4.Redis集群<br>5.Redis应用场景<br><a id="more"></a></p>
+<h2 id="Redis常用的数据结构"><a href="#Redis常用的数据结构" class="headerlink" title="Redis常用的数据结构"></a>Redis常用的数据结构</h2><p>这里都是针对value来讲的</p>
+<font color="blue" size="4"> String</font><br>String 是 redis 最基本的类型，你可以理解成与 Memcached 一模一样的类型，一个 key 对应一个 value。（<code>Ps:redis相比memcached新增了很多类型</code>）<br>String 可以包含任何数据。比如jpg图片或者序列化的对象。<br>String 类型是 Redis 最基本的数据类型，String 类型的值最大能存储 512MB。<br><code>Ps：value较小、模型简单的 value可以使用String类型存储，对于一些特殊的数据结构，比如List、Set等，建议采用相应的下面介绍的List和Set数据结构进行存储，这样不仅可以节省存储空间还可以提高操作效率。</code><br><font color="blue" size="4"> List</font><br>List类型是按照插入顺序排序的字符串链表。<br>和数据结构中的<font color="blue">普通链表</font>一样，可以在其头部(left)和尾部(right)添加新的元素。在插入时，如果该键并不存在，Redis将为该键创建一个新的链表。与此相反，如果链表中所有的元素均被移除，那么该键也将会被从数据库中删除。<br><font color="blue" size="4"> Set</font><br>Set是String类型的无序集合。<br>集合是通过哈希表实现的，所以添加，删除，查找的复杂度都是O(1)。<br><font color="blue" size="4"> zset</font><br>Redis zset 和 set 一样也是String类型元素的集合,且不允许重复的成员。<br>不同的是每个元素都会关联一个double类型的分数。redis正是通过分数来为集合中的成员进行从小到大的排序。<br>zset的成员是唯一的,但分数(score)却可以重复。<br><br>## Redis的持久化（单机）<br><font color="blue" size="4">1.RDB &amp; AOF 简介</font><br>1）RDB 持久化机制，会在一段时间内生成指定时间点的数据集快照(snapshot)<br>2）AOF 持久化机制(<code>Ps：类似数据库日志，全量日志</code>)，记录 server 端收到的每一条写命令，当 <font color="blue">server 重启时</font>会以此来重建之前的数据集。<br>3）如果仅使用 Redis 作为缓存加速访问，可以关闭这两个持久化设置<br>4）也可以同时开启这两个持久化设置，但是在这种情况下，Redis 重启时会使用 AOF 文件来重建数据集，因为 AOF 文件保存的数据往往更加完整<br><font color="blue" size="4">2.详解RDB</font><br><font color="green" size="3">2.1 RDB 创建与载入</font><br>Redis 提供了 SAVE 和 BGSAVE 两个命令来生成 RDB 文件，区别是前者是阻塞的，后者是后台 fork 子进程进行不会阻塞主进程处理命令请求。载入 RDB 文件不需要手工运行，而是 server 端自动进行，<font color="blue">只要启动时</font>检测到 RDB 文件存在 server 端便会载入 RDB 文件重建数据集。当然上面简介中已经提到，如果 同时存在 AOF 的话会优先使用 AOF 重建数据集因为其保存的数据更完整。<br><br><font color="green" size="3">2.2 RDB 相关配置</font><br>SAVE POINT配置：save seconds changes<br>xx秒内发生了xx次变化，那么执行一次快照保存<br><br><font color="green" size="3">2.3 RDB 的优点</font><br>1）RDB文件是一个很简洁的单文件，它保存了某个时间点的 Redis 数据集，很适合用于做备份。你可以设定一个时间点对 RDB 文件进行归档（备份保存），这样就能在需要的时候很轻易的把数据恢复到不同的版本。<br>2）基于上面所描述的特性，RDB 文件很适合用于灾备，因为单文件可以很方便地传输到另外的数据中心。<br>3）RDB的性能很好，需要进行持久化时，主进程会 fork 一个子进程出来，然后把持久化的工作交给子进程，自己不会有相关的 I/O 操作。<br>4）比起 AOF，在数据量比较大的情况下，RDB的启动速度更快。（<code>Ps:可能redis本身存放的内容还不如变动点多</code>）<br><br><font color="green" size="3">2.4 RDB 的缺点</font><br>1）RDB容易造成数据的丢失，当你希望在 Redis 停止工作时<font color="blue">尽量减少数据丢失</font>的话，那 RDB 不适用。假设每5分钟保存一次快照，如果Redis因为某些原因不能正常工作，那么从上次产生快照到 Redis 出现问题这段时间的数据就会丢失了。你可以通过配置不同的 save point 来减轻数据丢失的程度，但是越紧凑的 save point 会越频繁地触发 RDB 生成操作，从而对 Redis 性能产生影响<br>2）RDB 使用 fork 子进程进行数据的持久化，如果数据比较大的话可能就会花费点时间，造成 Redis 停止服务几毫秒。AOF 也需要 fork 但是你可以自己调整 rewrite 的频率，它不会造成数据丢失<br>3）在 Linux 系统中，fork 会拷贝进程的 page table。随着进程占用的内存越大，进程的 page table 也会越大，那么 fork 也会占用更多的时间。 如果 Redis 占用的内存很大 (例如 20 GB)，那么在 fork 子进程时，会出现明显的停顿现象（无法处理 client 的请求）<br>4）Linux fork 子进程采用的是 copy-on-write 的方式。在 Redis 执行 RDB 持久化期间，如果 client 写入数据很频繁，那么将增加 Redis 占用的内存<br><font color="blue" size="4">3. 详解 AOF</font><br><font color="green" size="3">3.1 AOF 实现</font><br>和 RDB 持久化数据库键值对来记录数据库状态不同，AOF 是通过保存对数据库的写命令集来记录数据库状态的。AOF 持久化实现可以分为命令追加(append)、文件写入(write)、文件同步(fsync) 三个步骤。<br>Append 追加命令到<font color="blue">aof_buf 缓冲区</font> ，Write 将缓冲区的内容写入到<font color="blue">AOF文件缓冲区</font>，Fsync 将程序缓冲区的内容写入到<font color="blue">文件</font>。<br><font color="red">命令追加</font><br>当 AOF 持久化功能打开时，server 端每执行完一个写命令，会以协议格式将被执行的写命令追加到 server 端 redisServer 结构体中的 aof_buf 缓冲区末尾。<br><br><font color="red">文件写入与同步</font><br>Redis server 进程是一个事件循环(event loop)，server 每结束一个事件循环之前都会调用 flushAppendOnlyFile 函数，考虑是否将 aof_buf 缓冲区中的内容吸入和保存到 AOF 文件，而 flushAppendOnlyFile 函数的行为由 appendfsync 选项来控制<br><br>appendfsync的值 | flushAppendOnlyFile行为<br>— | —<br>everysec | 每个事件循环都将 aof_buf 缓冲区中的内容写入 AOF 文件，Redis 还会每秒在子线程中执行一次 fsync()。在实践中，推荐使用这种设置，一定程度上可以保证数据持久性，又不会明显降低 Redis 性能<br>no | 每个事件循环都将 aof_buf 缓冲区中的内容写入 AOF 文件，但不对其进行同步，何时同步至磁盘会让操作系统决定。这种模式下 AOF 的写入速度最快，不过因其会在系统缓存中积累一段时间的数据，所以同步时间为三者最长。一旦宕机将会丢失自上一次同步 AOF 文件起所有的数据<br>always | 每个事件循环都将 aof_buf 缓冲区中的内容写入 AOF 文件，并且调用 fsync() 将其同步到磁盘。这可以保证最好的数据持久性，但却会给系统带来极大的开销，其效率是三者中最慢的，但同时安全性也是最高的，即使宕机也只丢失一个事件循环中的数据<br><br><code>Ps：文件的写入和同步（fsync）</code><br>为了提高文件的写入效率， 在现代操作系统中， 当用户调用 write 函数， 将一些数据写入到文件的时候， 操作系统通常会将写入数据暂时保存在一个内存缓冲区里面， 等到缓冲区的空间被填满、或者超过了指定的时限之后， 才真正地将缓冲区中的数据写入到磁盘里面。<br>这种做法虽然提高了效率， 但也为写入数据带来了安全问题， 因为如果计算机发生停机， 那么保存在内存缓冲区里面的写入数据将会丢失。<br>为此， 系统提供了 fsync 和 fdatasync 两个同步函数， 它们可以强制让操作系统立即将缓冲区中的数据写入到硬盘里面， 从而确保写入数据的安全性。<br><br><font color="green" size="3">3.2 AOF 重写</font><br>AOF 持久化并不是没有缺点的，Redis 会不断将接收到的写命令追加到 AOF 文件中，导致 AOF 文件越来越大。过大的 AOF 文件会消耗磁盘空间，并且导致 Redis 重启时更加缓慢。为了解决这个问题，在适当情况下，Redis 会对 AOF 文件进行重写，去除文件中冗余的命令，以减小 AOF 文件的体积（<code>Ps：比如对某个key执行了两次写操作，第二次会覆盖第一次，那么AOF再保存第一次的写操作其实意义并不大</code>）。<br><br>AOF的重写会执行大量的写入操作，Redis是单线程的，所以如果有服务器直接调用重写，服务器就不能处理其他命令了，因此Redis服务器新起了单独一个进程来执行AOF重写。<br><br>在子进程执行AOF重写时，服务端接收到客户端的命令之后，先执行客户端发来的命令，然后将执行后的写命令追加到AOF缓冲区中，同时将执行后的写命令追加到AOF重写缓冲区中。 等到子进程完成了重写工作后(<code>Ps都是写到重写缓冲区</code>)，会发一个完成的信号给服务器，服务器就将AOF重写缓冲区中的所有内容追加到AOF文件中，然后原子性地覆盖现有的AOF文件（<code>Ps注意这里强调的原子性</code>）。<br><br>题外话：提到IO经常要提到缓存，这个缓存是干啥的？<br>进程执行I/O操作，就是向操作系统发出请求，让它要么把缓冲区的数据排干（写），要么用数据把缓冲区填满（读）。进程使用这一机制处理所有数据进出操作。<br>简单地说，数据在内核空间和用户空间『穿梭』成本较高，所以无论是读还是写都希望能够凑齐一波一起去执行，这样可以均摊『跨空间』的成本。而在凑齐一波之前数据在的区域就是缓冲区<br><br><font color="green" size="3">3.3 AOF优点</font><br>1）比RDB可靠。你可以制定不同的 fsync 策略：no、everysec 和 always。默认是 everysec。这意味着你最多丢失一秒钟的数据。<br>2）AOF日志文件是一个纯追加的文件。就算是遇到突然停电的情况，也不会出现日志的定位或者损坏问题。<br>3）当AOF文件太大时，Redis 会自动在后台进行重写。重写很安全（<code>Ps：原子性</code>），因为重写是在一个新的文件上进行，同时 Redis 会继续往旧的文件追加数据。新文件上会写入能重建当前数据集的最小操作命令的集合（<code>Ps：AOF瘦身</code>）。当新文件重写完，Redis 会把新旧文件进行切换，然后开始把数据写到新文件上（<code>Ps：原子性</code>）。<br>4）AOF 把操作命令以简单易懂的格式一条接一条的保存在文件里，很容易导出来用于恢复数据。例如我们不小心用 FLUSHALL 命令把所有数据刷掉了，只要文件没有被重写，我们可以把服务停掉，把最后那条命令删掉，然后重启服务，这样就能把被刷掉的数据恢复回来。<br><br><font color="green" size="3">3.4 AOF 的缺点</font><br>1）在相同的数据集下，AOF 文件的大小一般会比 RDB 文件大。<br><br>2）在某些 fsync 策略下，AOF 的速度会比 RDB 慢。通常 fsync 设置为每秒一次就能获得比较高的性能，而在禁止 fsync 的情况下速度可以达到 RDB 的水平。<br><br>小结：RDB和AOF的优缺点<br><br>|RDB | AOF<br>—- | — | —<br>优点 | 简单的备份单文件，适合灾备和数据恢复不同版本；性能较好会fork一个新进程完成IO操作 | 最好的情况下，最多丢失某次的更新数据；AOF文件过大时候会执行重写（瘦身），而且新旧AOF的替换操作是原子性的<br>缺点 | 容易造成数据丢失；如果数据较大，fork子进程会占用较多cpu时间，甚至造成redis停止服务几毫米；fork是基于写时拷贝，如果客户端频繁的写，那么将增加redis占用的内存 | 相同数据集下，AOF文件一般比RDB大；AOF的速度一般比RDB慢（同步频率较高）<br><br>## Redis主从复制<br><font color="blue" size="4">1.简介</font><br>Redis 作为单机数据库使用时，使用场景有限且存在单点宕机问题，无法维持高可用。因此 Redis 允许通过 SLAVEOF 命令或者 slaveof 配置项来让一个 Redis server 复制另一个 Redis server 的数据集和状态，我们称之为主从复制。主服务器下文称 master，从服务器下文称 slave，Redis 采用异步的复制机制。<br>复制机制的运行依靠三个特性：<br><br>1）当一个 master 和一个 slave 连接正常时，master 会发送一连串的命令流来保持对 slave 的更新，以便于将自身数据集的变更复制给 slave ：包括客户端的写入、key 的过期或被逐出等<br><br>2）当 master 和 slave 之间的连接断开后（断开的原因可能是网络问题或者连接超时） slave 重连上 master 并尝试进行部分重同步，这意味着它只会尝试获取在断开连接期间内丢失的命令流<br><br>3）当无法进行部分重同步时， slave 会请求进行全量重同步。这会涉及到一个更复杂的过程，例如 master 需要创建所有数据的快照，将之发送给 slave ，之后在数据集更改时持续发送命令流到 slave<br><br><font color="blue" size="4">2. 优点</font><br>1）master 可以关闭持久化机制，减少不必要的 IO 操作且降低延迟，对于以性能著称的组件来说极为重要<br><br>2）slave 虽然不能处理写请求，但是可以处理读请求，从而增加读取操作的吞吐量。但由于复制机制的原因，主从数据存在不一致的时间窗口（<code>Ps：作为缓冲中间件来讲，主从不一致影响并不大</code>）<br><br>3）使得 Redis 可以告别单机版本的单点风险，采用副本形式提高可用性，在 master 宕机时可以将 slave 提升为 master 继续向外提供服务<br><br>Ps：常说的主从复制和集群的区别是什么？<br>主从复制一般包含一个master和若干slave，slave 在复制机制的场景下，可以提供故障恢复、分担读流量和数据备份的功能。<br><br>集群机制一大特点是，不同集群中存放的数据不同。集群机制的使用意味着你的数据量较大，数据会根据 Key 计算出的 slot 值自动在多个分片上进行分区(Partitioning)，客户端对某个 Key 的请求会被转发到持有那个 Key 的分片上。分片由一个 master 和若干个 slave 组成，二者间通过复制机制同步数据。因此总结来看，集群模式更像<font color="blue">分区和复制机制的组合</font>
+
+<p><font color="blue" size="4">3. 原理</font><br>主从复制过程可分为三个阶段：复制初始化、数据同步和命令传播。<br>1）复制初始化：slave和master之间建立tcp连接<br>2）数据同步：slave向master发送psync命令，master判断是进行增量同步还是全量同步（该阶段一般未全量同步）<br>3）命令传播：完成数据同步后，master和slave需要通过心跳包来确认对方是否在线，master向slave发送PING命令，slave向master发送REPLCONF ACK命令，该命令还包含slave保存数据的复制偏移量（master会比对偏移量向slave发送未同步的命令）</p>
+<h2 id="Redis集群"><a href="#Redis集群" class="headerlink" title="Redis集群"></a>Redis集群</h2><p><font color="blue" size="4">1. 简介</font><br>大规模数据存储系统都会面临的一个问题就是如何横向拓展。当你的数据集越来越大，一主多从的模式已经无法支撑这么大量的数据存储，于是你首先考虑将多个主从模式结合在一起对外提供服务</p>
+<p><font color="blue" size="4">2. Redis Cluster 简介</font><br>常见的三种方案<br>1）将Proxy放到客户端：分发压力放到客户端，缓解了服务器压力；不能平滑扩容or下线，运维成本高<br>2）将Proxy放到服务端：对客户端透明；服务端压力增大，可能会影响性能，难以做到平滑扩容or下线<br>3）官方方案Redis Cluster：无中心节点，数据按照 slot 存储分布在多个 Redis 实例上，平滑的进行扩容/缩容节点，自动故障转移（节点之间通过 Gossip 协议交换状态信息,进行投票机制完成 slave 到 master 角色的提升）降低运维成本，提高了系统的可扩展性和高可用性。一般将同一分片的master和slave部署在不同机房，以增加容灾能力<br>客户端可以和任意redis相连接，如果当前key不位于当前分片，那么会收到一个move请求，之后再去请求新的分片</p>
+<h2 id="Redis应用场景"><a href="#Redis应用场景" class="headerlink" title="Redis应用场景"></a>Redis应用场景</h2><p>1）缓存<br>2）消息队列：list的一个双向链表，可以通过lpush(left)将消息放到左侧，通过rpop(right)将右侧的消息取出<br>3）分布式锁：setnx+expire+del三个操作实现<br>4）倒排索引：搜索beijing想达到和输入『北京』效果相同，可以考虑将beijing作为key，北京作为value</p>
+<h2 id="Redis为啥这么快？"><a href="#Redis为啥这么快？" class="headerlink" title="Redis为啥这么快？"></a>Redis为啥这么快？</h2><p>Redis采用的是基于内存的采用的是单进程单线程模型的 KV 数据库，由C语言编写，官方提供的数据是可以达到100000+的QPS（每秒内查询次数）<br>1、完全基于内存，绝大部分请求是纯粹的内存操作，非常快速。数据存在内存中，类似于HashMap，HashMap的优势就是查找和操作的时间复杂度都是O(1)；</p>
+<p>2、数据结构简单，对数据操作也简单，Redis中的数据结构是专门进行设计的；</p>
+<p>3、采用单线程，避免了不必要的上下文切换和竞争条件，也不存在多进程或者多线程导致的切换而消耗 CPU，不用去考虑各种锁的问题，不存在加锁释放锁操作，没有因为可能出现死锁而导致的性能消耗；</p>
+<p>4、使用多路I/O复用模型，非阻塞IO；</p>
+<p>Ps<br>1）作为一个内存数据库，所需要的一切数据都在内存中显然单线程就是最快的<br>2）当需要使用下层存储的时候（比如磁盘）这个时候推荐使用多线程方案</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Java中间件/" rel="tag"># Java中间件</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/09/12/tcp-window/" rel="next" title="tcp window">
+                <i class="fa fa-chevron-left"></i> tcp window
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">Luyu</p>
+              <p class="site-description motion-element" itemprop="description">知识广度是深度的副产品</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">36</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">10</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">11</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Redis常用的数据结构"><span class="nav-number">1.</span> <span class="nav-text">Redis常用的数据结构</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Redis集群"><span class="nav-number">2.</span> <span class="nav-text">Redis集群</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Redis应用场景"><span class="nav-number">3.</span> <span class="nav-text">Redis应用场景</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Redis为啥这么快？"><span class="nav-number">4.</span> <span class="nav-text">Redis为啥这么快？</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Luyu</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Mist</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

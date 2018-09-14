@@ -87,7 +87,7 @@
 <meta property="og:site_name" content="Luyu&#39;s Blog">
 <meta property="og:description" content="Outline1.import 和 parent2.dependencyManagement和dependency3.maven plugin4.maven scope">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2018-09-11T11:53:59.000Z">
+<meta property="og:updated_time" content="2018-09-13T01:47:40.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="maven基础知识">
 <meta name="twitter:description" content="Outline1.import 和 parent2.dependencyManagement和dependency3.maven plugin4.maven scope">
@@ -333,11 +333,12 @@
 
       
         <p>Outline<br>1.import 和 parent<br>2.dependencyManagement和dependency<br>3.maven plugin<br>4.maven scope<br><a id="more"></a></p>
-<h3 id="import-和-parent"><a href="#import-和-parent" class="headerlink" title="import 和 parent"></a><font color="green" size="5">import 和 parent</font></h3><p>子model可以使用parent继承某个父model<br>但是，问题也出现了：<br>单继承：maven的继承跟java一样，单继承，也就是说子model中只能出现一个parent标签；<br>parent模块中，dependencyManagement中预定义太多的依赖，造成pom文件过长，而且很乱；<br>如何让这些依赖可以分类并清晰的管理？<br>问题解决：import scope依赖<br>注意：scope=import只能用在dependencyManagement里面,且仅用于type=pom的dependency<br><code>总结：import并非解决多重继承，而是让父model中的依赖们更清晰的管理(将另一个pom文件以import的方式引入而不是平铺在当前model中)</code></p>
-<h3 id="dependencyManagement和dependency"><a href="#dependencyManagement和dependency" class="headerlink" title="dependencyManagement和dependency"></a><font color="green" size="5">dependencyManagement和dependency</font></h3><p>在maven多模块项目中，为了保持模块间依赖的统一，常规做法是在parent model中，使用dependencyManagement预定义所有模块需要用到的dependency(依赖)<br>dependencyManagement只会影响现有依赖的配置，但不会引入依赖，即子model不会继承parent中dependencyManagement所有预定义的dependency，只引入需要的依赖即可，简单说就是“按需引入依赖”或者“按需继承”；因此，在parent中严禁直接使用dependencies预定义依赖，坏处是子model会自动继承dependencies中所有预定义依赖；</p>
+<h3 id="import-和-parent"><a href="#import-和-parent" class="headerlink" title="import 和 parent"></a><font color="green" size="5">import 和 parent</font></h3><p>子model可以使用parent继承某个父model<br>但是，问题也出现了：<br>单继承：maven的继承跟java一样，单继承，也就是说子model中只能出现一个parent标签；<br>parent模块中，dependencyManagement中预定义太多的依赖，造成pom文件过长，而且很乱；<br>如何让这些依赖可以分类并清晰的管理？<br>问题解决：import scope依赖</p>
+<p><font color="blue">注意：scope=import只能用在dependencyManagement里面,且仅用于type=pom的dependency</font><br><code>总结：pom的多重继承通过将多个欲继承的model放到同一个model中来实现，而为了让父model中的依赖们更清晰的管理引入了import(将另一个pom文件以import的方式引入而不是平铺在当前model中)</code></p>
+<h3 id="dependencyManagement和dependency"><a href="#dependencyManagement和dependency" class="headerlink" title="dependencyManagement和dependency"></a><font color="green" size="5">dependencyManagement和dependency</font></h3><p>在maven多模块项目中，为了保持模块间依赖的统一，常规做法是在parent model中，使用dependencyManagement预定义所有模块需要用到的dependency(依赖)<br>dependencyManagement只会影响现有依赖的配置，但不会引入依赖，即子model不会继承parent中dependencyManagement所有预定义的dependency，只引入需要的依赖即可，简单说就是<font color="blue">“按需引入依赖”或者“按需继承”</font><br>在parent中严禁直接使用dependencies预定义依赖，因为子model会自动继承dependencies中所有预定义依赖</p>
 <ul>
 <li>dependenciesManagement标签中声明的依赖并不会被子项目直接继承，在子项目中需要声明，但是只需要声明groupId和artifactId</li>
-<li>dependencies标签中的依赖会被子项目完全继承：即父项目中有的依赖都会出现在子项目中</li>
+<li>dependencies标签中的依赖会被子项目完全继承,即父项目中有的依赖都会出现在子项目中</li>
 </ul>
 <h3 id="maven-plugin"><a href="#maven-plugin" class="headerlink" title="maven plugin"></a><font color="green" size="5">maven plugin</font></h3><ul>
 <li>maven-resources-plugin: copy resources not in src/main/resources to target/classes</li>
@@ -471,7 +472,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">35</span>
+                  <span class="site-state-item-count">36</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -493,7 +494,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">10</span>
+                  <span class="site-state-item-count">11</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>

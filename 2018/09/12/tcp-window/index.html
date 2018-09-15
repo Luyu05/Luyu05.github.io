@@ -89,7 +89,7 @@
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="http://yoursite.com/2018/09/12/tcp-window/001.jpeg">
 <meta property="og:image" content="http://yoursite.com/2018/09/12/tcp-window/002.jpeg">
-<meta property="og:updated_time" content="2018-09-14T06:33:29.000Z">
+<meta property="og:updated_time" content="2018-09-15T05:26:39.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="tcp window">
 <meta name="twitter:description" content="Outline1.对比了拥塞控制和流量控制2.拥塞控制的细节">
@@ -380,7 +380,7 @@
 <h3 id="拥塞控制的一些细节"><a href="#拥塞控制的一些细节" class="headerlink" title="拥塞控制的一些细节"></a><font color="green" size="5">拥塞控制的一些细节</font></h3><p>拥塞控制的几种算法：慢开始( slow-start )、拥塞避免( congestion avoidance )、快重传( fast retransmit )和快恢复( fast recovery )<br>最开始指数增长阶段就是<font color="blue">慢开始算法</font>、而线性增长阶段是<font color="blue">拥塞避免算法</font><br>Ps:更新后的ssthresh值变为出现超时时的拥塞窗口数值的一半<br><img src="/2018/09/12/tcp-window/001.jpeg"></p>
 <p><font color="blue">快重传算法</font><br>1）首先要求接收方每收到一个<code>失序的报文段</code>后就立即发出重复确认（为的是使发送方及早知道有报文段没有到达对方）而不要等到自己发送数据时才进行捎带确认。</p>
 <p>2）算法还规定，发送方只要一连收到三个重复确认就应当立即重传对方尚未收到的报文段Mx，而不必继续等待Mx设置的重传计时器到期。由于发送方尽早重传未被确认的报文段，因此采用快重传后可以使整个网络吞吐量提高约20%。</p>
-<p>与快重传配合使用的还有<font color="blue">快恢复算法</font><br>1）当发送方连续收到三个重复确认，就执行“乘法减小”算法，把慢开始门限ssthresh减半。这是为了预防网络发生拥塞（这里想想就清楚了，因为接下来要进行重传再加上正常的传输可能会发送拥塞）。请注意：接下去不执行慢开始算法。</p>
+<p>与快重传配合使用的还有<font color="blue">快恢复算法</font><br>1）当发送方连续收到三个重复确认，就执行“乘法减小”算法，把慢开始门限ssthresh减半（当前cwind的一半）。这是为了预防网络发生拥塞（这里想想就清楚了，因为接下来要进行重传再加上正常的传输可能会发送拥塞）。请注意：接下去不执行慢开始算法。</p>
 <p>2）由于发送方现在认为网络很可能没有发生拥塞，因此与慢开始不同之处是现在不执行慢开始算法（即拥塞窗口cwnd现在不设置为1），而是把cwnd值设置为慢开始门限ssthresh减半后的数值，然后开始执行拥塞避免算法（“加法增大”），使拥塞窗口缓慢地线性增大。<br><img src="/2018/09/12/tcp-window/002.jpeg"></p>
 <h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a><font color="green" size="5">总结</font></h3><p>发送方窗口的上限值 = Min [ rwnd, cwnd ]</p>
 <p>当rwnd &lt; cwnd 时，是接收方的接收能力限制发送方窗口的最大值。</p>

@@ -87,7 +87,7 @@
 <meta property="og:site_name" content="Luyu&#39;s Blog">
 <meta property="og:description" content="Outline1.数据库乐观锁悲观锁2.数据库三大范式">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2018-09-04T10:23:02.000Z">
+<meta property="og:updated_time" content="2018-09-15T05:51:22.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="关于数据库的一些知识点">
 <meta name="twitter:description" content="Outline1.数据库乐观锁悲观锁2.数据库三大范式">
@@ -337,6 +337,9 @@
 <p>而且乐观锁还可以避免<code>主从不一致</code>的问题，更新的时候比对版本时肯定读取的是最新的version（最多增加一些失败率）<br>延伸知识点：databus监听从库，insert一条记录触发databus消费逻辑，此时可以放心捞取数据 不用担心主从不一致的问题</p>
 <p>2.悲观锁<br>还是上面的场景，第一个线程也可以select for update 释放之后 线程二再执行 这种场景一般不常用相当于对这条记录加锁了</p>
 <p>3.无锁<br>比如更新某条卡券的库存量 此时不需要任何锁 update Ticket set count = count - 1 where count &gt; 0</p>
+<p>悲观锁：比较适合写入操作比较频繁的场景，如果出现大量的读取操作，每次读取的时候都会进行加锁，这样会增加大量的锁的开销，降低了系统的吞吐量。</p>
+<p>乐观锁：比较适合读取操作比较频繁的场景，如果出现大量的写入操作，数据发生冲突的可能性就会增大，为了保证数据的一致性，应用层需要不断的重新获取数据，这样会增加大量的查询操作，降低了系统的吞吐量。</p>
+<p>总结：两种所各有优缺点，读取频繁使用乐观锁，写入频繁使用悲观锁。</p>
 <h3 id="数据库三大范式"><a href="#数据库三大范式" class="headerlink" title="数据库三大范式"></a><font color="red" size="5">数据库三大范式</font></h3><p>1.第一范式，简单的说,第一范式就是每一个属性都不可再分。不符合第一范式则不能称为<code>关系数据库</code>。比如某个Address属性是可以再分的，”北京市XX路XX小区XX号”，可以将其分解为新的表包括cityId country street</p>
 <p>2.第二范式，简单的说，是表中的属性必须完全依赖于全部主键，而不是部分主键.所以只有一个主键的表如果符合第一范式，那一定是第二范式</p>
 <p>3.第三范式，简单的说，第三范式是为了消除数据库中关键字之间的依赖关系，即非主键的列不能依赖于其他非主键的列</p>

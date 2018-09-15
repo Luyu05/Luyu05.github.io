@@ -88,7 +88,7 @@
 <meta property="og:description" content="Spring AOP专题AOP解决程序开发里事务性，和核心业务无关的问题，但这些问题对于业务场景的实现是很有必要的。">
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="http://yoursite.com/2018/07/28/Spring-2/aop.png">
-<meta property="og:updated_time" content="2018-09-11T12:47:26.000Z">
+<meta property="og:updated_time" content="2018-09-15T06:52:58.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Spring-AOP专题">
 <meta name="twitter:description" content="Spring AOP专题AOP解决程序开发里事务性，和核心业务无关的问题，但这些问题对于业务场景的实现是很有必要的。">
@@ -354,7 +354,7 @@
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MethodBeforeAdviceInterceptor</span> <span class="keyword">implements</span> <span class="title">MethodInterceptor</span>, <span class="title">Serializable</span> </span>&#123;</span><br><span class="line">    ...省略</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> Object <span class="title">invoke</span><span class="params">(MethodInvocation mi)</span> <span class="keyword">throws</span> Throwable </span>&#123;</span><br><span class="line">        <span class="comment">//先去执行advice的前置方法</span></span><br><span class="line">		<span class="keyword">this</span>.advice.before(mi.getMethod(), mi.getArguments(), mi.getThis() );</span><br><span class="line">		<span class="keyword">return</span> mi.proceed();</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>小结：<br>终于撸完了一个简单的AOP全过程，之前如果有人问题AOP的原理，我就只能说动态代理和CGLIB<br>现在我知道了ProxyFactoryBean将IOC和AOP连接在一起<br>以及为啥前置&gt;方法&gt;后置，通过不同advice的interceptor实现</p>
 <p>简单地说，就是对每个目标对象创建一个BeanFactory的实例，通过getObject对实现进行改造，该方法内部通过动态代理 or CGLIB的方式对当前方法进行代理，而代理的invoke方法中会先去遍历当前target配置的advisor，然后找到和当前method匹配的advisor，之后再将匹配的advisor和method融合到一起，实现aop~</p>
-<p>这种配置的方法其实很蛋疼，每一个需要被代理的类都要配置为一个proxyFactoryBean<br>那么如果不这么配置的话咋实现对每个可能的目标类的代理呢？<br>我们想到了Spring预留的BeanPostProcessor方法，该方法可以做到对每个符合代理要求的bean进行偷梁换柱<br>具体逻辑位于postProcessAfterInitialization中，也就是执行过初始化方法之后，对符合<br>pointCut的类进行代理，返回给getBean的调用处完成『偷梁换柱』</p>
+<p>这种配置的方法其实很蛋疼，每一个需要被代理的类都要配置为一个proxyFactoryBean<br>那么如果不这么配置的话咋实现对每个可能的目标类的代理呢？<br>我们想到了Spring预留的BeanPostProcessor接口，该方法可以做到对每个符合代理要求的bean进行偷梁换柱<br>具体逻辑位于postProcessAfterInitialization中，也就是执行过初始化方法之后，对符合<br>pointCut的类进行代理，返回给getBean的调用处完成『偷梁换柱』</p>
 <h3 id="关于AOP的几问"><a href="#关于AOP的几问" class="headerlink" title="关于AOP的几问"></a><font color="red" size="5">关于AOP的几问</font></h3><p><font color="blue">AOP的底层是通过什么实现的？</font><br>Spring AOP底层使用JDK动态代理和CGLIB来实现的<br>这里多提一句JDK动态代理相当于new了一个代理所实现接口的实例，接下来再对其方法进行覆写,写到这里引出一个问题，如果代理类本身就有的一些方法能否同样被代理？哈哈，一下就暴露了对动态代理的不熟悉,<br>(TargetInterface)Proxy.newProxyInstance,注意前面那个强制转换，此时是无法调用非接口方法的。<br>缺点：</p>
 <ul>
 <li>JDK动态代理需要代理类实现至少一个接口</li>

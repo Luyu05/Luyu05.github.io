@@ -79,18 +79,18 @@
 
 
 
-<meta name="description" content="zk本身提供分布式系统的协调服务；为了防止zk本身挂掉影响整个分布式集群，引入了ZAB协议ZAB协议是zookeeper中专门设计的一种支持崩溃恢复的原子广播协议。">
+<meta name="description" content="zk本身提供分布式系统的协调服务；为了防止zk本身挂掉影响整个分布式集群，引入了ZAB协议ZAB协议是zookeeper中专门设计的一种支持崩溃恢复的原子广播协议。Ps:这篇文章必须加精">
 <meta name="keywords" content="Zookeeper">
 <meta property="og:type" content="article">
 <meta property="og:title" content="ZAB协议">
 <meta property="og:url" content="http://yoursite.com/2018/05/24/ZAB/index.html">
 <meta property="og:site_name" content="Luyu&#39;s Blog">
-<meta property="og:description" content="zk本身提供分布式系统的协调服务；为了防止zk本身挂掉影响整个分布式集群，引入了ZAB协议ZAB协议是zookeeper中专门设计的一种支持崩溃恢复的原子广播协议。">
+<meta property="og:description" content="zk本身提供分布式系统的协调服务；为了防止zk本身挂掉影响整个分布式集群，引入了ZAB协议ZAB协议是zookeeper中专门设计的一种支持崩溃恢复的原子广播协议。Ps:这篇文章必须加精">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2018-06-27T01:47:07.000Z">
+<meta property="og:updated_time" content="2018-09-18T12:00:40.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="ZAB协议">
-<meta name="twitter:description" content="zk本身提供分布式系统的协调服务；为了防止zk本身挂掉影响整个分布式集群，引入了ZAB协议ZAB协议是zookeeper中专门设计的一种支持崩溃恢复的原子广播协议。">
+<meta name="twitter:description" content="zk本身提供分布式系统的协调服务；为了防止zk本身挂掉影响整个分布式集群，引入了ZAB协议ZAB协议是zookeeper中专门设计的一种支持崩溃恢复的原子广播协议。Ps:这篇文章必须加精">
 
 
 
@@ -332,7 +332,7 @@
       
 
       
-        <p>zk本身提供分布式系统的协调服务；为了防止zk本身挂掉影响整个分布式集群，引入了ZAB协议<br>ZAB协议是zookeeper中专门设计的一种支持崩溃恢复的原子广播协议。<br><a id="more"></a></p>
+        <p>zk本身提供分布式系统的协调服务；为了防止zk本身挂掉影响整个分布式集群，引入了ZAB协议<br>ZAB协议是zookeeper中专门设计的一种支持崩溃恢复的原子广播协议。<br>Ps:这篇文章必须加精<br><a id="more"></a></p>
 <h1 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h1><p><font color="red">消息广播<font></font></font></p>
 <p>Ps：以和zk集群follower相连接的client发送一个写请求为例</p>
 <ol>
@@ -386,6 +386,9 @@
 <hr>
 <h1 id="延伸思考"><a href="#延伸思考" class="headerlink" title="延伸思考"></a>延伸思考</h1><p>1.准Leader如何选举？<br>答：投票选举，每个服务器都会生成投票信息（myid,ZXID）,首先投给自己，之后再广播给集群中的其他机器，集群中的服务器接收到投票后会判断收到的票的有效性（包括是否是本轮投票，是否来自LOOKING状态的服务器），接下来将别人的票和自己的票做PK，优先PK ZXID，如果一样那么PK myid，将自己的票更新为PK胜利方的信息，并再次将票广播给其他机器，每次投票后，服务器都会统计所有投票，判断是否有过半的机器收到相同的投票信息 Ps myid并不重要，可能仅仅是代表一个序号，只要不重复就ok</p>
 <p>2.如何保证不会丢失已经提交的提议（指的是整个集群）？<br>答：这个是相当的有意思，假设所有子民{0，1，2，3，4，5}，第一个朝代国王是0，子民是{1，2，3}，Ps成立朝代的标准是子民要超过半数，在某个提议整个朝代commit后（假设当前zxid=3），国王生病，这时候要更换新的国王，假设是5，而新的朝代子民也要超过半数，那么这就意味着新的王国内部必然有前朝子民，假设是{3，4，1}，新的国王会更新朝代epoch+1，并从当前子民中找到epoch最大或者epoch相等&amp;zxid最大的（这种方式可以防止”复辟”，即小epoch大zxid当选leader），将其提交过的事务更新为自己做过的事务，并将自己的zxid置为0，然后勒令子民们和自己做过的事务进行同步，哈哈，这样就保证了朝代更替不会导致已经被提交的事务丢失~<br>Ps 这里说的zxid指的是zxid的低32位</p>
+<hr>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>ZooKeeper集群：<br>1）读写数据库<br>2）保证一致性的集群<br>3）可以感知客户端的变化<br>4）主要解决分布式应用中经常遇到的一些<code>数据管理问题</code></p>
+<p>Ps:分布式系统的节点可以通过第三方节点进行数据共享，而这个第三方节点（zk）肯定也是由集群构成的（不然会有单点问题），所以第三方节点间也要通过协议保证（ZAB协议）数据的一致性</p>
 
       
     </div>
@@ -560,7 +563,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#概述"><span class="nav-number">1.</span> <span class="nav-text">概述</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#详解"><span class="nav-number">2.</span> <span class="nav-text">详解</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#延伸思考"><span class="nav-number">3.</span> <span class="nav-text">延伸思考</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#概述"><span class="nav-number">1.</span> <span class="nav-text">概述</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#详解"><span class="nav-number">2.</span> <span class="nav-text">详解</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#延伸思考"><span class="nav-number">3.</span> <span class="nav-text">延伸思考</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#总结"><span class="nav-number">4.</span> <span class="nav-text">总结</span></a></li></ol></div>
             
 
           </div>

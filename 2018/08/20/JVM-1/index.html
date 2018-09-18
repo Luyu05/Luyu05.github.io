@@ -89,7 +89,7 @@
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="http://yoursite.com/2018/08/20/JVM-1/001.png">
 <meta property="og:image" content="http://yoursite.com/2018/08/20/JVM-1/JVM-2.png">
-<meta property="og:updated_time" content="2018-09-17T12:35:31.000Z">
+<meta property="og:updated_time" content="2018-09-18T10:32:31.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="JVM">
 <meta name="twitter:description" content="Outline0.最近在看《深入理解JVM》对全书做了一个思维导图，也方便以后的回顾（提纲挈领嘛），看不清楚的小伙伴可以download到本地，图片还是很清晰的1.读书过程中的一些想法与体会也顺带记录了下，欢迎大家批评指正">
@@ -341,7 +341,7 @@
 <li><font color="blue">加载</font><br>理论上来讲类的加载是讲究时机的，具体可以参考导图中初始化的触发时机（初始化发生前一定会先执行加载操作）。<br>当类被加载的时候，会做三件事情<br>1）通过类的全限定名获取此类的二进制流<br>2）将这个字节流所代表的静态存储结构转换为方法区运行时的数据结构，包括class中的常量池保存到JVM内存的运行时常量池、Class&amp;Method&amp;Field的信息保存到方法区<br>Ps：<br>简单的说类的全部信息都保存在方法区中，包括类的版本、字段、方法等的描述信息。<br>再看看一些细节的东西<br>将class文件中保存的一些内容存储到真正的运行时的内存中，比如class文件中的常量池，包括字面量和符号引用，要存储到JVM运行时的常量池中；将类的版本信息、方法、字段等的描述信息，存储到方法区中。<br>3）在堆中生成这个类的class对象，作为访问方法区中该类信息的入口（通过反射去拿类的信息）</li>
 <li><font color="blue">验证</font><br>这步没啥好说的，就是对class文件进行校验，防止class会损害虚拟机</li>
 <li><font color="blue">准备</font><br>两件事，第一，为类变量分配内存并赋默认值；第二，为final修饰的变量进行赋值操作（非默认值）</li>
-<li><p><font color="blue">解析</font><br>严格意义上讲，解析可以在初始化之前也可以在其之后。<br>这步骤的工作就是将常量池中的符号引用转为直接引用比如上面的object（符号引用）转为堆上的直接引用<br>对于初始化前的方法解析主要针对一些运行期间不可变的方法比如final、private等<br>而对于初始化后的方法解析主要针对一些运行期绑定的方法（指的是真正运行时候，而不是说初始化之后立刻去解析）<br>还是举个例子吧</p>
+<li><p><font color="blue">解析</font><br>严格意义上讲，解析可以在初始化之前也可以在其之后。<br>这步骤的工作就是将常量池中的符号引用转为直接引用比如上面的object（符号引用）转为堆上的直接引用<br>对于初始化前的方法解析主要针对一些运行期间不可变的方法比如final、private、static等<br>而对于初始化后的方法解析主要针对一些运行期绑定的方法（指的是真正运行时候，而不是说初始化之后立刻去解析）<br>还是举个例子吧</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">fun</span><span class="params">(Father f)</span> </span>&#123;</span><br><span class="line">    f.fun1();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>假设调用上面这个方法，而入参为Father的子类Son且Son也覆写了fun1方法，那么程序最终执行的父类的方法还是子类的方法是不得而知的，只有在程序真正运行时候才能确定，称之为运行时绑定</p>
 </li>

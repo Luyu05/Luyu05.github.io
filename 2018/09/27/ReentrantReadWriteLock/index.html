@@ -68,7 +68,7 @@
 
 
 
-  <meta name="keywords" content="I/O," />
+  <meta name="keywords" content="多线程," />
 
 
 
@@ -79,20 +79,18 @@
 
 
 
-<meta name="description" content="可以把整个IO分为两个阶段  等待数据到达 从内核拷贝数据到用户空间">
-<meta name="keywords" content="I&#x2F;O">
+<meta name="description" content="今天看到一个词，『锁降级』，于是就Google了下，然后顺带着把之前没搞懂的一个知识点搞清楚了，在这里记录下。">
+<meta name="keywords" content="多线程">
 <meta property="og:type" content="article">
-<meta property="og:title" content="JAVA中的I&#x2F;O">
-<meta property="og:url" content="http://yoursite.com/2018/05/29/BIO-NIO-AIO/index.html">
+<meta property="og:title" content="ReentrantReadWriteLock">
+<meta property="og:url" content="http://yoursite.com/2018/09/27/ReentrantReadWriteLock/index.html">
 <meta property="og:site_name" content="Luyu&#39;s Blog">
-<meta property="og:description" content="可以把整个IO分为两个阶段  等待数据到达 从内核拷贝数据到用户空间">
+<meta property="og:description" content="今天看到一个词，『锁降级』，于是就Google了下，然后顺带着把之前没搞懂的一个知识点搞清楚了，在这里记录下。">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:image" content="http://yoursite.com/2018/05/29/BIO-NIO-AIO/nio2.jpg">
-<meta property="og:updated_time" content="2018-08-06T06:48:58.000Z">
+<meta property="og:updated_time" content="2018-09-27T06:03:52.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="JAVA中的I&#x2F;O">
-<meta name="twitter:description" content="可以把整个IO分为两个阶段  等待数据到达 从内核拷贝数据到用户空间">
-<meta name="twitter:image" content="http://yoursite.com/2018/05/29/BIO-NIO-AIO/nio2.jpg">
+<meta name="twitter:title" content="ReentrantReadWriteLock">
+<meta name="twitter:description" content="今天看到一个词，『锁降级』，于是就Google了下，然后顺带着把之前没搞懂的一个知识点搞清楚了，在这里记录下。">
 
 
 
@@ -122,13 +120,13 @@
 
 
 
-  <link rel="canonical" href="http://yoursite.com/2018/05/29/BIO-NIO-AIO/"/>
+  <link rel="canonical" href="http://yoursite.com/2018/09/27/ReentrantReadWriteLock/"/>
 
 
 
 
 
-  <title>JAVA中的I/O | Luyu's Blog</title>
+  <title>ReentrantReadWriteLock | Luyu's Blog</title>
   
 
 
@@ -245,7 +243,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/05/29/BIO-NIO-AIO/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/09/27/ReentrantReadWriteLock/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Luyu">
@@ -262,7 +260,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">JAVA中的I/O</h1>
+          <h1 class="post-title" itemprop="name headline">ReentrantReadWriteLock</h1>
         
 
         <div class="post-meta">
@@ -274,8 +272,8 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-05-29T21:12:40+08:00">
-                2018-05-29
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-09-27T11:54:00+08:00">
+                2018-09-27
               </time>
             
 
@@ -297,8 +295,8 @@
               
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/I-O/" itemprop="url" rel="index">
-                    <span itemprop="name">I/O</span>
+                  <a href="/categories/多线程/" itemprop="url" rel="index">
+                    <span itemprop="name">多线程</span>
                   </a>
                 </span>
 
@@ -334,80 +332,8 @@
       
 
       
-        <p>可以把整个IO分为两个阶段</p>
-<ul>
-<li>等待数据到达</li>
-<li>从内核拷贝数据到用户空间<a id="more"></a>
-</li>
-</ul>
-<h1 id="I-O的三种方式"><a href="#I-O的三种方式" class="headerlink" title="I/O的三种方式"></a>I/O的三种方式</h1><ul>
-<li><strong>缓存IO</strong><br>  最常见的一种IO方式，磁盘-&gt;内核缓冲区-&gt;用户空间</li>
-<li><strong>直接IO</strong><br>  磁盘-&gt;用户空间，该方式IO见于数据库系统</li>
-<li><strong>内存映射</strong><br>  用户空间的一部分区域和内核缓冲区共享，比如epoll模式中    </li>
-</ul>
-<h1 id="UNIX的5种I-O模型"><a href="#UNIX的5种I-O模型" class="headerlink" title="UNIX的5种I/O模型"></a>UNIX的5种I/O模型</h1><p><img src="/2018/05/29/BIO-NIO-AIO/nio2.jpg" align="left"></p>
-<ul>
-<li><strong>阻塞I/O模型</strong><br>  等待数据到达+将数据从内核空间复制到用户空间 Ps进程阻塞于revcfrom调用<br>  Ps下面都是非阻塞的I/O模型（执行revcfrom时候是否需要等待）</li>
-<li><strong>非阻塞I/O模型</strong><br>  不断轮询检查数据是否已经到达 Ps进程反复调用revcfrom（未就绪直接返回）等待返回成功（轮询）</li>
-<li><strong>I/O复用</strong><br>  1）select/poll，前者最大文件描述符为1024；后者为65535<br>  2）epoll，基于事件驱动方式代替轮询扫描，最大文件描述符为65535<br>  都会阻塞进程，不过一个是轮询fd查看状态（O(n)），另一个是主动通知fd已就绪(O(1))<br>  就绪之后，调用recvfrom</li>
-</ul>
-<table>
-<thead>
-<tr>
-<th></th>
-<th>select</th>
-<th>poll</th>
-<th>epoll</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>操作方式</td>
-<td>遍历</td>
-<td>遍历</td>
-<td>回调</td>
-</tr>
-<tr>
-<td>底层实现</td>
-<td>数组</td>
-<td>链表</td>
-<td>哈希表</td>
-</tr>
-<tr>
-<td>IO效率</td>
-<td>线性遍历O(n)</td>
-<td>线性遍历O(n)</td>
-<td>事件通知方式，每当fd准备就绪，系统注册的回调函数会被调用O(1)</td>
-</tr>
-<tr>
-<td>最大连接数</td>
-<td>1024(x86) 2048(x64)</td>
-<td>无上限</td>
-<td>无上限</td>
-</tr>
-<tr>
-<td>fd拷贝</td>
-<td>每次调用select都需要把fd集合从用户态拷贝到内核态</td>
-<td>每次调用poll都需要把fd集合从用户态拷贝到内核态</td>
-<td>调用epoll_ct时拷贝进内核并保存，之后每次epoll_wait不拷贝</td>
-</tr>
-</tbody>
-</table>
-<ul>
-<li><strong>信号驱动I/O</strong><br>  通过系统调用sigaction执行一个信号处理函数（此系统调用立即返回，进程继续工作，它是非阻塞的）；当数据准备就绪后，为该进程生成一个SIGIO信号，通知应用程序调用recvfrom读取数据（此时仍然需要进程自身去调用recvfrom）</li>
-<li><strong>异步I/O</strong><br>  告知内核启动某个操作，并让内核在整个操作完成后通知我们（包括将数据从内核复制到用户空间）<br>  Ps异步I/O模型由内核通知我们I/O操作何时已经完成。而信号驱动I/O由内核告诉我们合适可以在进程内执行一个I/O操作</li>
-</ul>
-<h1 id="同步VS异步"><a href="#同步VS异步" class="headerlink" title="同步VS异步"></a>同步VS异步</h1><p>数据从内核到用户空间的复制是否需要当前进程参与</p>
-<h1 id="阻塞VS非阻塞"><a href="#阻塞VS非阻塞" class="headerlink" title="阻塞VS非阻塞"></a>阻塞VS非阻塞</h1><p>调用revcfrom是否需要等待(以I/O复用为例，调用recvfrom时已经收到select的关于数据就绪的通知，此时无须等待所以是非阻塞的)</p>
-<h1 id="JAVA中常用的三种IO"><a href="#JAVA中常用的三种IO" class="headerlink" title="JAVA中常用的三种IO"></a>JAVA中常用的三种IO</h1><h2 id="BIO（阻塞IO）"><a href="#BIO（阻塞IO）" class="headerlink" title="BIO（阻塞IO）"></a>BIO（阻塞IO）</h2><p>同步阻塞：数据从内核到用户空间的复制在进程内且调用recvfrom后需要等待<br>传统的服务器使用的就是BIO，每当客户端过来一个请求便开启一个新的线程，这种方式最大的问题就是过度依赖于线程。而线程是相对昂贵的资源</p>
-<ul>
-<li>线程本身占用较大的内存，如果成千上万个请求发送到服务端，此时JVM的内存会被占用很多</li>
-<li>线程切换的成本很高，甚至比线程本身的业务逻辑花的时间还要多</li>
-<li>线程创建和销毁成本也相对较高</li>
-</ul>
-<p>客户端个数/IO线程数 = 1:1</p>
-<h2 id="NIO（非阻塞IO）"><a href="#NIO（非阻塞IO）" class="headerlink" title="NIO（非阻塞IO）"></a>NIO（非阻塞IO）</h2><p>同步非阻塞：数据从内核到用户空间的复制在进程内且调用recvfrom后无需等待<br>nginx使用的就是NIO用来接收数以千万计的客户端请求，之后再分发到不同的服务端<br>tomcat容器之前采用bio，现在已经改为nio<br>客户端个数/IO线程数 = M:1</p>
-<h2 id="AIO（异步IO）"><a href="#AIO（异步IO）" class="headerlink" title="AIO（异步IO）"></a>AIO（异步IO）</h2><p>异步非阻塞：数据从内核到用户空间的复制不在进程内且当前进程根本无须调用recvfrom也就无须等待<br>客户端个数/IO线程数 = M:0</p>
+        <p>今天看到一个词，『锁降级』，于是就Google了下，然后顺带着把之前没搞懂的一个知识点搞清楚了，在这里记录下。<br><a id="more"></a><br>先上例子（不得不说，官方的例子真是简洁优雅没任何废话）<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">CachedData</span> </span>&#123;</span><br><span class="line">   Object data;</span><br><span class="line">   <span class="keyword">volatile</span> <span class="keyword">boolean</span> cacheValid;</span><br><span class="line">   <span class="keyword">final</span> ReentrantReadWriteLock rwl = <span class="keyword">new</span> ReentrantReadWriteLock();</span><br><span class="line"></span><br><span class="line">   <span class="function"><span class="keyword">void</span> <span class="title">processCachedData</span><span class="params">()</span> </span>&#123;</span><br><span class="line">     rwl.readLock().lock();</span><br><span class="line">     <span class="keyword">if</span> (!cacheValid) &#123;</span><br><span class="line">        <span class="comment">// Must release read lock before acquiring write lock</span></span><br><span class="line">        rwl.readLock().unlock();</span><br><span class="line">        rwl.writeLock().lock();</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">          <span class="comment">// Recheck state because another thread might have</span></span><br><span class="line">          <span class="comment">// acquired write lock and changed state before we did.</span></span><br><span class="line">          <span class="keyword">if</span> (!cacheValid) &#123;</span><br><span class="line">            data = ...</span><br><span class="line">            cacheValid = <span class="keyword">true</span>;</span><br><span class="line">          &#125;</span><br><span class="line">          <span class="comment">// Downgrade by acquiring read lock before releasing write lock</span></span><br><span class="line">          rwl.readLock().lock();</span><br><span class="line">        &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">          rwl.writeLock().unlock(); <span class="comment">// Unlock write, still hold read</span></span><br><span class="line">        &#125;</span><br><span class="line">     &#125;</span><br><span class="line"></span><br><span class="line">     <span class="keyword">try</span> &#123;</span><br><span class="line">       use(data);</span><br><span class="line">     &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">       rwl.readLock().unlock();</span><br><span class="line">     &#125;</span><br><span class="line">   &#125;</span><br><span class="line"> &#125;</span><br></pre></td></tr></table></figure></p>
+<p>几个值得注意的点<br>1）当存在读锁时，获取写锁的线程会被阻塞（防止读的时候数据被修改）<br>2）读锁是共享锁，所以当存在读锁时，获取读锁的线程不会被阻塞（极大提升了系统吞吐量）<br>3）锁降级的目的，保证了一个『原子性』，写-读原子性（如果先放弃写锁再获取读锁，可能会被其他线程抢占写锁导致数据变更）</p>
 
       
     </div>
@@ -425,7 +351,7 @@
       
         <div class="post-tags">
           
-            <a href="/tags/I-O/" rel="tag"># I/O</a>
+            <a href="/tags/多线程/" rel="tag"># 多线程</a>
           
         </div>
       
@@ -438,8 +364,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2018/05/25/zk-apply/" rel="next" title="Zookeeper应用场景">
-                <i class="fa fa-chevron-left"></i> Zookeeper应用场景
+              <a href="/2018/09/27/HashWheel/" rel="next" title="HashWheel">
+                <i class="fa fa-chevron-left"></i> HashWheel
               </a>
             
           </div>
@@ -447,10 +373,6 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2018/06/02/dark-time/" rel="prev" title="读书笔记-暗时间">
-                读书笔记-暗时间 <i class="fa fa-chevron-right"></i>
-              </a>
             
           </div>
         </div>
@@ -502,17 +424,8 @@
       
 
       
-        <ul class="sidebar-nav motion-element">
-          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
-            文章目录
-          </li>
-          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
-            站点概览
-          </li>
-        </ul>
-      
 
-      <section class="site-overview-wrap sidebar-panel">
+      <section class="site-overview-wrap sidebar-panel sidebar-panel-active">
         <div class="site-overview">
           <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
             
@@ -572,22 +485,6 @@
         </div>
       </section>
 
-      
-      <!--noindex-->
-        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
-          <div class="post-toc">
-
-            
-              
-            
-
-            
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#I-O的三种方式"><span class="nav-number">1.</span> <span class="nav-text">I/O的三种方式</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#UNIX的5种I-O模型"><span class="nav-number">2.</span> <span class="nav-text">UNIX的5种I/O模型</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#同步VS异步"><span class="nav-number">3.</span> <span class="nav-text">同步VS异步</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#阻塞VS非阻塞"><span class="nav-number">4.</span> <span class="nav-text">阻塞VS非阻塞</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#JAVA中常用的三种IO"><span class="nav-number">5.</span> <span class="nav-text">JAVA中常用的三种IO</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#BIO（阻塞IO）"><span class="nav-number">5.1.</span> <span class="nav-text">BIO（阻塞IO）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#NIO（非阻塞IO）"><span class="nav-number">5.2.</span> <span class="nav-text">NIO（非阻塞IO）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#AIO（异步IO）"><span class="nav-number">5.3.</span> <span class="nav-text">AIO（异步IO）</span></a></li></ol></li></ol></div>
-            
-
-          </div>
-        </section>
-      <!--/noindex-->
       
 
       

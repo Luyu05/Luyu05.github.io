@@ -89,7 +89,7 @@
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="http://yoursite.com/2018/08/20/JVM-1/001.png">
 <meta property="og:image" content="http://yoursite.com/2018/08/20/JVM-1/JVM-2.png">
-<meta property="og:updated_time" content="2018-09-18T10:32:31.000Z">
+<meta property="og:updated_time" content="2018-09-26T06:06:39.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="JVM">
 <meta name="twitter:description" content="Outline0.最近在看《深入理解JVM》对全书做了一个思维导图，也方便以后的回顾（提纲挈领嘛），看不清楚的小伙伴可以download到本地，图片还是很清晰的1.读书过程中的一些想法与体会也顺带记录了下，欢迎大家批评指正">
@@ -357,6 +357,65 @@
 <p>1）final修饰的a，它的值4也在常量池，4就是所谓的字面量<br>2）字符串常量”123”也在常量池，”123”也是所谓的字面量<br>3）基本上类中出现的符号都会在常量池中，比如n、c、a、mstring、d也都在常量池中<br>4）除此之外还有域的类型，方法的返回值类型、入参类型、入参名字<br>5）方法内部的”string”并不在常量池中<br>6）我们可以理解为类（父类信息）、域（修饰符等）、方法（修饰符等）的实际信息都存放在方法区中，而那些符号和字面量存在常量池。<br><code>终于搞懂了字面量和符号引用的意思，实践是检验整理的唯一标准，古人诚不欺我</code></p>
 <h3 id="再来宏观看下jvm运行时的数据区"><a href="#再来宏观看下jvm运行时的数据区" class="headerlink" title="再来宏观看下jvm运行时的数据区"></a><font color="red" size="5">再来宏观看下jvm运行时的数据区</font></h3><p><img src="/2018/08/20/JVM-1/001.png"><br>重点关注方法区（jdk8改为metaspace），包括<br>1）运行时常量池(Runtime Constant Pool)，包括class文件中的常量池和运行时的string.intern()<br>2）类信息(Class &amp; Field &amp; Method data)<br>3）即时编译器编译后的代码(Code)等等</p>
 <h3 id="什么是动态连接"><a href="#什么是动态连接" class="headerlink" title="什么是动态连接"></a><font color="red" size="5">什么是动态连接</font></h3><p>如何理解动态连接？我们知道Class文件的常量池中存有大量的符号引用，在加载过程中会被原样的拷贝到内存里先放着，到真正使用的时候就会被解析为直接引用 (直接引用包含：直接指向目标的指针、相对偏移量、能间接定位到目标的句柄等)。有些符号引用会在类的加载阶段或者第一次使用的时候转化为直接引用，这种转化称为静态解析(private/final)，而有的将在运行期间转化为直接引用，这部分称为动态连接(多态)。</p>
+<h3 id="常用的垃圾收集器"><a href="#常用的垃圾收集器" class="headerlink" title="常用的垃圾收集器"></a><font color="red" size="5">常用的垃圾收集器</font></h3><table>
+<thead>
+<tr>
+<th>适用周期</th>
+<th>名称</th>
+<th>算法</th>
+<th>特征描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>新生代</td>
+<td><font color="red">Serial</font></td>
+<td>复制</td>
+<td>1.垃圾收集时STW<br><br>2.只有一个活跃的线程去进行GC<br><br>3.可以和老年代的CMS一起使用</td>
+</tr>
+<tr>
+<td>新生代</td>
+<td><font color="red">ParNew</font></td>
+<td>复制</td>
+<td>1.Serial的多线程版本<br><br>2.垃圾收集时STW<br><br>3.多个活跃的线程进行GC<br><br>4.可以和老年代的CMS一起使用</td>
+</tr>
+<tr>
+<td>新生代</td>
+<td><font color="red">Parallel Scavenge</font></td>
+<td>复制</td>
+<td>1.多个活跃的线程进行GC<br><br>2.吞吐量=运行用户代码时间/（用户代码时间+GC时间），关注点比较奇特是吞吐量，而不是用户线程的停顿时间<br><br>3.停顿时间短用户体验较好，而吞吐量高可以最高效率利用CPU时间，适合在后台运算而不许太多交互的任务<br><br>4.STW</td>
+</tr>
+<tr>
+<td>老年代</td>
+<td><font color="red">Serial Old</font></td>
+<td>标记-整理</td>
+<td>1.Serial老年代版本<br><br>2.只有一个活跃的线程去进行GC<br><br>3.垃圾收集时STW</td>
+</tr>
+<tr>
+<td>老年代</td>
+<td><font color="red">Parallel Old</font></td>
+<td>标记-整理</td>
+<td>1.Parallel Scavenge老年代版本<br><br>2.多个活跃的线程进行GC<br><br>3.与Parallel Scavenge一起形成了吞吐量优先的闭环<br><br>4.STW</td>
+</tr>
+<tr>
+<td>老年代</td>
+<td><font color="red">CMS(Concurrent Mark Sweep)</font></td>
+<td>标记-清除</td>
+<td>1.以获取最短回收停顿时间为目标<br><br>2.分为四个步骤，初始标记（STW耗时较短）、并发标记（并发标记和用户线程并行，耗时较长）、重新标记（STW耗时较短）、并发清除（并发清除和用户线程并行，耗时较长）<br><br>3.耗时较长的过程用户线程都能工作，所以用户体验较好<br><br>4.缺点：CPU敏感，可能很多CPU用来处理GC；无法处理浮动垃圾（清理过程，工作线程产生的垃圾）；标记清除算法的缺点—-空间碎片</td>
+</tr>
+<tr>
+<td>老年代</td>
+<td><font color="red">G1</font></td>
+<td>标记-整理</td>
+<td>1.非常精确地控制停顿，指定xx毫秒停顿xx毫秒<br><br>2.极力避免全区域垃圾收集，将堆划分为多个独立区域，优先回收垃圾最多的区域（G1=Garbage First）</td>
+</tr>
+</tbody>
+</table>
+<h3 id="GC触发条件"><a href="#GC触发条件" class="headerlink" title="GC触发条件"></a><font color="red" size="5">GC触发条件</font></h3><p>Minor GC：当Eden区满的时候，就会执行Minor GC<br>Full GC：<br>1）大对象直接进入老年代，如果此时老年代空间不够那么执行Full GC<br>2）调用System.gc时，系统建议执行Full GC，但是不必然执行<br>3）执行了jmap -histo:live pid命令 //这个会立即触发fullgc<br>4）在执行minor gc的时候进行的一系列检查<br>如果开启空间担保机制，则JVM会检查老年代中最大连续可用空间是否大于了历次晋升到老年代中的平均大小，如果小于则执行改为执行Full GC。<br>5）由Eden区、From Space区向To Space区复制时，对象大小大于To Space可用内存，则把该对象转存到老年代（空间担保机制），且老年代的可用内存小于该对象大小</p>
+<h3 id="Eden-From-To"><a href="#Eden-From-To" class="headerlink" title="Eden/From/To"></a><font color="red" size="5">Eden/From/To</font></h3><p><code>From和To是动态的</code><br>在GC开始的时候，对象只会存在于Eden区和名为“From”的Survivor区，Survivor区“To”是空的。紧接着进行GC，Eden区中所有存活的对象都会被复制到“To”，而在“From”区中，仍存活的对象会根据他们的年龄值来决定去向。年龄达到一定值(年龄阈值，可以通过-XX:MaxTenuringThreshold来设置)的对象会被移动到年老代中，没有达到阈值的对象会被复制到“To”区域。经过这次GC后，Eden区和From区已经被清空。这个时候，“From”和“To”会交换他们的角色，也就是新的“To”就是上次GC前的“From”，新的“From”就是上次GC前的“To”。不管怎样，都会保证名为To的Survivor区域是空的。Minor GC会一直重复这样的过程，直到“To”区被填满，“To”区被填满之后，会将所有对象移动到年老代中。</p>
+<h3 id="代码的执行顺序"><a href="#代码的执行顺序" class="headerlink" title="代码的执行顺序"></a><font color="red" size="5">代码的执行顺序</font></h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.Test;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Created by luyu on 2018/9/26.</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">OrderTest</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> c = init2();</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">int</span> <span class="title">init2</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">"father static final variable"</span>);</span><br><span class="line">        <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">int</span> d = init3();</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">int</span> <span class="title">init3</span><span class="params">()</span></span>&#123;</span><br><span class="line">        System.out.println(<span class="string">"father normal variable"</span>);</span><br><span class="line">        <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">static</span> <span class="keyword">int</span> a = init();</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">int</span> <span class="title">init</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">"father static variable"</span>);</span><br><span class="line">        <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">static</span> &#123;</span><br><span class="line">        System.out.println(<span class="string">"father static &#123;&#125;"</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">final</span> <span class="keyword">int</span> b = init1();</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">int</span> <span class="title">init1</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">"father final variable"</span>);</span><br><span class="line">        <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">OrderTest</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">"father constructor"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">OrderTestSon</span> <span class="keyword">extends</span> <span class="title">OrderTest</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> c = init2();</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">int</span> <span class="title">init2</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">"son staic final variable"</span>);</span><br><span class="line">        <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">static</span> &#123;</span><br><span class="line">        System.out.println(<span class="string">"son static &#123;&#125;"</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">static</span> <span class="keyword">int</span> a = init();</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">int</span> <span class="title">init</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">"son static variable"</span>);</span><br><span class="line">        <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">final</span> <span class="keyword">int</span> b = init1();</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">int</span> <span class="title">init1</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">"son final variable"</span>);</span><br><span class="line">        <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">int</span> d = init3();</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">int</span> <span class="title">init3</span><span class="params">()</span></span>&#123;</span><br><span class="line">        System.out.println(<span class="string">"son normal variable"</span>);</span><br><span class="line">        <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">OrderTestSon</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">"son constructor"</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">new</span> OrderTestSon();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>输出结果：<br>father static final variable<br>father static variable<br>father static {}<br>son staic final variable<br>son static {}<br>son static variable<br>father normal variable<br>father final variable<br>father constructor<br>son final variable<br>son normal variable<br>son constructor</p>
+<p>代码执行顺序为：父类clinit方法（包括类变量的赋值+静态代码块）、子类clinit方法、父类普通成员初始化（普通代码块）、父类构造函数、子类普通成员初始化（普通代码块）、子类构造函数<br>注意点：final static修饰的变量会优先赋值，前提是”=”右侧是常量，如果通过方法赋值那么就是普通的clinit</p>
 <h3 id="《深入理解JVM》思维导图"><a href="#《深入理解JVM》思维导图" class="headerlink" title="《深入理解JVM》思维导图"></a><font color="red" size="5">《深入理解JVM》思维导图</font></h3><p><img src="/2018/08/20/JVM-1/JVM-2.png"></p>
 
       
@@ -477,7 +536,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">37</span>
+                  <span class="site-state-item-count">40</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -488,7 +547,7 @@
               
               <div class="site-state-item site-state-categories">
                 <a href="/categories/index.html">
-                  <span class="site-state-item-count">11</span>
+                  <span class="site-state-item-count">12</span>
                   <span class="site-state-item-name">分类</span>
                 </a>
               </div>
@@ -499,7 +558,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">12</span>
+                  <span class="site-state-item-count">13</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
@@ -532,7 +591,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#一个-java到真正执行都经历了什么？"><span class="nav-number">1.</span> <span class="nav-text">一个*.java到真正执行都经历了什么？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#内存回收实战"><span class="nav-number">2.</span> <span class="nav-text">内存回收实战</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#结合例子来看-class文件的常量池"><span class="nav-number">3.</span> <span class="nav-text">结合例子来看.class文件的常量池</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#再来宏观看下jvm运行时的数据区"><span class="nav-number">4.</span> <span class="nav-text">再来宏观看下jvm运行时的数据区</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#什么是动态连接"><span class="nav-number">5.</span> <span class="nav-text">什么是动态连接</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#《深入理解JVM》思维导图"><span class="nav-number">6.</span> <span class="nav-text">《深入理解JVM》思维导图</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#一个-java到真正执行都经历了什么？"><span class="nav-number">1.</span> <span class="nav-text">一个*.java到真正执行都经历了什么？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#内存回收实战"><span class="nav-number">2.</span> <span class="nav-text">内存回收实战</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#结合例子来看-class文件的常量池"><span class="nav-number">3.</span> <span class="nav-text">结合例子来看.class文件的常量池</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#再来宏观看下jvm运行时的数据区"><span class="nav-number">4.</span> <span class="nav-text">再来宏观看下jvm运行时的数据区</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#什么是动态连接"><span class="nav-number">5.</span> <span class="nav-text">什么是动态连接</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#常用的垃圾收集器"><span class="nav-number">6.</span> <span class="nav-text">常用的垃圾收集器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#GC触发条件"><span class="nav-number">7.</span> <span class="nav-text">GC触发条件</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Eden-From-To"><span class="nav-number">8.</span> <span class="nav-text">Eden/From/To</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#代码的执行顺序"><span class="nav-number">9.</span> <span class="nav-text">代码的执行顺序</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#《深入理解JVM》思维导图"><span class="nav-number">10.</span> <span class="nav-text">《深入理解JVM》思维导图</span></a></li></ol></div>
             
 
           </div>

@@ -87,7 +87,7 @@
 <meta property="og:site_name" content="Luyu&#39;s Blog">
 <meta property="og:description" content="Outline讨论了几种解决top-k问题的方法">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2018-09-26T11:45:44.000Z">
+<meta property="og:updated_time" content="2018-09-28T02:16:44.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Top-K">
 <meta name="twitter:description" content="Outline讨论了几种解决top-k问题的方法">
@@ -334,6 +334,7 @@
       
         <p>Outline<br>讨论了几种解决top-k问题的方法<br><a id="more"></a><br>前言：<br>之前觉着一旦掌握了某些通性通法就不用去单独刷什么算法题，殊不知很多最优秀的解题思路单凭自己闭门造车是很难相出来的，所以还是要去多刷题（和高三一样），刷题-思考-答案-消化-思考-提升<br>题目：<br>int[] arr = new int[] {5,3,7,1,8,2,9,4,7,2,6,6}，从中找出top5的数字</p>
 <h3 id="排序解决"><a href="#排序解决" class="headerlink" title="排序解决"></a><font color="red" size="5">排序解决</font></h3><p>利用排序算法，比如快排，对arr进行排序，之后找到前5的数字。<br>这种方法是最先想到的方法，时间复杂度为O(N*logN)<br>伪代码:<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">quickSort(arr);</span><br><span class="line"><span class="keyword">return</span> arr[<span class="number">0</span>,<span class="number">4</span>];</span><br></pre></td></tr></table></figure></p>
+<p>时间复杂度O(NlogN)</p>
 <h3 id="初级排序解决"><a href="#初级排序解决" class="headerlink" title="初级排序解决"></a><font color="red" size="5">初级排序解决</font></h3><p>再次审题，我们只需要top5的数字，无须对所有数组中的元素进行排序，所以可以使用初级排序算法，比如冒泡排序、选择排序<br>伪代码：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">0</span>;i&lt;<span class="number">4</span>;i++)&#123;</span><br><span class="line">    findMaxAndSwap(arr);</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">return</span> arr[<span class="number">0</span>,<span class="number">4</span>];</span><br></pre></td></tr></table></figure></p>
 <p>时间复杂度O(k*N)</p>
 <h3 id="堆排序解决"><a href="#堆排序解决" class="headerlink" title="堆排序解决"></a><font color="red" size="5">堆排序解决</font></h3><p>数组堆解决这个问题，先令arr的前5个元素堆有序，解析来遍历后面的元素，如果大于堆中的最小值（根节点）进行swap，之后再使堆变得有序<br>伪代码<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">heap[<span class="number">4</span>] = make_heap(arr[<span class="number">0</span>, <span class="number">4</span>]);</span><br><span class="line"><span class="keyword">for</span>(i=<span class="number">5</span> to n)&#123;</span><br><span class="line">        <span class="keyword">if</span>(arr[i] &gt; arr[<span class="number">0</span>]) &#123;</span><br><span class="line">            swap(arr,<span class="number">0</span>,i);</span><br><span class="line">            adjust_heap(heep[<span class="number">4</span>]);</span><br><span class="line">        &#125; </span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">return</span> heap[<span class="number">4</span>];</span><br></pre></td></tr></table></figure></p>
@@ -460,7 +461,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">40</span>
+                  <span class="site-state-item-count">41</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -482,7 +483,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">13</span>
+                  <span class="site-state-item-count">14</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>

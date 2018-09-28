@@ -1,0 +1,749 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="好文收集," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="Outline1.使用场景2.如何保证消息可靠到达3.如何保证幂等4.如何削峰填谷">
+<meta name="keywords" content="好文收集">
+<meta property="og:type" content="article">
+<meta property="og:title" content="MQ-入门">
+<meta property="og:url" content="http://yoursite.com/2018/09/27/MQ/index.html">
+<meta property="og:site_name" content="Luyu&#39;s Blog">
+<meta property="og:description" content="Outline1.使用场景2.如何保证消息可靠到达3.如何保证幂等4.如何削峰填谷">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://yoursite.com/2018/09/27/MQ/001.jpg">
+<meta property="og:image" content="http://yoursite.com/2018/09/27/MQ/001.jpg">
+<meta property="og:updated_time" content="2018-09-28T01:40:31.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="MQ-入门">
+<meta name="twitter:description" content="Outline1.使用场景2.如何保证消息可靠到达3.如何保证幂等4.如何削峰填谷">
+<meta name="twitter:image" content="http://yoursite.com/2018/09/27/MQ/001.jpg">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2018/09/27/MQ/"/>
+
+
+
+
+
+  <title>MQ-入门 | Luyu's Blog</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Luyu's Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/09/27/MQ/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Luyu">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Luyu's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">MQ-入门</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-09-27T20:23:58+08:00">
+                2018-09-27
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Java中间件/" itemprop="url" rel="index">
+                    <span itemprop="name">Java中间件</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>Outline<br>1.使用场景<br>2.如何保证消息可靠到达<br>3.如何保证幂等<br>4.如何削峰填谷</p>
+<a id="more"></a>
+<h2 id="使用场景"><a href="#使用场景" class="headerlink" title="使用场景"></a><font color="green">使用场景</font></h2><p><code>不适用的场景：</code><br>1）调用方实时依赖结果的业务场景</p>
+<p><code>适用的场景：</code><br>1）有执行顺序的job，可以通过cron执行第一个job，当第一个job执行成功后通过mq通知第二个job，依次类推<br>2）上游不关心执行结果，以预约场景为例，用户预约成功后对于后续的一些处理过程（比如发送消息通知商户等）并不关心，这种情况很适合采用mq和预约行为代码解耦。而且当需要增加一些其他后处理行为的时候，不需要修改上游代码。</p>
+<h2 id="MQ核心架构"><a href="#MQ核心架构" class="headerlink" title="MQ核心架构"></a><font color="green">MQ核心架构</font></h2><p><code>发送方：</code><br>1）业务调用方<br>2）MQ-client-sender（核心api：sendMsg(),sendCallback()）</p>
+<p><code>MQ集群：</code><br>1）MQ-server<br>2）zk<br>3）db<br>4）管理后台web</p>
+<p><code>接收方：</code><br>1）业务接收方<br>2）MQ-client-reciever（核心api：revcCallback(),sendAck()）</p>
+<h2 id="MQ运转流程"><a href="#MQ运转流程" class="headerlink" title="MQ运转流程"></a><font color="green">MQ运转流程</font></h2><p><img src="/2018/09/27/MQ/001.jpg"><br><code>MQ消息投递上半场，MQ-client-sender到MQ-server流程见上图：</code></p>
+<p>（1）MQ-client将消息发送给MQ-server（此时业务方调用的是API：SendMsg）</p>
+<p>（2）MQ-server将消息落地，落地后即为发送成功</p>
+<p>（3）MQ-server将应答发送给MQ-client（此时回调业务方是API：SendCallback）</p>
+<p><code>MQ消息投递下半场，MQ-server到MQ-client-receiver流程见上图4-6：</code></p>
+<p>（4）MQ-server将消息发送给MQ-client（此时回调业务方是API：RecvCallback）</p>
+<p>（5）MQ-client回复应答给MQ-server（此时业务方主动调用API：SendAck）</p>
+<p>（6）MQ-server收到ack，将之前已经落地的消息删除，完成消息的可靠投递</p>
+<h2 id="如何保证消息可靠到达"><a href="#如何保证消息可靠到达" class="headerlink" title="如何保证消息可靠到达"></a><font color="green">如何保证消息可靠到达</font></h2><h3 id="机制"><a href="#机制" class="headerlink" title="机制"></a>机制</h3><p>1）消息落地<br>2）消息超时重传、消息确认</p>
+<h3 id="具体措施"><a href="#具体措施" class="headerlink" title="具体措施"></a>具体措施</h3><p><code>上半场的超时与重传</code></p>
+<p>MQ上半场的1或者2或者3如果丢失或者超时，MQ-client-sender内的timer会重发消息，直到期望收到3，如果重传N次后还未收到，则SendCallback回调发送失败，需要注意的是，这个过程中MQ-server可能会收到同一条消息的多次重发。</p>
+<p><code>下半场的超时与重传</code></p>
+<p>MQ下半场的4或者5或者6如果丢失或者超时，MQ-server内的timer会重发消息，直到收到5并且成功执行6，这个过程可能会重发很多次消息，一般采用指数退避的策略，先隔x秒重发，2x秒重发，4x秒重发，以此类推，需要注意的是，这个过程中MQ-client-receiver也可能会收到同一条消息的多次重发。</p>
+<h2 id="如何保证幂等"><a href="#如何保证幂等" class="headerlink" title="如何保证幂等"></a><font color="green">如何保证幂等</font></h2><p><img src="/2018/09/27/MQ/001.jpg"></p>
+<h3 id="上半场幂等的设计"><a href="#上半场幂等的设计" class="headerlink" title="上半场幂等的设计"></a>上半场幂等的设计</h3><p>此时重发是MQ-client发起的，消息的处理是MQ-server，为了避免步骤2落地重复的消息，对每条消息，MQ系统内部必须生成一个inner-msg-id，作为去重和幂等的依据，这个内部消息ID的特性是：</p>
+<p>（1）全局唯一</p>
+<p>（2）MQ生成，具备业务无关性，对消息发送方和消息接收方屏蔽</p>
+<p>Ps：上半场的幂等不涉及到调用方的工作，主要保证不会落地重复</p>
+<h3 id="下半场幂等的设计"><a href="#下半场幂等的设计" class="headerlink" title="下半场幂等的设计"></a>下半场幂等的设计</h3><p>此时重发是MQ-server发起的，消息的处理是消息消费业务方，消息重发势必导致业务方重复消费（上例中的一次付款，重复扣减库存），为了保证业务幂等性，业务消息体中，必须有一个biz-id，作为去重和幂等的依据，这个业务ID的特性是：</p>
+<p>（1）对于同一个业务场景，全局唯一</p>
+<p>（2）由业务消息发送方生成，业务相关，对MQ透明</p>
+<p>（3）由业务消息消费方负责判重，以保证幂等</p>
+<p>比如，代码中对biz-id进行判断，如果处理过了直接return，以保证幂等</p>
+<p>Ps：下半场的幂等涉及到消费方的业务逻辑的改动</p>
+<h2 id="MQ削峰填谷"><a href="#MQ削峰填谷" class="headerlink" title="MQ削峰填谷"></a><font color="green">MQ削峰填谷</font></h2><p>传统的rpc框架，服务提供方会有限流以及鉴权措施<br>对于通过mq传递引用的场景，如何防止流量过大造成下游服务雪崩？</p>
+<p>1）原来，MQ-client-reciver除了推送模式，还有一种拉模式，reciver每隔一定时间从server拉取一定的消息，以实现流量控制，保护自身。这个是MQ提供的通用功能，无须上下游修改代码。</p>
+<p>2）于此同时，对于批量拉取的消息，消费放最好能够做到批量消费，这需要对原有的1对1的代码进行修改，以实现批量处理</p>
+<p>原文链接：<a href="https://mp.weixin.qq.com/s/CIPosICgva9haqstMDIHag" target="_blank" rel="noopener">https://mp.weixin.qq.com/s/CIPosICgva9haqstMDIHag</a></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/好文收集/" rel="tag"># 好文收集</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/09/27/ReentrantReadWriteLock/" rel="next" title="读写锁">
+                <i class="fa fa-chevron-left"></i> 读写锁
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">Luyu</p>
+              <p class="site-description motion-element" itemprop="description">知识广度是深度的副产品</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">41</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">12</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">14</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#使用场景"><span class="nav-number">1.</span> <span class="nav-text">使用场景</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#MQ核心架构"><span class="nav-number">2.</span> <span class="nav-text">MQ核心架构</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#MQ运转流程"><span class="nav-number">3.</span> <span class="nav-text">MQ运转流程</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#如何保证消息可靠到达"><span class="nav-number">4.</span> <span class="nav-text">如何保证消息可靠到达</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#机制"><span class="nav-number">4.1.</span> <span class="nav-text">机制</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#具体措施"><span class="nav-number">4.2.</span> <span class="nav-text">具体措施</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#如何保证幂等"><span class="nav-number">5.</span> <span class="nav-text">如何保证幂等</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#上半场幂等的设计"><span class="nav-number">5.1.</span> <span class="nav-text">上半场幂等的设计</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#下半场幂等的设计"><span class="nav-number">5.2.</span> <span class="nav-text">下半场幂等的设计</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#MQ削峰填谷"><span class="nav-number">6.</span> <span class="nav-text">MQ削峰填谷</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Luyu</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Mist</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

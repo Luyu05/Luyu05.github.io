@@ -88,7 +88,7 @@
 <meta property="og:description" content="可以把整个IO分为两个阶段  等待数据到达 从内核拷贝数据到用户空间">
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="http://yoursite.com/2018/05/29/BIO-NIO-AIO/nio2.jpg">
-<meta property="og:updated_time" content="2018-08-06T06:48:58.000Z">
+<meta property="og:updated_time" content="2018-09-30T04:52:06.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="JAVA中的I&#x2F;O">
 <meta name="twitter:description" content="可以把整个IO分为两个阶段  等待数据到达 从内核拷贝数据到用户空间">
@@ -397,7 +397,7 @@
 <li><strong>信号驱动I/O</strong><br>  通过系统调用sigaction执行一个信号处理函数（此系统调用立即返回，进程继续工作，它是非阻塞的）；当数据准备就绪后，为该进程生成一个SIGIO信号，通知应用程序调用recvfrom读取数据（此时仍然需要进程自身去调用recvfrom）</li>
 <li><strong>异步I/O</strong><br>  告知内核启动某个操作，并让内核在整个操作完成后通知我们（包括将数据从内核复制到用户空间）<br>  Ps异步I/O模型由内核通知我们I/O操作何时已经完成。而信号驱动I/O由内核告诉我们合适可以在进程内执行一个I/O操作</li>
 </ul>
-<h1 id="同步VS异步"><a href="#同步VS异步" class="headerlink" title="同步VS异步"></a>同步VS异步</h1><p>数据从内核到用户空间的复制是否需要当前进程参与</p>
+<h1 id="同步VS异步"><a href="#同步VS异步" class="headerlink" title="同步VS异步"></a>同步VS异步</h1><p>数据从内核到用户空间的复制是否需要当前进程参与，换句话讲read的逻辑代码是否在当前进程执行~</p>
 <h1 id="阻塞VS非阻塞"><a href="#阻塞VS非阻塞" class="headerlink" title="阻塞VS非阻塞"></a>阻塞VS非阻塞</h1><p>调用revcfrom是否需要等待(以I/O复用为例，调用recvfrom时已经收到select的关于数据就绪的通知，此时无须等待所以是非阻塞的)</p>
 <h1 id="JAVA中常用的三种IO"><a href="#JAVA中常用的三种IO" class="headerlink" title="JAVA中常用的三种IO"></a>JAVA中常用的三种IO</h1><h2 id="BIO（阻塞IO）"><a href="#BIO（阻塞IO）" class="headerlink" title="BIO（阻塞IO）"></a>BIO（阻塞IO）</h2><p>同步阻塞：数据从内核到用户空间的复制在进程内且调用recvfrom后需要等待<br>传统的服务器使用的就是BIO，每当客户端过来一个请求便开启一个新的线程，这种方式最大的问题就是过度依赖于线程。而线程是相对昂贵的资源</p>
 <ul>

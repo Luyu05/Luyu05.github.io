@@ -87,7 +87,7 @@
 <meta property="og:site_name" content="Luyu&#39;s Blog">
 <meta property="og:description" content="Outline一、啥是SPI？二、啥是策略模式？三、SPI和策略模式有啥关系？">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2018-09-14T11:23:31.000Z">
+<meta property="og:updated_time" content="2018-10-08T03:44:03.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="spi机制与策略模式">
 <meta name="twitter:description" content="Outline一、啥是SPI？二、啥是策略模式？三、SPI和策略模式有啥关系？">
@@ -333,7 +333,7 @@
 
       
         <p>Outline<br>一、啥是SPI？<br>二、啥是策略模式？<br>三、SPI和策略模式有啥关系？<br><a id="more"></a></p>
-<h2 id="一、啥是SPI？"><a href="#一、啥是SPI？" class="headerlink" title="一、啥是SPI？"></a>一、啥是SPI？</h2><p>入职初期经常听大佬说SPI，也不知道是干啥的，最近终于有所领悟。<br>Java程序员应该对『面向接口』编程不陌生（如果陌生说明你对面向对象理解的还不够透彻），我们要说的SPI和面向接口编程是紧密关联的。</p>
+<h2 id="一、啥是SPI？"><a href="#一、啥是SPI？" class="headerlink" title="一、啥是SPI？"></a>一、啥是SPI？</h2><p>入职初期经常听大佬说SPI，也不知道是干啥的，最近终于有所领悟。<br>Java程序员应该对『面向接口』编程不陌生，我们要说的SPI和面向接口编程是紧密关联的。</p>
 <p>简单地讲，如果一个接口由<code>调用方</code>来定义，而接口的实现由<code>提供方</code>来实现，这个就是SPI。而如果接口的定义和实现都由<code>提供方</code>来完成，就是我们常说的API。<br>这样说可能还是比较抽象，不如来看一个例子。<br>src.zip/rt-jar内定义了一个接口Driver，在这个例子中src包扮演的角色是调用方<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">Driver</span> </span>&#123;</span><br><span class="line">    <span class="function">Connection <span class="title">connect</span><span class="params">(String url, java.util.Properties info)</span></span></span><br><span class="line"><span class="function">        <span class="keyword">throws</span> SQLException</span>;</span><br><span class="line">        ...省略</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
 <p>既然src定义了接口，那么他肯定要用啊，具体细节忽略我们只关心下面这行代码<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">DriverManager</span> </span>&#123; </span><br><span class="line">    ...</span><br><span class="line">     ServiceLoader&lt;Driver&gt; loadedDrivers = ServiceLoader.load(Driver.class);</span><br><span class="line">     ....</span><br><span class="line">      <span class="keyword">try</span>&#123;</span><br><span class="line">            <span class="keyword">while</span>(driversIterator.hasNext()) &#123;</span><br><span class="line">                driversIterator.next();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125; <span class="keyword">catch</span>(Throwable t) &#123;</span><br><span class="line">        <span class="comment">// Do nothing</span></span><br><span class="line">        &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
 <p>小结：<br></p>

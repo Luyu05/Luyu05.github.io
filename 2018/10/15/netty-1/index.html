@@ -68,7 +68,7 @@
 
 
 
-  <meta name="keywords" content="Hexo, NexT" />
+  <meta name="keywords" content="I/O," />
 
 
 
@@ -79,16 +79,18 @@
 
 
 
-<meta name="description" content="知识广度是深度的副产品">
-<meta property="og:type" content="website">
-<meta property="og:title" content="Luyu&#39;s Blog">
-<meta property="og:url" content="http://yoursite.com/categories/My-Wheel/index.html">
+<meta name="description" content="总有一天我会把netty彻底搞清楚和线程池一样">
+<meta name="keywords" content="I&#x2F;O">
+<meta property="og:type" content="article">
+<meta property="og:title" content="netty外层">
+<meta property="og:url" content="http://yoursite.com/2018/10/15/netty-1/index.html">
 <meta property="og:site_name" content="Luyu&#39;s Blog">
-<meta property="og:description" content="知识广度是深度的副产品">
+<meta property="og:description" content="总有一天我会把netty彻底搞清楚和线程池一样">
 <meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2018-10-15T14:12:11.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Luyu&#39;s Blog">
-<meta name="twitter:description" content="知识广度是深度的副产品">
+<meta name="twitter:title" content="netty外层">
+<meta name="twitter:description" content="总有一天我会把netty彻底搞清楚和线程池一样">
 
 
 
@@ -118,13 +120,13 @@
 
 
 
-  <link rel="canonical" href="http://yoursite.com/categories/My-Wheel/"/>
+  <link rel="canonical" href="http://yoursite.com/2018/10/15/netty-1/"/>
 
 
 
 
 
-  <title>分类: My Wheel | Luyu's Blog</title>
+  <title>netty外层 | Luyu's Blog</title>
   
 
 
@@ -143,7 +145,7 @@
     
   
 
-  <div class="container sidebar-position-left ">
+  <div class="container sidebar-position-left page-post-detail">
     <div class="headband"></div>
 
     <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
@@ -227,55 +229,172 @@
           <div id="content" class="content">
             
 
-  
-  
-  
-  <div class="post-block category">
+  <div id="posts" class="posts-expand">
+    
 
-    <div id="posts" class="posts-collapse">
-      <div class="collection-title">
-        <h1>My Wheel<small>分类</small>
-        </h1>
-      </div>
+  
 
-      
-        
+  
+  
+  
 
   <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/10/15/netty-1/">
 
-      <h2 class="post-title">
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Luyu">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Luyu's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
         
-            <a class="post-title-link" href="/2018/09/27/HashWheel/" itemprop="url">
-              
-                <span itemprop="name">HashWheel</span>
-              
-            </a>
         
-      </h2>
+          <h1 class="post-title" itemprop="name headline">netty外层</h1>
+        
 
-      <div class="post-meta">
-        <time class="post-time" itemprop="dateCreated"
-              datetime="2018-09-27T10:01:36+08:00"
-              content="2018-09-27" >
-          09-27
-        </time>
-      </div>
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-10-15T21:48:38+08:00">
+                2018-10-15
+              </time>
+            
 
-    </header>
-  </article>
+            
 
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/I-O/" itemprop="url" rel="index">
+                    <span itemprop="name">I/O</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>总有一天我会把netty彻底搞清楚和线程池一样<br><a id="more"></a></p>
+<h2 id="Reactor模型"><a href="#Reactor模型" class="headerlink" title="Reactor模型"></a>Reactor模型</h2><h3 id="单线程模型"><a href="#单线程模型" class="headerlink" title="单线程模型"></a>单线程模型</h3><p>指的是所有的io操作都在同一个nio线程上面完成，nio线程的职责如下<br>（1）接收客户端的TCP连接<br>（2）读取通信对端的请求或者应答<br>（3）向通信对端发送消息请求或者应答<br>这种模型，理论上可以处理所有的io相关操作。不过只适用于一些小容量的应用场景，对于高负载、大并发的应用不合适<br>（1）性能问题。一个nio线程处理成百上千个请求，性能无法支撑，哪怕CPU利用率100%<br>（2）可靠性问题。一旦nio线程意外进入死循环，那么会导致整个系统通信不可用</p>
+<h3 id="多线程模型"><a href="#多线程模型" class="headerlink" title="多线程模型"></a>多线程模型</h3><p>为了解决上述单线程模型的问题，引入了多线程模型。和单线程模型最大的区别是，有一组nio线程处理io操作。<br>（1）有一个专门的nio线程—-Acceptor线程用于监听服务端，接收客户端的tcp连接请求<br>（2）网络io操作—-读、写等由一个nio线程池负责，线程池负责消息的读取、编解码和发送<br>（3）一个nio线程可以同时处理n条链路，但是1个链路只对应1个nio线程，防止发生并发操作问题</p>
+<h3 id="主从模型"><a href="#主从模型" class="headerlink" title="主从模型"></a>主从模型</h3><p>大多数情况，多线程模型都能满足需求。但是在及其特殊的场景中，一个nio线程负责监听和处理所有的客户端连接可能还是会有问题。例如百万级别的客户端连接，单独一个Acceptor线程可能会存在性能不足问题。为此，引出Reactor多线程模型<br>（1）服务端用于接收客户端连接的不再是一个单独的nio线程，而是一个独立的nio线程池。<br>（2）Acceptor接收到客户端tcp连接请求处理完成后，将新创建的SocketChannel注册到io线程池（sub reactor线程池）的某个io线程上。由它负责socketChannel的读写和编码工作。<br>（3）Acceptor线程池只用于客户端的连接，一旦链路建立成功，就将链路注册到subReactor线程池的io线程上，由io线程负责后续的io操作。</p>
 
       
     </div>
+    
+    
+    
 
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/I-O/" rel="tag"># I/O</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/10/11/DP/" rel="next" title="DP">
+                <i class="fa fa-chevron-left"></i> DP
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
   </div>
   
   
   
+  </article>
 
-  
 
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
 
 
           </div>
@@ -283,6 +402,10 @@
 
 
           
+
+  
+
+
 
         </div>
         
@@ -303,8 +426,17 @@
       
 
       
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
 
-      <section class="site-overview-wrap sidebar-panel sidebar-panel-active">
+      <section class="site-overview-wrap sidebar-panel">
         <div class="site-overview">
           <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
             
@@ -364,6 +496,22 @@
         </div>
       </section>
 
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Reactor模型"><span class="nav-number">1.</span> <span class="nav-text">Reactor模型</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#单线程模型"><span class="nav-number">1.1.</span> <span class="nav-text">单线程模型</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#多线程模型"><span class="nav-number">1.2.</span> <span class="nav-text">多线程模型</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#主从模型"><span class="nav-number">1.3.</span> <span class="nav-text">主从模型</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
       
 
       
@@ -497,6 +645,10 @@
   
 
   
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
 
   
 

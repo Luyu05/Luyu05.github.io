@@ -87,7 +87,7 @@
 <meta property="og:site_name" content="Luyu&#39;s Blog">
 <meta property="og:description" content="总有一天我会把netty彻底搞清楚和线程池一样">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2018-10-15T14:12:11.000Z">
+<meta property="og:updated_time" content="2018-10-19T02:11:22.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="netty外层">
 <meta name="twitter:description" content="总有一天我会把netty彻底搞清楚和线程池一样">
@@ -333,6 +333,11 @@
 
       
         <p>总有一天我会把netty彻底搞清楚和线程池一样<br><a id="more"></a></p>
+<h2 id="ByteBuf"><a href="#ByteBuf" class="headerlink" title="ByteBuf"></a>ByteBuf</h2><h3 id="原生的缺点"><a href="#原生的缺点" class="headerlink" title="原生的缺点"></a>原生的缺点</h3><p>先说nio提供的ByteBuffer的缺点（结合例子）<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> ByteBuffer bb = ByteBuffer.allocate(<span class="number">1024</span>);</span><br><span class="line">SocketChannel sc = (SocketChannel)sk.channel();</span><br><span class="line">bb.clear();</span><br><span class="line"><span class="keyword">while</span> (sc.read(bb) &gt; <span class="number">0</span>)</span><br><span class="line">&#123;</span><br><span class="line">    bb.flip();</span><br><span class="line">    <span class="keyword">while</span> (bb.hasRemaining())</span><br><span class="line">&#123;</span><br><span class="line">        System.out.print((<span class="keyword">char</span>)bb.get());</span><br><span class="line">    &#125;</span><br><span class="line">    System.out.println();</span><br><span class="line">    bb.clear();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>（1）ByteBuffer长度固定，一旦分配完成容量不能动态扩展和收缩<br>（2）只有一个标识位置的指针position，读写的时候要手工调用flip()</p>
+<h3 id="ByteBuf的好处"><a href="#ByteBuf的好处" class="headerlink" title="ByteBuf的好处"></a>ByteBuf的好处</h3><p>（1）提供了readerIndex和writerIndex两个指针，写的时候writerIndex不断增加，读的时候readerIndex不断增加（但是不能超过writerIndex）<br>（2）屏蔽扩展细节，实现动态扩展<br>（3）discardReadBytes操作，将0-readerIndex范围的数据回收并续到capacity后面（目的是尽可能地重用缓冲区，但是因为改操作会发生字节数组的内存复制所以会影响性能）</p>
+<h2 id="Channel功能说明"><a href="#Channel功能说明" class="headerlink" title="Channel功能说明"></a>Channel功能说明</h2><p>（1）channel是netty网络操作抽象类，包括网络的读、写，客户端发起连接，主动关闭连接，获取通信双方的网络地址等。<br>（2）channel需要注册到EventLoop的多路复用器上，用于处理IO事件，通过channel的eventLoop方法可以获取注册的EventLoop<br>（3）EventLoop的本质就是处理网络读写事件的Reactor线程<br>（4）在netty中每个channel对应一个物理连接，每个连接都由自己的tcp参数配置（tcp缓冲区大小、tcp超时时间等），通过metadata()可以获取当前channel的tcp参数设置</p>
+<h2 id="ChannelPipeline和ChannelHandler"><a href="#ChannelPipeline和ChannelHandler" class="headerlink" title="ChannelPipeline和ChannelHandler"></a>ChannelPipeline和ChannelHandler</h2><p>（1）ChannelPipeline和ChannelHandler类似于Servlet和Filter，都是责任链模式的一种变形<br>（2）ChannelPipeline是Channel的数据管道的抽象，消息在ChannelPipeline中流动<br>（3）ChannelPipeline持有io事件拦截器ChannelHandler的链表，由ChannelHandler对IO事件进行拦截和处理，可以方便地新增和删除ChannelHandler<br>（4）这里关注下ChannelHandlerAdapter，因为ChannelHandler接口中的方法太多，所以如果自定义的handler直接继承该接口要实现很多用不到的方法，所以这里使用了适配器模式，简单地讲就是一个对接口中的方法进行了空实现的抽象类<br>（5）ChannelHandler用ChannelHandlerContext包裹着，有prev和next节点，可以获取前后ChannelHandler，read时从ChannelPipeline的head执行到tail，write时从tail执行到head，所以head既是read事件的起点也是write事件的终点，与io交互最紧密</p>
 <h2 id="Reactor模型"><a href="#Reactor模型" class="headerlink" title="Reactor模型"></a>Reactor模型</h2><h3 id="单线程模型"><a href="#单线程模型" class="headerlink" title="单线程模型"></a>单线程模型</h3><p>指的是所有的io操作都在同一个nio线程上面完成，nio线程的职责如下<br>（1）接收客户端的TCP连接<br>（2）读取通信对端的请求或者应答<br>（3）向通信对端发送消息请求或者应答<br>这种模型，理论上可以处理所有的io相关操作。不过只适用于一些小容量的应用场景，对于高负载、大并发的应用不合适<br>（1）性能问题。一个nio线程处理成百上千个请求，性能无法支撑，哪怕CPU利用率100%<br>（2）可靠性问题。一旦nio线程意外进入死循环，那么会导致整个系统通信不可用</p>
 <h3 id="多线程模型"><a href="#多线程模型" class="headerlink" title="多线程模型"></a>多线程模型</h3><p>为了解决上述单线程模型的问题，引入了多线程模型。和单线程模型最大的区别是，有一组nio线程处理io操作。<br>（1）有一个专门的nio线程—-Acceptor线程用于监听服务端，接收客户端的tcp连接请求<br>（2）网络io操作—-读、写等由一个nio线程池负责，线程池负责消息的读取、编解码和发送<br>（3）一个nio线程可以同时处理n条链路，但是1个链路只对应1个nio线程，防止发生并发操作问题</p>
 <h3 id="主从模型"><a href="#主从模型" class="headerlink" title="主从模型"></a>主从模型</h3><p>大多数情况，多线程模型都能满足需求。但是在及其特殊的场景中，一个nio线程负责监听和处理所有的客户端连接可能还是会有问题。例如百万级别的客户端连接，单独一个Acceptor线程可能会存在性能不足问题。为此，引出Reactor多线程模型<br>（1）服务端用于接收客户端连接的不再是一个单独的nio线程，而是一个独立的nio线程池。<br>（2）Acceptor接收到客户端tcp连接请求处理完成后，将新创建的SocketChannel注册到io线程池（sub reactor线程池）的某个io线程上。由它负责socketChannel的读写和编码工作。<br>（3）Acceptor线程池只用于客户端的连接，一旦链路建立成功，就将链路注册到subReactor线程池的io线程上，由io线程负责后续的io操作。</p>
@@ -375,6 +380,10 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/10/20/Netty-0/" rel="prev" title="Netty源码分析-Java原生NIO">
+                Netty源码分析-Java原生NIO <i class="fa fa-chevron-right"></i>
+              </a>
             
           </div>
         </div>
@@ -451,7 +460,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">44</span>
+                  <span class="site-state-item-count">46</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -462,7 +471,7 @@
               
               <div class="site-state-item site-state-categories">
                 <a href="/categories/index.html">
-                  <span class="site-state-item-count">12</span>
+                  <span class="site-state-item-count">13</span>
                   <span class="site-state-item-name">分类</span>
                 </a>
               </div>
@@ -473,7 +482,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">14</span>
+                  <span class="site-state-item-count">15</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
@@ -506,7 +515,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Reactor模型"><span class="nav-number">1.</span> <span class="nav-text">Reactor模型</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#单线程模型"><span class="nav-number">1.1.</span> <span class="nav-text">单线程模型</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#多线程模型"><span class="nav-number">1.2.</span> <span class="nav-text">多线程模型</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#主从模型"><span class="nav-number">1.3.</span> <span class="nav-text">主从模型</span></a></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#ByteBuf"><span class="nav-number">1.</span> <span class="nav-text">ByteBuf</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#原生的缺点"><span class="nav-number">1.1.</span> <span class="nav-text">原生的缺点</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ByteBuf的好处"><span class="nav-number">1.2.</span> <span class="nav-text">ByteBuf的好处</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Channel功能说明"><span class="nav-number">2.</span> <span class="nav-text">Channel功能说明</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#ChannelPipeline和ChannelHandler"><span class="nav-number">3.</span> <span class="nav-text">ChannelPipeline和ChannelHandler</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Reactor模型"><span class="nav-number">4.</span> <span class="nav-text">Reactor模型</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#单线程模型"><span class="nav-number">4.1.</span> <span class="nav-text">单线程模型</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#多线程模型"><span class="nav-number">4.2.</span> <span class="nav-text">多线程模型</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#主从模型"><span class="nav-number">4.3.</span> <span class="nav-text">主从模型</span></a></li></ol></li></ol></div>
             
 
           </div>

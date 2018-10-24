@@ -345,6 +345,7 @@
 <li><code>option</code>一般用来配置TCP参数</li>
 <li><code>childOption</code>用来配置父channel接收到的channel，本例子中父channel是NioServerSocketChannel</li>
 <li><code>ch.pipeline().addLast(new SimpleServerHandler())</code>这里使用了管道模式，将自定义的handler放到pipeline中当做『拦路虎』</li>
+<li><code>.handler</code>这里是father的handler，也就是bossGroup中channel使用的handler</li>
 <li><code>.childHandler</code>注意这里是child的handler，也就是workerGroup中的channel使用的handler</li>
 </ul>
 <p>上面代码在本地执行之后，最终控制台输出为（注意这时候还没有客户端仅仅是服务端启动就触发的事件）：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">handlerAdded</span><br><span class="line">channelRegistered</span><br><span class="line">channelActive</span><br></pre></td></tr></table></figure></p>

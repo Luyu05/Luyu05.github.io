@@ -87,7 +87,7 @@
 <meta property="og:site_name" content="Luyu&#39;s Blog">
 <meta property="og:description" content="上文介绍了服务端启动的过程，这篇文章介绍接收新连接的过程。">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2018-10-25T12:27:08.000Z">
+<meta property="og:updated_time" content="2018-10-25T13:13:37.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Netty源码分析(3)-新连接接入">
 <meta name="twitter:description" content="上文介绍了服务端启动的过程，这篇文章介绍接收新连接的过程。">
@@ -357,6 +357,7 @@
 <p>在register的过程中会执行很多用户定义的回调方法，比如invokeHandlerAddedIfNeeded()会调用pipeline上handler的handlerAdded方法，注意这个时候已经是childGroup中了，所以根据用户初始时候的输入<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">.childHandler(<span class="keyword">new</span> ChannelInitializer&lt;SocketChannel&gt;() &#123;</span><br><span class="line">            <span class="meta">@Override</span></span><br><span class="line">            <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">initChannel</span><span class="params">(SocketChannel ch)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;)</span><br></pre></td></tr></table></figure></p>
 <p>此时要执行ChannelInitializer的handlerAdded方法，而该方法会调用我们组装过程中定义的initChannel方法，这个方法调用完成后ChannelInitializer会将自己从pipeline中删除。</p>
 <p>小结：<br>1.new server channel<br>2.init server channel(3 steps)<br>    2.1 in the 3rd step add Acceptor to bossGroup pipeline as a handler<br>    Ps:Acceptor#channelRead init newChannel which just connects,and register it on childGroup<br>3.register server channel to bossGroup<br>    3.1 fireManyMethods such as invokeHandlerAddedIfNeeded,fireChannelRegistered<br>4.bind address to server channel<br>    4.1 bossGroup loop run(3 steps)<br>5.new connect come<br>6.bossGroup catch new channel and package it as a Netty Channel<br>7.fire server channel pipeline<br>8.run into Acceptor#channelRead and transfer new channel to childGroup</p>
+<p>按照自顶向下的顺序，接下来逐一去看：<br>（1）EventLoop<br>（2）Pipeline<br>（3）ByteBuf<br>（4）Netty编解码</p>
 
       
     </div>

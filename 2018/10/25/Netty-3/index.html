@@ -87,7 +87,7 @@
 <meta property="og:site_name" content="Luyu&#39;s Blog">
 <meta property="og:description" content="上文介绍了服务端启动的过程，这篇文章介绍接收新连接的过程。">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2018-10-26T01:46:24.000Z">
+<meta property="og:updated_time" content="2018-11-02T00:22:36.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Netty源码分析(3)-新连接接入">
 <meta name="twitter:description" content="上文介绍了服务端启动的过程，这篇文章介绍接收新连接的过程。">
@@ -358,6 +358,7 @@
 <p>此时要执行ChannelInitializer的handlerAdded方法，而该方法会调用我们组装过程中定义的initChannel方法，这个方法调用完成后ChannelInitializer会将自己从pipeline中删除。</p>
 <p>小结：<br>1.new server channel<br>2.init server channel(3 steps)<br>    2.1 in the 3rd step add Acceptor to bossGroup pipeline as a handler<br>    Ps:Acceptor#channelRead init newChannel which just connects,and register it on childGroup<br>3.register server channel to bossGroup<br>    3.1 fireManyMethods such as invokeHandlerAddedIfNeeded,fireChannelRegistered<br>4.bind address to server channel<br>    4.1 bossGroup loop run(3 steps)<br>5.new connect come<br>6.bossGroup catch new channel and package it as a Netty Channel<br>7.fire server channel pipeline<br>8.run into Acceptor#channelRead and transfer new channel to childGroup</p>
 <p>按照自顶向下的顺序，接下来逐一去看：<br>（1）EventLoop<br>（2）Pipeline<br>（3）ByteBuf<br>（4）Netty编解码</p>
+<p>参考链接：<br><a href="https://www.jianshu.com/p/0242b1d4dd21" target="_blank" rel="noopener">https://www.jianshu.com/p/0242b1d4dd21</a></p>
 
       
     </div>
@@ -477,7 +478,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">48</span>
+                  <span class="site-state-item-count">50</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>

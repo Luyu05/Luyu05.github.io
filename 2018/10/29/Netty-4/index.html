@@ -89,7 +89,7 @@
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="http://yoursite.com/2018/10/29/Netty-4/001.jpg">
 <meta property="og:image" content="http://yoursite.com/2018/10/29/Netty-4/002.jpg">
-<meta property="og:updated_time" content="2018-10-30T06:27:30.000Z">
+<meta property="og:updated_time" content="2018-11-02T00:22:16.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Netty源码分析(4)-Reactor线程模型">
 <meta name="twitter:description" content="正式进入Netty核心组件：Reactor线程模型看完本文应该明白这些问题：1.为什么channel的操作是线程安全的？2.NioEventLoop都干了啥？3.如何解决jdk nio的空轮询的bug？">
@@ -360,6 +360,7 @@
 <h2 id="runAllTasks"><a href="#runAllTasks" class="headerlink" title="runAllTasks"></a>runAllTasks</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"> <span class="function"><span class="keyword">protected</span> <span class="keyword">boolean</span> <span class="title">runAllTasks</span><span class="params">(<span class="keyword">long</span> timeoutNanos)</span> </span>&#123;</span><br><span class="line">    fetchFromScheduledTaskQueue();</span><br><span class="line">    Runnable task = pollTask();</span><br><span class="line">    <span class="keyword">if</span> (task == <span class="keyword">null</span>) &#123;</span><br><span class="line">        afterRunningAllTasks();</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">final</span> <span class="keyword">long</span> deadline = ScheduledFutureTask.nanoTime() + timeoutNanos;</span><br><span class="line">    <span class="keyword">long</span> runTasks = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">long</span> lastExecutionTime;</span><br><span class="line">    <span class="keyword">for</span> (;;) &#123;</span><br><span class="line">        safeExecute(task);</span><br><span class="line">        runTasks ++;</span><br><span class="line">        <span class="keyword">if</span> ((runTasks &amp; <span class="number">0x3F</span>) == <span class="number">0</span>) &#123;</span><br><span class="line">            lastExecutionTime = ScheduledFutureTask.nanoTime();</span><br><span class="line">            <span class="keyword">if</span> (lastExecutionTime &gt;= deadline) &#123;</span><br><span class="line">                <span class="keyword">break</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        task = pollTask();</span><br><span class="line">        <span class="keyword">if</span> (task == <span class="keyword">null</span>) &#123;</span><br><span class="line">            lastExecutionTime = ScheduledFutureTask.nanoTime();</span><br><span class="line">            <span class="keyword">break</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    afterRunningAllTasks();</span><br><span class="line">    <span class="keyword">this</span>.lastExecutionTime = lastExecutionTime;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>(1)将到期的定时任务从一个优先队列转移到MPSC（多生产者单消费者）队列中<br>(2)从taskQueue中获取一个task<br>(3)计算本次任务循环的截止时间，因为需要留时间给select操作和process操作<br>(4)进入循环<br>(5)执行任务，如果被执行的任务到了64个（nanotime的获取是一个相对昂贵的操作，所以不是每次循环都去判断），此时去判断是否已经timeout，如果是的话那么直接break<br>(6)如果不符合上述要求，那么继续从taskQueue中拉取任务并执行</p>
 <p>总结，Netty中的任务机制是其线程安全的一大保证。当非reactor线程执行一些并发操作时，都会把这次操作抽象为一个任务并将任务放到reactor线程的任务队列中等待reactor线程去执行。比如：channel的write操作、定时任务的优先队列任务的添加等操作都会被封装为一次普通的task。</p>
+<p>参考链接：<br><a href="https://www.jianshu.com/p/0d0eece6d467" target="_blank" rel="noopener">https://www.jianshu.com/p/0d0eece6d467</a></p>
 
       
     </div>
@@ -399,6 +400,10 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/11/01/Netty-5/" rel="prev" title="Netty源码分析(5)-Pipeline">
+                Netty源码分析(5)-Pipeline <i class="fa fa-chevron-right"></i>
+              </a>
             
           </div>
         </div>
@@ -475,7 +480,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">48</span>
+                  <span class="site-state-item-count">50</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>

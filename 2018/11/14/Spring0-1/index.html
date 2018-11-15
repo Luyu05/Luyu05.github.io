@@ -87,7 +87,7 @@
 <meta property="og:site_name" content="Luyu&#39;s Blog">
 <meta property="og:description" content="契机：之前写了很多宏观分析Spring的文章，很多细节都不是很清楚，所以想开一个源码阅读的专栏，希望能够坚持下去。">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2018-11-15T01:58:02.000Z">
+<meta property="og:updated_time" content="2018-11-15T02:04:22.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Spring源码阅读(1)-FactoryBean的实现">
 <meta name="twitter:description" content="契机：之前写了很多宏观分析Spring的文章，很多细节都不是很清楚，所以想开一个源码阅读的专栏，希望能够坚持下去。">
@@ -342,6 +342,7 @@
 <p>到这里就真相大白了，调用了factoryBean这个bean的getObject方法。</p>
 <p>Tips：<br>application启动的时候，放到<code>Map&lt;String, Object&gt; singletonObjects</code>中的bean是FactoryBean而不是getObject()返回的对象，当调用getBean()时候如果入参前缀为&amp;此时会直接return map中存放的对象；反之，如果无前缀，这时候会return FactoryBean.getObject()方法。下面这段代码是关键的关键。<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">protected</span> Object <span class="title">getObjectForBeanInstance</span><span class="params">(</span></span></span><br><span class="line"><span class="function"><span class="params">			Object beanInstance, String name, String beanName, RootBeanDefinition mbd)</span> </span>&#123;</span><br><span class="line">   <span class="comment">//...</span></span><br><span class="line">    <span class="keyword">if</span> (!(beanInstance <span class="keyword">instanceof</span> FactoryBean) || BeanFactoryUtils.isFactoryDereference(name)) &#123;</span><br><span class="line">        <span class="keyword">return</span> beanInstance;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">//...</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
 <p>就是通过<code>BeanFactoryUtils.isFactoryDereference</code>来决定是返回FactoryBean还是其getObject()方法的返回值。</p>
+<p>总结：<br>写文章一定要多问自己几个为什么，就像文末说的那行代码决定是返回factoryBean还是其getObject()方法的返回值，这个如果不仔细思考可能就遗漏了，追代码追到getObject就结束了。本文分析了factoryBean，下篇文章去看看和factoryBean大有渊源的AOP。</p>
 
       
     </div>
@@ -381,6 +382,10 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/11/15/Spring0-2/" rel="prev" title="Spring源码阅读(2)-AOP实现原理">
+                Spring源码阅读(2)-AOP实现原理 <i class="fa fa-chevron-right"></i>
+              </a>
             
           </div>
         </div>
@@ -448,7 +453,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">52</span>
+                  <span class="site-state-item-count">53</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>

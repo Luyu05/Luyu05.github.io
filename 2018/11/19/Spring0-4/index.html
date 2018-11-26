@@ -87,7 +87,7 @@
 <meta property="og:site_name" content="Luyu&#39;s Blog">
 <meta property="og:description" content="本来不打算写关于IOC的文章的，后来看了下之前写的文章，都相对浅薄没有深入源码分析，于是做本文。IOC部分打算分为两篇文章来分别讲解，本文是该系列之一『容器启动阶段』">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2018-11-22T12:25:47.000Z">
+<meta property="og:updated_time" content="2018-11-26T12:40:01.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Spring源码阅读(4)-IOC之容器启动阶段">
 <meta name="twitter:description" content="本来不打算写关于IOC的文章的，后来看了下之前写的文章，都相对浅薄没有深入源码分析，于是做本文。IOC部分打算分为两篇文章来分别讲解，本文是该系列之一『容器启动阶段』">
@@ -272,7 +272,7 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-11-19T20:23:17+08:00">
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-11-19T20:22:17+08:00">
                 2018-11-19
               </time>
             
@@ -358,7 +358,7 @@
 <h1 id="invokeBeanFactoryPostProcessors-beanFactory"><a href="#invokeBeanFactoryPostProcessors-beanFactory" class="headerlink" title="invokeBeanFactoryPostProcessors(beanFactory)"></a>invokeBeanFactoryPostProcessors(beanFactory)</h1><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">invokeBeanFactoryPostProcessors</span><span class="params">(</span></span></span><br><span class="line"><span class="function"><span class="params">			ConfigurableListableBeanFactory beanFactory, List&lt;BeanFactoryPostProcessor&gt; beanFactoryPostProcessors)</span> </span>&#123;</span><br><span class="line">    <span class="comment">//...</span></span><br><span class="line">    List&lt;BeanFactoryPostProcessor&gt; regularPostProcessors = <span class="keyword">new</span> LinkedList&lt;BeanFactoryPostProcessor&gt;();</span><br><span class="line">    <span class="keyword">for</span> (BeanFactoryPostProcessor postProcessor : beanFactoryPostProcessors) &#123;</span><br><span class="line">        regularPostProcessors.add(postProcessor);</span><br><span class="line">    &#125;</span><br><span class="line">    invokeBeanFactoryPostProcessors(regularPostProcessors, beanFactory);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">invokeBeanFactoryPostProcessors</span><span class="params">(</span></span></span><br><span class="line"><span class="function"><span class="params">        Collection&lt;? extends BeanFactoryPostProcessor&gt; postProcessors, ConfigurableListableBeanFactory beanFactory)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">for</span> (BeanFactoryPostProcessor postProcessor : postProcessors) &#123;</span><br><span class="line">        postProcessor.postProcessBeanFactory(beanFactory);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>对每个普通的BeanFactoryProcessor都调用了postProcessBeanFactory方法。<br>至此容器的启动阶段结束。</p>
 <hr>
-<p>小结：<br>1）如果当前存在BeanFactory那么销毁所有Beans并关闭BeanFactory<br>2）实例化BeanFactory，与此同时指定了一些不会被自动注入的类型的bean<br>3）将xml解析为Document（xml-&gt;inputsource&amp;resource）<br>4）利用BeanDefinitionParserDelegate对Document进行解析，解析的结果是BeanDefination（对特殊注解比如aspectJ aop的解析也在这里）<br>5）对解析出来的BeanDefination进行注册（其实就是放到了一个ConcurrentHashMap中）<br>6）回调BeanFactoryPostProcessor类型的bean的postProcessBeanFactory方法</p>
+<p>小结：<br>1）如果当前存在BeanFactory那么销毁所有Beans并关闭BeanFactory<br>2）实例化BeanFactory，与此同时指定了一些不会被依赖检查的类型的bean<br>3）将xml解析为Document（xml-&gt;inputsource&amp;resource）<br>4）利用BeanDefinitionParserDelegate对Document进行解析，解析的结果是BeanDefination（对特殊注解比如aspectJ aop的解析也在这里）<br>5）对解析出来的BeanDefination进行注册（其实就是放到了一个ConcurrentHashMap中）<br>6）回调BeanFactoryPostProcessor类型的bean的postProcessBeanFactory方法</p>
 <p>以上です</p>
 <hr>
 
@@ -391,8 +391,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2018/11/19/Spring0-5/" rel="next" title="Spring源码阅读(5)-IOC之bean的实例化">
-                <i class="fa fa-chevron-left"></i> Spring源码阅读(5)-IOC之bean的实例化
+              <a href="/2018/11/16/Spring0-3/" rel="next" title="Spring源码阅读(3)-自动化AOP实现原理">
+                <i class="fa fa-chevron-left"></i> Spring源码阅读(3)-自动化AOP实现原理
               </a>
             
           </div>
@@ -401,8 +401,8 @@
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2018/11/21/Read-Point/" rel="prev" title="左耳听风专栏笔记">
-                左耳听风专栏笔记 <i class="fa fa-chevron-right"></i>
+              <a href="/2018/11/19/Spring0-5/" rel="prev" title="Spring源码阅读(5)-IOC之bean的实例化">
+                Spring源码阅读(5)-IOC之bean的实例化 <i class="fa fa-chevron-right"></i>
               </a>
             
           </div>

@@ -1,0 +1,25 @@
+<hr>
+<p>title: 关于多线程的一些思考<br>date: 2018-07-05 15:36:10<br>tags: 多线程</p>
+<h2 id="categories-多线程"><a href="#categories-多线程" class="headerlink" title="categories: 多线程"></a>categories: 多线程</h2><p>1.如何解决缓存被击穿db压力瞬间过大的问题<br><!-- more --></p>
+<h3 id="如何解决缓存被击穿db压力瞬间过大的问题"><a href="#如何解决缓存被击穿db压力瞬间过大的问题" class="headerlink" title="如何解决缓存被击穿db压力瞬间过大的问题"></a><font color=red size=5>如何解决缓存被击穿db压力瞬间过大的问题</font></h3><p>1）对数据一致性要求不高的场景，可以设置缓存为永不过期<br>2）缓存击穿前的处理方案<br>   开启一个后台线程定期去更新快要过期的缓存，适用于超高并发的场景，即使是在分布式环境也仅会有一个线程去读取db<br>3）缓存击穿后的处理方案<br>   最多每个JVM有一个线程去请求db</p>
+<pre><code class="java"><span class="keyword">private</span> ConcurrentHashMap&lt;String, Future&lt;String&gt;&gt; map = <span class="keyword">new</span> ConcurrentHashMap();
+<span class="function"><span class="keyword">public</span> String <span class="title">getCacheContent</span><span class="params">(String key)</span> <span class="keyword">throws</span> Exception </span>{
+    String res = loadContentFromCache(key);
+    <span class="keyword">if</span> (<span class="keyword">null</span> == res) {
+        Future&lt;String&gt; future = map.putIfAbsent(<span class="string">"workThread"</span>, Executors.newCachedThreadPool().submit(<span class="keyword">new</span> Callable&lt;String&gt;() {
+            <span class="meta">@Override</span>
+            <span class="function"><span class="keyword">public</span> String <span class="title">call</span><span class="params">()</span> <span class="keyword">throws</span> Exception </span>{
+                setContentToCache(loadContentFromDb(key));
+                <span class="keyword">return</span> loadContentFromDb(key);
+            }
+        }));
+        <span class="keyword">if</span> (future != <span class="keyword">null</span>) {
+            <span class="keyword">return</span> future.get();
+        }<span class="keyword">else</span> {
+            <span class="keyword">return</span> map.get(<span class="string">"workThread"</span>).get();
+        }
+    }<span class="keyword">else</span> {
+        <span class="keyword">return</span>  res;
+    }
+}
+</code></pre>

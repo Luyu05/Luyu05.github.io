@@ -82,16 +82,16 @@
 <meta name="description" content="正式进入Netty核心组件：Reactor线程模型看完本文应该明白这些问题：1.为什么channel的操作是线程安全的？2.NioEventLoop都干了啥？3.如何解决jdk nio的空轮询的bug？">
 <meta name="keywords" content="Netty">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Netty源码分析(4)-Reactor线程模型">
+<meta property="og:title" content="Netty源码分析(3)-Reactor线程模型">
 <meta property="og:url" content="http://yoursite.com/2018/10/29/Netty-4/index.html">
 <meta property="og:site_name" content="Luyu&#39;s Blog">
 <meta property="og:description" content="正式进入Netty核心组件：Reactor线程模型看完本文应该明白这些问题：1.为什么channel的操作是线程安全的？2.NioEventLoop都干了啥？3.如何解决jdk nio的空轮询的bug？">
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="http://yoursite.com/2018/10/29/Netty-4/001.jpg">
 <meta property="og:image" content="http://yoursite.com/2018/10/29/Netty-4/002.jpg">
-<meta property="og:updated_time" content="2018-12-04T06:53:00.000Z">
+<meta property="og:updated_time" content="2018-12-20T08:42:12.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Netty源码分析(4)-Reactor线程模型">
+<meta name="twitter:title" content="Netty源码分析(3)-Reactor线程模型">
 <meta name="twitter:description" content="正式进入Netty核心组件：Reactor线程模型看完本文应该明白这些问题：1.为什么channel的操作是线程安全的？2.NioEventLoop都干了啥？3.如何解决jdk nio的空轮询的bug？">
 <meta name="twitter:image" content="http://yoursite.com/2018/10/29/Netty-4/001.jpg">
 
@@ -129,7 +129,7 @@
 
 
 
-  <title>Netty源码分析(4)-Reactor线程模型 | Luyu's Blog</title>
+  <title>Netty源码分析(3)-Reactor线程模型 | Luyu's Blog</title>
   
 
 
@@ -263,7 +263,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">Netty源码分析(4)-Reactor线程模型</h1>
+          <h1 class="post-title" itemprop="name headline">Netty源码分析(3)-Reactor线程模型</h1>
         
 
         <div class="post-meta">
@@ -396,8 +396,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2018/10/25/Netty-3/" rel="next" title="Netty源码分析(3)-新连接接入">
-                <i class="fa fa-chevron-left"></i> Netty源码分析(3)-新连接接入
+              <a href="/2018/10/25/Netty-3/" rel="next" title="Netty源码分析(2)-新连接接入">
+                <i class="fa fa-chevron-left"></i> Netty源码分析(2)-新连接接入
               </a>
             
           </div>
@@ -406,8 +406,8 @@
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2018/11/01/Netty-5/" rel="prev" title="Netty源码分析(5)-Pipeline">
-                Netty源码分析(5)-Pipeline <i class="fa fa-chevron-right"></i>
+              <a href="/2018/11/01/Netty-5/" rel="prev" title="Netty源码分析(4)-Pipeline">
+                Netty源码分析(4)-Pipeline <i class="fa fa-chevron-right"></i>
               </a>
             
           </div>

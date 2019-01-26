@@ -88,7 +88,8 @@
 <meta property="og:description" content="上篇文章分析了比较原始的AOP的实现方式，最后我们也分析了那种方式的弊端，本文分析一种更为炫酷的AOP的实现方式。">
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="http://yoursite.com/2018/11/19/Spring0-3/001.jpg">
-<meta property="og:updated_time" content="2018-12-23T07:07:56.000Z">
+<meta property="og:image" content="http://yoursite.com/2018/11/19/Spring0-3/002.jpg">
+<meta property="og:updated_time" content="2018-12-23T07:39:28.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Spring源码阅读(5)-基于@Aspect的AOP实现原理">
 <meta name="twitter:description" content="上篇文章分析了比较原始的AOP的实现方式，最后我们也分析了那种方式的弊端，本文分析一种更为炫酷的AOP的实现方式。">
@@ -365,6 +366,7 @@
 <hr>
 <p>小结：<br>1）IOC容器启动阶段需要对document进行解析以生成一个个的BeanDefination并注册到容器中<br>2）在这个步骤中会对我们在xml中写的<code>&lt;aop:aspectj-autoproxy/&gt;</code>进行解析<br>3）解析的过程就是创建了一个<code>AnnotationAwareAspectJAutoProxyCreator.class</code>类型的BeanDefination并注册到了容器中<br>4）IOC流程继续执行的时候会调用<code>BeanPostProcessor.postProcessAfterInitialiization()</code><br>5）而我们注册的AnnotationAwareAspectJAutoProxyCreator就是一个BeanPostProcessor，此时执行它对应的postProcessAfterInitialiization方法<br>6）该方法首先获取advisor list，包括普通的advisor以及aspectJ类型的advisor（只有和任意当前类以及当前类实现的接口的方法相匹配的advisor才会被加入到list中）<br>7）接着根据获取到的advisor创建动态代理并返回（此时获取到的bean已经是动态代理对象了）<br>8）当调用bean的方法时候，会触发动态代理对象的invoke方法，该方法会找到和当前class &amp; method匹配的advisor并包装成interceptor，接着执行经典的proceed方法。</p>
 <p>Tips：<br>和上文的半自动aop不同，最开始寻找advisor chain的时候只会找到和当前bean的任意接口任意方法匹配的advisor，如果找到才说明它需要被代理，而在真正执行invoke方法时，才会根据method进行进一步的甄别并封装成interceptor。而上文的半自动aop会找到配置的所有的advisor，并且一定会将配置的target包装为代理。这是两者的区别，请注意。</p>
+<p><img src="/2018/11/19/Spring0-3/002.jpg"></p>
 <p>至此，AOP专题到此结束，源码分析过程主要分析了一些主干流程，很多也很重要的点被砍掉了。以后有机会对那些部分再深入研究。</p>
 <p>That’s all.<br>2018-11-19 20:06:01 上海</p>
 <hr>
@@ -487,7 +489,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">53</span>
+                  <span class="site-state-item-count">54</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -509,7 +511,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">16</span>
+                  <span class="site-state-item-count">17</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
@@ -562,7 +564,7 @@
 
     <footer id="footer" class="footer">
       <div class="footer-inner">
-        <div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
   <span class="with-love">
     <i class="fa fa-user"></i>
   </span>

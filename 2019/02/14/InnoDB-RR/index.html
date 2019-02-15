@@ -88,7 +88,7 @@
 <meta property="og:description" content="Mysql InnoDB引擎下 RR隔离级别的一些特性">
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="http://yoursite.com/2019/02/14/InnoDB-RR/001.jpg">
-<meta property="og:updated_time" content="2019-02-14T06:46:29.000Z">
+<meta property="og:updated_time" content="2019-02-15T08:49:13.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="InnoDB引擎">
 <meta name="twitter:description" content="Mysql InnoDB引擎下 RR隔离级别的一些特性">
@@ -337,19 +337,37 @@
         <p>Mysql InnoDB引擎下 RR隔离级别的一些特性<br><a id="more"></a></p>
 <h1 id="快照读"><a href="#快照读" class="headerlink" title="快照读"></a>快照读</h1><p>RR隔离级别，事务启动时会创建一个整个库的视图</p>
 <ul>
-<li><p>辅助知识点<br> db中每行数据都有多个版本，每个版本有自己的row trx_id（对其作用的事务id）</p>
+<li><p>辅助知识点<br> db中每行数据都有多个版本，每个版本有自己的row trx_id（对其修改的事务id）</p>
 </li>
 <li><p>具体的实现方式<br> 1.事务启动时，会维持一个数组，用来保存启动瞬间，当前『活跃』的事务ID<br> 2.小于数组中最低ID的数据都是可见的；大于数组中最大ID的数据都是不可见的<br> 3.大于最低ID&amp;小于最高ID的数据，如果位于数组中那么是不可见的；反之可见</p>
 </li>
 </ul>
 <hr>
-<h1 id="当前读"><a href="#当前读" class="headerlink" title="当前读"></a>当前读</h1><p>update/delete/select for update/select lock in share mode都属于当前读<br>前3个语句会对行加X锁，最后一个加S锁</p>
+<h1 id="当前读"><a href="#当前读" class="headerlink" title="当前读"></a>当前读</h1><p>update/delete/select for update/select lock in share mode都属于当前读<br>前3个语句会对行加X锁，最后一个加S锁<br>Ps:如果存在unique index那么insert时候也会加锁</p>
 <hr>
 <h1 id="幻读"><a href="#幻读" class="headerlink" title="幻读"></a>幻读</h1><h2 id="条件"><a href="#条件" class="headerlink" title="条件"></a>条件</h2><ul>
 <li>插入</li>
 <li>当前读</li>
 </ul>
-<h2 id="举例"><a href="#举例" class="headerlink" title="举例"></a>举例</h2><p>table 只有id一个列 id为普通索引，初始只有id=1一条记录</p>
+<h2 id="举例"><a href="#举例" class="headerlink" title="举例"></a>举例</h2><p>Ps：假设此时并未引入Next-Key Lock(其实就是RC隔离级别的做法)<br>table(id key, name) </p>
+<table>
+<thead>
+<tr>
+<th>id</th>
+<th>1</th>
+<th>5</th>
+<th>10</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>name</td>
+<td>mike</td>
+<td>luyu</td>
+<td>jack</td>
+</tr>
+</tbody>
+</table>
 <table>
 <thead>
 <tr>
@@ -361,13 +379,13 @@
 <tbody>
 <tr>
 <td>T1</td>
-<td>begin;<br>select * from table where id=1 for update;<br>update table set id=2 where id=1;</td>
+<td>begin;<br>select * from table where id=5 for update;<br>update table set id=2 where id=5;</td>
 <td></td>
 </tr>
 <tr>
 <td>T2</td>
 <td></td>
-<td>insert into table values(1);</td>
+<td>insert into table values(5, john);<br>update table set name=’mary’ where name = ‘john’;</td>
 </tr>
 <tr>
 <td>T3</td>
@@ -377,14 +395,34 @@
 </tbody>
 </table>
 <h2 id="问题"><a href="#问题" class="headerlink" title="问题"></a>问题</h2><ul>
-<li>语义上：session1的select语句表示要将id=1的记录都上锁，不准其他事务进行读写；但是session2的insert语句破坏了这个语义</li>
+<li>语义上：session1的select语句表示要将id=5的记录都上锁，不准其他事务进行读写；但是session2中对id=5的记录进行了update操作</li>
 <li>一致性：上述情况执行完毕binlog会如下记载</li>
 </ul>
-<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">insert</span> <span class="keyword">into</span> <span class="keyword">table</span> <span class="keyword">values</span>(<span class="number">1</span>);</span><br><span class="line"><span class="keyword">update</span> <span class="keyword">table</span> <span class="keyword">set</span> <span class="keyword">id</span>=<span class="number">2</span> <span class="keyword">where</span> <span class="keyword">id</span>=<span class="number">1</span>;</span><br></pre></td></tr></table></figure>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">insert</span> <span class="keyword">into</span> <span class="keyword">table</span> <span class="keyword">values</span>(<span class="number">5</span>, john);</span><br><span class="line"><span class="keyword">update</span> <span class="keyword">table</span> <span class="keyword">set</span> <span class="keyword">name</span>=<span class="string">'jack'</span> <span class="keyword">where</span> <span class="keyword">name</span> = <span class="string">'john'</span>;</span><br><span class="line"><span class="keyword">update</span> <span class="keyword">table</span> <span class="keyword">set</span> <span class="keyword">id</span>=<span class="number">2</span> <span class="keyword">where</span> <span class="keyword">id</span>=<span class="number">5</span>;</span><br></pre></td></tr></table></figure>
 <p>如果这个binlog拿去从库执行，就会出现主从数据的不一致</p>
 <hr>
-<h1 id="如何解决幻读"><a href="#如何解决幻读" class="headerlink" title="如何解决幻读"></a>如何解决幻读</h1><h2 id="GAP锁"><a href="#GAP锁" class="headerlink" title="GAP锁"></a>GAP锁</h2><p>归根结底，问题出现的原因就是，session2中insert语句的执行<br>此时需要引入间隙锁（GAP），对可能执行id=1插入的区间加锁</p>
-<h2 id="加锁举例"><a href="#加锁举例" class="headerlink" title="加锁举例"></a>加锁举例</h2><p>RR隔离级别<br>select * from table where id = 1 for update;<br><img src="/2019/02/14/InnoDB-RR/001.jpg"></p>
+<h1 id="如何解决幻读"><a href="#如何解决幻读" class="headerlink" title="如何解决幻读"></a>如何解决幻读</h1><h2 id="GAP锁"><a href="#GAP锁" class="headerlink" title="GAP锁"></a>GAP锁</h2><p>归根结底，问题出现的原因就是，session2中insert语句的执行<br>此时需要引入next-key lock(RR默认)，对可能执行id=5插入的区间加锁，在上面例子中RR级别下id位于[1,10)的记录的insert操作都将会block</p>
+<h2 id="加锁举例"><a href="#加锁举例" class="headerlink" title="加锁举例"></a>加锁举例</h2><p>RR隔离级别<br>table(id key, name) </p>
+<table>
+<thead>
+<tr>
+<th>id</th>
+<th>1</th>
+<th>5</th>
+<th>10</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>name</td>
+<td>mike</td>
+<td>luyu</td>
+<td>jack</td>
+</tr>
+</tbody>
+</table>
+<p>select * from table where id = 5 for update;</p>
+<p>表中横轴代表id是哪种类型的索引，纵轴代表sql语句执行的结果<br><img src="/2019/02/14/InnoDB-RR/001.jpg"></p>
 <hr>
 <h1 id="索引"><a href="#索引" class="headerlink" title="索引"></a>索引</h1><h2 id="数据结构的演进"><a href="#数据结构的演进" class="headerlink" title="数据结构的演进"></a>数据结构的演进</h2><h3 id="从二叉树到B树"><a href="#从二叉树到B树" class="headerlink" title="从二叉树到B树"></a>从二叉树到B树</h3><p>B树其实就是多叉树，当数据量较大时二叉树的深度过大，而索引可能是存储在磁盘上的，这可能会导致某个具体数据的定位过程耗时较长，为此引入了B树（多叉树）</p>
 <h3 id="从B树到B-树"><a href="#从B树到B-树" class="headerlink" title="从B树到B+树"></a>从B树到B+树</h3><p>相比B树，B+树只有叶子节点才存储具体的数据，这意味着非叶子节点可以存储更多的索引意味着树的高度会相应降低；而且因为所有的data都存储在叶子节点，range查询变得更为方便</p>

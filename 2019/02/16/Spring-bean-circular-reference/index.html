@@ -91,7 +91,7 @@
 <meta property="og:image" content="http://yoursite.com/2019/02/16/Spring-bean-circular-reference/002.jpg">
 <meta property="og:image" content="http://yoursite.com/2019/02/16/Spring-bean-circular-reference/003.jpg">
 <meta property="og:image" content="http://yoursite.com/2019/02/16/Spring-bean-circular-reference/004.jpg">
-<meta property="og:updated_time" content="2019-02-16T06:29:20.000Z">
+<meta property="og:updated_time" content="2019-02-16T06:39:36.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Spring bean循环依赖">
 <meta name="twitter:description" content="1.两种bean的循环依赖方式2.Spring的应对方式">
@@ -369,6 +369,7 @@
 <hr>
 <hr>
 <p>总结：<br>1）一个bean在实例化之前会将自己存放到名为singletonsCurrentlyInCreation的set中表征自己正处于创建状态<br>2）如果set执行add返回false表征发生了构造器类型的循环依赖，此时会抛出错误<br>3）在实例化之后会将自己从singletonsCurrentlyInCreation中移除<br>4）一个bean在实例化后注入属性前会将自己存放到名为singletonFactories的map中<br>5）当bean2触发bean1实例化时，会先去singletonObjects中获取bean1，获取不到会去earlySingletonObjects中获取bean1，再获取不到就会去singletonFactories中获取。如果在singletonFactories中获取到，就将bean1从singletonFactories中移除，并存放到earlySingletonObjects中</p>
+<p>以上です</p>
 
       
     </div>

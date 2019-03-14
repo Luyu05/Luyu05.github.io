@@ -87,7 +87,7 @@
 <meta property="og:site_name" content="鲁宇的技术博客">
 <meta property="og:description" content="上文介绍了服务端启动的过程，这篇文章介绍接收新连接的过程。">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2018-12-25T01:32:12.000Z">
+<meta property="og:updated_time" content="2019-03-14T03:09:10.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Netty源码分析(2)-新连接接入">
 <meta name="twitter:description" content="上文介绍了服务端启动的过程，这篇文章介绍接收新连接的过程。">
@@ -335,7 +335,7 @@
         <p>上文介绍了服务端启动的过程，这篇文章介绍接收新连接的过程。<br><a id="more"></a></p>
 <h1 id="BOSS-EventLoop的启动过程"><a href="#BOSS-EventLoop的启动过程" class="headerlink" title="(BOSS)EventLoop的启动过程"></a>(BOSS)EventLoop的启动过程</h1><p>上回书说到在注册channel过程中有这样的一段代码，当时说是BossEventLoop reactor线程启动的入口，我们从这里去分析本文。<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">void</span> <span class="title">register</span><span class="params">(EventLoop eventLoop, <span class="keyword">final</span> ChannelPromise promise)</span> </span>&#123;</span><br><span class="line">    <span class="comment">//...</span></span><br><span class="line">    AbstractChannel.<span class="keyword">this</span>.eventLoop = eventLoop;</span><br><span class="line">    <span class="keyword">if</span> (eventLoop.inEventLoop()) &#123;</span><br><span class="line">        register0(promise);</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        eventLoop.execute(<span class="keyword">new</span> Runnable() &#123;</span><br><span class="line">            <span class="meta">@Override</span></span><br><span class="line">            <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">                register0(promise);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
 <p>这段代码就是将channel的注册行为抽象成了一次异步的任务，而eventLoop在执行execute方法时候也同样启动了。我们这里的channel.eventLoop指的是当前channel对应的单个EventLoop(我们这里分析的是BossEventLoop)，而SingleThreadEventExecutor是EventLoop的父类，所以我们根据eventLoop的execute方法追溯到了这里<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//SingleThreadEventExecutor.class</span></span><br><span class="line"><span class="meta">@Override</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">execute</span><span class="params">(Runnable task)</span> </span>&#123;</span><br><span class="line">   <span class="comment">//...</span></span><br><span class="line">    <span class="keyword">boolean</span> inEventLoop = inEventLoop();</span><br><span class="line">    <span class="keyword">if</span> (inEventLoop) &#123;</span><br><span class="line">        addTask(task);</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        startThread();</span><br><span class="line">        addTask(task);</span><br><span class="line">        <span class="keyword">if</span> (isShutdown() &amp;&amp; removeTask(task)) &#123;</span><br><span class="line">            reject();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">//...</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<p>简单地调用栈是这样的startThread()-&gt;doStartThread()-&gt;run()-&gt;NioEventLoop#run<br>NioEventLoop的run方法是一个很重要的方法<a href="https://luyu05.github.io/2018/10/29/Netty-4/" target="_blank" rel="noopener">详情见Netty源码分析(4)-Reactor线程模型</a>，这是NioEventLoop启动的地方，在这里进行无限循环。执行NioEventLoop的三板斧：轮询注册在selector上的IO事件、处理IO事件、执行异步task。而新连接的接入过程就位于第二步骤（处理IO事件），我们接下来去分析。</p>
+<p>简单地调用栈是这样的startThread()-&gt;doStartThread()-&gt;run()-&gt;NioEventLoop#run<br>NioEventLoop的run方法是一个很重要的方法详情见<a href="https://luyu05.github.io/2018/10/29/Netty-4/" target="_blank" rel="noopener">Netty源码分析(3)-Reactor线程模型</a>，这是NioEventLoop启动的地方，在这里进行无限循环。执行NioEventLoop的三板斧：轮询注册在selector上的IO事件、处理IO事件、执行异步task。而新连接的接入过程就位于第二步骤（处理IO事件），我们接下来去分析。</p>
 <h1 id="BOSS-EventLoop-processSelectedKeys"><a href="#BOSS-EventLoop-processSelectedKeys" class="headerlink" title="(BOSS)EventLoop#processSelectedKeys()"></a>(BOSS)EventLoop#processSelectedKeys()</h1><p>从无参的processSelectedKeys()追到了processSelectedKeys(SelectionKey k, AbstractNioChannel ch)中<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">processSelectedKey</span><span class="params">(SelectionKey k, AbstractNioChannel ch)</span> </span>&#123;</span><br><span class="line">    <span class="comment">//...</span></span><br><span class="line">    <span class="keyword">if</span> ((readyOps &amp; (SelectionKey.OP_READ | SelectionKey.OP_ACCEPT)) != <span class="number">0</span> || readyOps == <span class="number">0</span>) &#123;</span><br><span class="line">        unsafe.read();</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">//...</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
 <hr>
 <p><font color="red">这里有一个疑问，和当前channel绑定的eventLoop是如何确定的？</font><br>答：在channel注册过程中，通过next()方法从bossGroup中随机选择的一个eventLoop</p>
@@ -392,8 +392,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2018/10/23/Netty-2/" rel="next" title="Netty源码分析(1)-服务端启动过程">
-                <i class="fa fa-chevron-left"></i> Netty源码分析(1)-服务端启动过程
+              <a href="/2018/10/23/Netty-4/" rel="next" title="Netty源码分析(2)-Reactor线程模型">
+                <i class="fa fa-chevron-left"></i> Netty源码分析(2)-Reactor线程模型
               </a>
             
           </div>
@@ -402,8 +402,8 @@
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2018/10/29/Netty-4/" rel="prev" title="Netty源码分析(3)-Reactor线程模型">
-                Netty源码分析(3)-Reactor线程模型 <i class="fa fa-chevron-right"></i>
+              <a href="/2018/10/29/Netty-2/" rel="prev" title="Netty源码分析(1)-服务端启动过程">
+                Netty源码分析(1)-服务端启动过程 <i class="fa fa-chevron-right"></i>
               </a>
             
           </div>

@@ -87,7 +87,7 @@
 <meta property="og:site_name" content="鲁宇的技术博客">
 <meta property="og:description" content="happen-before 这个概念在最早接触并发编程的时候就知道，但是一直不得要领，不知道想表达的是什么。最近拜读了一些博客，还算有所领悟，于是写下来。先把教科书上的内容贴一下，最后结合几个例子彻底搞懂它。">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2019-02-22T08:38:58.000Z">
+<meta property="og:updated_time" content="2019-03-25T01:34:15.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="深入理解happen-before原则">
 <meta name="twitter:description" content="happen-before 这个概念在最早接触并发编程的时候就知道，但是一直不得要领，不知道想表达的是什么。最近拜读了一些博客，还算有所领悟，于是写下来。先把教科书上的内容贴一下，最后结合几个例子彻底搞懂它。">
@@ -333,7 +333,7 @@
 
       
         <p>happen-before 这个概念在最早接触并发编程的时候就知道，但是一直不得要领，不知道想表达的是什么。最近拜读了一些博客，还算有所领悟，于是写下来。<br>先把教科书上的内容贴一下，最后结合几个例子彻底搞懂它。<br><a id="more"></a></p>
-<h3 id="happens-before"><a href="#happens-before" class="headerlink" title="happens before"></a><font color="red" size="5">happens before</font></h3><p>概念：<code>如果存在hb(a,b)，那么操作a及a之前在内存上面所做的操作（如赋值操作等）都对操作b可见，即操作a影响了操作b</code><br>Ps:hb(a,b) presents “a happens before b”</p>
+<h3 id="happens-before"><a href="#happens-before" class="headerlink" title="happens before"></a><font color="red" size="5">happens before</font></h3><p>概念：<code>如果存在hb(a,b)，那么操作a及a之前在内存上面所做的操作（如赋值操作等）都对操作b可见，即操作a影响了操作b</code><br>Ps:hb(a,b) presents “a happens before b”<br>Ps:先行发生是一个逻辑上的概念，并非真实的执行的先后顺序</p>
 <p>1）<font color="blue">程序次序规则</font>（Program Order Rule） <code>在一个线程内</code>，按照程序代码顺序，书写在前面的操作Happens-Before书写在后面的操作</p>
 <p>线程中上一个动作及之前的所有写操作在该线程执行下一个动作时对该线程可见（也就是说，同一个线程中前面的所有写操作对后面的操作可见），在同一个线程内，即使发生了指令重排序，书写在前面的代码也是先行发生于书写在后面的代码的</p>
 <p>2）<font color="blue">线程锁定规则</font>（Monitor Lock Rule） An unlock on a monitor happens-before every subsequent lock on that monitor.</p>
@@ -484,7 +484,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">51</span>
+                  <span class="site-state-item-count">52</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -495,7 +495,7 @@
               
               <div class="site-state-item site-state-categories">
                 <a href="/categories/index.html">
-                  <span class="site-state-item-count">13</span>
+                  <span class="site-state-item-count">12</span>
                   <span class="site-state-item-name">分类</span>
                 </a>
               </div>

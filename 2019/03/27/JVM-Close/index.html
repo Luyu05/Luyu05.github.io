@@ -68,7 +68,7 @@
 
 
 
-  <meta name="keywords" content="数据库," />
+  <meta name="keywords" content="Java," />
 
 
 
@@ -79,20 +79,18 @@
 
 
 
-<meta name="description" content="Mysql InnoDB引擎下 RR隔离级别的一些特性">
-<meta name="keywords" content="数据库">
+<meta name="description" content="1.Spring的启动点与关闭点2.jvm shutDownHook">
+<meta name="keywords" content="Java">
 <meta property="og:type" content="article">
-<meta property="og:title" content="InnoDB引擎">
-<meta property="og:url" content="http://yoursite.com/2019/02/14/InnoDB-RR/index.html">
+<meta property="og:title" content="ShutDownHook">
+<meta property="og:url" content="http://yoursite.com/2019/03/27/JVM-Close/index.html">
 <meta property="og:site_name" content="鲁宇的技术博客">
-<meta property="og:description" content="Mysql InnoDB引擎下 RR隔离级别的一些特性">
+<meta property="og:description" content="1.Spring的启动点与关闭点2.jvm shutDownHook">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:image" content="http://yoursite.com/2019/02/14/InnoDB-RR/001.jpg">
-<meta property="og:updated_time" content="2019-02-15T10:37:37.000Z">
+<meta property="og:updated_time" content="2019-03-27T07:24:40.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="InnoDB引擎">
-<meta name="twitter:description" content="Mysql InnoDB引擎下 RR隔离级别的一些特性">
-<meta name="twitter:image" content="http://yoursite.com/2019/02/14/InnoDB-RR/001.jpg">
+<meta name="twitter:title" content="ShutDownHook">
+<meta name="twitter:description" content="1.Spring的启动点与关闭点2.jvm shutDownHook">
 
 
 
@@ -122,13 +120,13 @@
 
 
 
-  <link rel="canonical" href="http://yoursite.com/2019/02/14/InnoDB-RR/"/>
+  <link rel="canonical" href="http://yoursite.com/2019/03/27/JVM-Close/"/>
 
 
 
 
 
-  <title>InnoDB引擎 | 鲁宇的技术博客</title>
+  <title>ShutDownHook | 鲁宇的技术博客</title>
   
 
 
@@ -245,7 +243,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/02/14/InnoDB-RR/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/03/27/JVM-Close/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Luyu">
@@ -262,7 +260,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">InnoDB引擎</h1>
+          <h1 class="post-title" itemprop="name headline">ShutDownHook</h1>
         
 
         <div class="post-meta">
@@ -274,8 +272,8 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-02-14T13:48:16+08:00">
-                2019-02-14
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-03-27T14:29:02+08:00">
+                2019-03-27
               </time>
             
 
@@ -297,8 +295,8 @@
               
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/数据库/" itemprop="url" rel="index">
-                    <span itemprop="name">数据库</span>
+                  <a href="/categories/Java-进阶/" itemprop="url" rel="index">
+                    <span itemprop="name">Java 进阶</span>
                   </a>
                 </span>
 
@@ -334,105 +332,14 @@
       
 
       
-        <p>Mysql InnoDB引擎下 RR隔离级别的一些特性<br><a id="more"></a></p>
-<h1 id="快照读"><a href="#快照读" class="headerlink" title="快照读"></a>快照读</h1><p>RR隔离级别，事务启动时会创建一个整个库的视图</p>
-<ul>
-<li><p>辅助知识点<br> db中每行数据都有多个版本，每个版本有自己的row trx_id（对其修改的事务id）</p>
-</li>
-<li><p>具体的实现方式<br> 1.事务启动时，会维持一个数组，用来保存启动瞬间，当前『活跃』的事务ID<br> 2.小于数组中最低ID的数据都是可见的；大于数组中最大ID的数据都是不可见的<br> 3.大于最低ID&amp;小于最高ID的数据，如果位于数组中那么是不可见的；反之可见</p>
-</li>
-</ul>
-<hr>
-<h1 id="当前读"><a href="#当前读" class="headerlink" title="当前读"></a>当前读</h1><p>update/delete/select for update/select lock in share mode都属于当前读<br>前3个语句会对行加X锁，最后一个加S锁<br>Ps:如果存在unique index那么insert时候也会加锁</p>
-<hr>
-<h1 id="幻读"><a href="#幻读" class="headerlink" title="幻读"></a>幻读</h1><h2 id="条件"><a href="#条件" class="headerlink" title="条件"></a>条件</h2><ul>
-<li>插入</li>
-<li>当前读</li>
-</ul>
-<h2 id="举例"><a href="#举例" class="headerlink" title="举例"></a>举例</h2><p>Ps：假设此时并未引入Next-Key Lock(其实就是RC隔离级别的做法)<br>table(id key, name) </p>
-<table>
-<thead>
-<tr>
-<th>id</th>
-<th>1</th>
-<th>5</th>
-<th>10</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>name</td>
-<td>mike</td>
-<td>luyu</td>
-<td>jack</td>
-</tr>
-</tbody>
-</table>
-<table>
-<thead>
-<tr>
-<th></th>
-<th>session1</th>
-<th>session2</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>T1</td>
-<td>begin;<br>select * from table where id=5 for update;<br>update table set id=2 where id=5;</td>
-<td></td>
-</tr>
-<tr>
-<td>T2</td>
-<td></td>
-<td>insert into table values(5, john);<br>update table set name=’mary’ where name = ‘john’;</td>
-</tr>
-<tr>
-<td>T3</td>
-<td>commit;</td>
-<td></td>
-</tr>
-</tbody>
-</table>
-<h2 id="问题"><a href="#问题" class="headerlink" title="问题"></a>问题</h2><ul>
-<li>语义上：session1的select语句表示要将id=5的记录都上锁，不准其他事务进行读写；但是session2中对id=5的记录进行了update操作</li>
-<li>一致性：上述情况执行完毕binlog会如下记载</li>
-</ul>
-<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">insert</span> <span class="keyword">into</span> <span class="keyword">table</span> <span class="keyword">values</span>(<span class="number">5</span>, john);</span><br><span class="line"><span class="keyword">update</span> <span class="keyword">table</span> <span class="keyword">set</span> <span class="keyword">name</span>=<span class="string">'jack'</span> <span class="keyword">where</span> <span class="keyword">name</span> = <span class="string">'john'</span>;</span><br><span class="line"><span class="keyword">update</span> <span class="keyword">table</span> <span class="keyword">set</span> <span class="keyword">id</span>=<span class="number">2</span> <span class="keyword">where</span> <span class="keyword">id</span>=<span class="number">5</span>;</span><br></pre></td></tr></table></figure>
-<p>如果这个binlog拿去从库执行，就会出现主从数据的不一致</p>
-<hr>
-<h1 id="如何解决幻读"><a href="#如何解决幻读" class="headerlink" title="如何解决幻读"></a>如何解决幻读</h1><h2 id="GAP锁"><a href="#GAP锁" class="headerlink" title="GAP锁"></a>GAP锁</h2><p>归根结底，问题出现的原因就是，session2中insert语句的执行<br>此时需要引入next-key lock(RR默认)，对可能执行id=5插入的区间加锁，在上面例子中RR级别下id位于[1,10)的记录的insert操作都将会block</p>
-<h2 id="加锁举例"><a href="#加锁举例" class="headerlink" title="加锁举例"></a>加锁举例</h2><p>RR隔离级别<br>table(id key, name) </p>
-<table>
-<thead>
-<tr>
-<th>id</th>
-<th>1</th>
-<th>5</th>
-<th>10</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>name</td>
-<td>mike</td>
-<td>luyu</td>
-<td>jack</td>
-</tr>
-</tbody>
-</table>
-<p>select * from table where id = 5 for update;</p>
-<p>表中横轴代表id是哪种类型的索引，纵轴代表sql语句执行的结果<br><img src="/2019/02/14/InnoDB-RR/001.jpg"></p>
-<hr>
-<h1 id="索引"><a href="#索引" class="headerlink" title="索引"></a>索引</h1><h2 id="数据结构的演进"><a href="#数据结构的演进" class="headerlink" title="数据结构的演进"></a>数据结构的演进</h2><h3 id="从二叉树到B树"><a href="#从二叉树到B树" class="headerlink" title="从二叉树到B树"></a>从二叉树到B树</h3><p>B树其实就是多叉树，当数据量较大时二叉树的深度过大，而索引可能是存储在磁盘上的，这可能会导致某个具体数据的定位过程耗时较长，为此引入了B树（多叉树）</p>
-<h3 id="从B树到B-树"><a href="#从B树到B-树" class="headerlink" title="从B树到B+树"></a>从B树到B+树</h3><p>相比B树，B+树只有叶子节点才存储具体的数据，这意味着非叶子节点可以存储更多的索引意味着树的高度会相应降低；而且因为所有的data都存储在叶子节点，range查询变得更为方便</p>
-<h2 id="InnoDB-VS-MyISAM"><a href="#InnoDB-VS-MyISAM" class="headerlink" title="InnoDB VS MyISAM"></a>InnoDB VS MyISAM</h2><p>Innodb与MyISAM的索引都采用B+树，二者的区别主要如下</p>
-<ul>
-<li>InnoDB的数据文件本身就是索引文件;MyISAM索引文件和数据文件是分离的，索引文件仅保存数据记录的地址</li>
-<li>InnoDB的辅助索引data域存储相应记录主键的值而不是地址</li>
-</ul>
-<hr>
-<p>参考文章：<br><a href="http://blog.jobbole.com/24006/" target="_blank" rel="noopener">http://blog.jobbole.com/24006/</a><br><a href="http://hedengcheng.com/?p=771#_%E7%BB%84%E5%90%88%E4%B8%80%EF%BC%9Aid%E4%B8%BB%E9%94%AE+RC" target="_blank" rel="noopener">http://hedengcheng.com/?p=771#_%E7%BB%84%E5%90%88%E4%B8%80%EF%BC%9Aid%E4%B8%BB%E9%94%AE+RC</a></p>
+        <p>1.Spring的启动点与关闭点<br>2.jvm shutDownHook<br><a id="more"></a></p>
+<h1 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h1><p>内部一个用于任务调度的项目，依赖该项目的工程在发布部署时候经常会有这个报错<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">java.lang.IllegalStateException: BeanFactory not initialized or already closed </span><br><span class="line">call <span class="string">'refresh'</span> before accessing beans via the ApplicationContext</span><br></pre></td></tr></table></figure></p>
+<p>经排查问题的原因是工程启动后会开启一个daemon线程不断轮询db中的任务并执行，执行过程中会调用ApplicationContext的getBean()方法，而当项目重新部署时会先停掉tomcat，这时候触发了Spring容器的关闭，而后台线程还在调用getBean方法，此时就会提示这个错误。</p>
+<h1 id="解决方法"><a href="#解决方法" class="headerlink" title="解决方法"></a>解决方法</h1><h2 id="Listener"><a href="#Listener" class="headerlink" title="Listener"></a>Listener</h2><p>基于Spring FrameWork的web项目，在web.xml中都会配置一个Spring相关的Listener<br><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">listener</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">listener-class</span>&gt;</span>org.springframework.web.context.ContextLoaderListener<span class="tag">&lt;/<span class="name">listener-class</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">listener</span>&gt;</span></span><br></pre></td></tr></table></figure></p>
+<p>这个Listener提供了很多回调的方法，eg：contextInitialized/contextDestroyed<br>前者执行了Spring容器的启动过程（refresh()）；后者执行了容器的销毁工作，主要包括销毁所有bean（单例）以及关闭容器(BeanFactory)。在销毁Bean的过程中执行了，每个bean注册的destroy()方法(如果注册了的话)。<br>解决方法比较简单，配置一个自定义的Listener，放到上面这个Listener的后面，值得一提的是Listener的contextInitialized顺序和contextDestroyed的执行顺序刚好相反，前者和配置的上下顺序一致，后者反之。<br>但是，本工程是以jar包的形式供业务使用，采用本方案需要业务方自行在web.xml中配置Listener，这对业务的侵入性较大，于是否定了该方案。</p>
+<h2 id="Bean的destroy"><a href="#Bean的destroy" class="headerlink" title="Bean的destroy()"></a>Bean的destroy()</h2><p>该方案利用了Spring在销毁BeanFactory之前会销毁所有单例的bean这一特性。编写自定义的bean，在destroy方法中实现关闭调度任务的逻辑。<br>该方法可行，但需要配置一个和业务无关的bean，不够优雅。</p>
+<h2 id="ShutDownHook"><a href="#ShutDownHook" class="headerlink" title="ShutDownHook"></a>ShutDownHook</h2><p>最后采用shutDownHook，在项目工程启动时候注册一个钩子方法，方法中执行调度的关闭<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">Runtime.getRuntime().addShutdownHook(<span class="keyword">new</span> Thread(<span class="keyword">new</span> Runnable() &#123;</span><br><span class="line">           <span class="meta">@Override</span></span><br><span class="line">           <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">               stop();</span><br><span class="line">           &#125;</span><br><span class="line">       &#125;));</span><br></pre></td></tr></table></figure></p>
+<h1 id="执行流程"><a href="#执行流程" class="headerlink" title="执行流程"></a>执行流程</h1><p>测试了下上述几种方案，执行顺序是<br>shutDownHook()-&gt;listener#contextDestroyed()-&gt;Bean#destroy()-&gt;BeanFactory#close()</p>
 
       
     </div>
@@ -450,7 +357,7 @@
       
         <div class="post-tags">
           
-            <a href="/tags/数据库/" rel="tag"># 数据库</a>
+            <a href="/tags/Java/" rel="tag"># Java</a>
           
         </div>
       
@@ -463,8 +370,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2018/12/20/network-protocal/" rel="next" title="网络协议(2)">
-                <i class="fa fa-chevron-left"></i> 网络协议(2)
+              <a href="/2019/02/16/Spring-bean-circular-reference/" rel="next" title="Spring bean循环依赖">
+                <i class="fa fa-chevron-left"></i> Spring bean循环依赖
               </a>
             
           </div>
@@ -472,10 +379,6 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2019/02/16/Spring-bean-circular-reference/" rel="prev" title="Spring bean循环依赖">
-                Spring bean循环依赖 <i class="fa fa-chevron-right"></i>
-              </a>
             
           </div>
         </div>
@@ -607,7 +510,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#快照读"><span class="nav-number">1.</span> <span class="nav-text">快照读</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#当前读"><span class="nav-number">2.</span> <span class="nav-text">当前读</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#幻读"><span class="nav-number">3.</span> <span class="nav-text">幻读</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#条件"><span class="nav-number">3.1.</span> <span class="nav-text">条件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#举例"><span class="nav-number">3.2.</span> <span class="nav-text">举例</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#问题"><span class="nav-number">3.3.</span> <span class="nav-text">问题</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#如何解决幻读"><span class="nav-number">4.</span> <span class="nav-text">如何解决幻读</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#GAP锁"><span class="nav-number">4.1.</span> <span class="nav-text">GAP锁</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#加锁举例"><span class="nav-number">4.2.</span> <span class="nav-text">加锁举例</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#索引"><span class="nav-number">5.</span> <span class="nav-text">索引</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#数据结构的演进"><span class="nav-number">5.1.</span> <span class="nav-text">数据结构的演进</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#从二叉树到B树"><span class="nav-number">5.1.1.</span> <span class="nav-text">从二叉树到B树</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#从B树到B-树"><span class="nav-number">5.1.2.</span> <span class="nav-text">从B树到B+树</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#InnoDB-VS-MyISAM"><span class="nav-number">5.2.</span> <span class="nav-text">InnoDB VS MyISAM</span></a></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#背景"><span class="nav-number">1.</span> <span class="nav-text">背景</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#解决方法"><span class="nav-number">2.</span> <span class="nav-text">解决方法</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Listener"><span class="nav-number">2.1.</span> <span class="nav-text">Listener</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Bean的destroy"><span class="nav-number">2.2.</span> <span class="nav-text">Bean的destroy()</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#ShutDownHook"><span class="nav-number">2.3.</span> <span class="nav-text">ShutDownHook</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#执行流程"><span class="nav-number">3.</span> <span class="nav-text">执行流程</span></a></li></ol></div>
             
 
           </div>

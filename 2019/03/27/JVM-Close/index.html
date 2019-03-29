@@ -68,7 +68,7 @@
 
 
 
-  <meta name="keywords" content="Java," />
+  <meta name="keywords" content="Spring," />
 
 
 
@@ -79,18 +79,18 @@
 
 
 
-<meta name="description" content="1.Spring的启动点与关闭点2.jvm shutDownHook">
-<meta name="keywords" content="Java">
+<meta name="description" content="由一个线上报错引发的关于Spring容器优雅关闭的探究">
+<meta name="keywords" content="Spring">
 <meta property="og:type" content="article">
-<meta property="og:title" content="ShutDownHook">
+<meta property="og:title" content="Spring容器优雅关闭">
 <meta property="og:url" content="http://yoursite.com/2019/03/27/JVM-Close/index.html">
 <meta property="og:site_name" content="鲁宇的技术博客">
-<meta property="og:description" content="1.Spring的启动点与关闭点2.jvm shutDownHook">
+<meta property="og:description" content="由一个线上报错引发的关于Spring容器优雅关闭的探究">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2019-03-27T07:24:40.000Z">
+<meta property="og:updated_time" content="2019-03-29T02:52:11.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="ShutDownHook">
-<meta name="twitter:description" content="1.Spring的启动点与关闭点2.jvm shutDownHook">
+<meta name="twitter:title" content="Spring容器优雅关闭">
+<meta name="twitter:description" content="由一个线上报错引发的关于Spring容器优雅关闭的探究">
 
 
 
@@ -126,7 +126,7 @@
 
 
 
-  <title>ShutDownHook | 鲁宇的技术博客</title>
+  <title>Spring容器优雅关闭 | 鲁宇的技术博客</title>
   
 
 
@@ -260,7 +260,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">ShutDownHook</h1>
+          <h1 class="post-title" itemprop="name headline">Spring容器优雅关闭</h1>
         
 
         <div class="post-meta">
@@ -295,8 +295,8 @@
               
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Java-进阶/" itemprop="url" rel="index">
-                    <span itemprop="name">Java 进阶</span>
+                  <a href="/categories/Spring/" itemprop="url" rel="index">
+                    <span itemprop="name">Spring</span>
                   </a>
                 </span>
 
@@ -332,14 +332,21 @@
       
 
       
-        <p>1.Spring的启动点与关闭点<br>2.jvm shutDownHook<br><a id="more"></a></p>
+        <p>由一个线上报错引发的关于Spring容器优雅关闭的探究<br><a id="more"></a></p>
 <h1 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h1><p>内部一个用于任务调度的项目，依赖该项目的工程在发布部署时候经常会有这个报错<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">java.lang.IllegalStateException: BeanFactory not initialized or already closed </span><br><span class="line">call <span class="string">'refresh'</span> before accessing beans via the ApplicationContext</span><br></pre></td></tr></table></figure></p>
 <p>经排查问题的原因是工程启动后会开启一个daemon线程不断轮询db中的任务并执行，执行过程中会调用ApplicationContext的getBean()方法，而当项目重新部署时会先停掉tomcat，这时候触发了Spring容器的关闭，而后台线程还在调用getBean方法，此时就会提示这个错误。</p>
 <h1 id="解决方法"><a href="#解决方法" class="headerlink" title="解决方法"></a>解决方法</h1><h2 id="Listener"><a href="#Listener" class="headerlink" title="Listener"></a>Listener</h2><p>基于Spring FrameWork的web项目，在web.xml中都会配置一个Spring相关的Listener<br><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">listener</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">listener-class</span>&gt;</span>org.springframework.web.context.ContextLoaderListener<span class="tag">&lt;/<span class="name">listener-class</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">listener</span>&gt;</span></span><br></pre></td></tr></table></figure></p>
 <p>这个Listener提供了很多回调的方法，eg：contextInitialized/contextDestroyed<br>前者执行了Spring容器的启动过程（refresh()）；后者执行了容器的销毁工作，主要包括销毁所有bean（单例）以及关闭容器(BeanFactory)。在销毁Bean的过程中执行了，每个bean注册的destroy()方法(如果注册了的话)。<br>解决方法比较简单，配置一个自定义的Listener，放到上面这个Listener的后面，值得一提的是Listener的contextInitialized顺序和contextDestroyed的执行顺序刚好相反，前者和配置的上下顺序一致，后者反之。<br>但是，本工程是以jar包的形式供业务使用，采用本方案需要业务方自行在web.xml中配置Listener，这对业务的侵入性较大，于是否定了该方案。</p>
-<h2 id="Bean的destroy"><a href="#Bean的destroy" class="headerlink" title="Bean的destroy()"></a>Bean的destroy()</h2><p>该方案利用了Spring在销毁BeanFactory之前会销毁所有单例的bean这一特性。编写自定义的bean，在destroy方法中实现关闭调度任务的逻辑。<br>该方法可行，但需要配置一个和业务无关的bean，不够优雅。</p>
-<h2 id="ShutDownHook"><a href="#ShutDownHook" class="headerlink" title="ShutDownHook"></a>ShutDownHook</h2><p>最后采用shutDownHook，在项目工程启动时候注册一个钩子方法，方法中执行调度的关闭<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">Runtime.getRuntime().addShutdownHook(<span class="keyword">new</span> Thread(<span class="keyword">new</span> Runnable() &#123;</span><br><span class="line">           <span class="meta">@Override</span></span><br><span class="line">           <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">               stop();</span><br><span class="line">           &#125;</span><br><span class="line">       &#125;));</span><br></pre></td></tr></table></figure></p>
-<h1 id="执行流程"><a href="#执行流程" class="headerlink" title="执行流程"></a>执行流程</h1><p>测试了下上述几种方案，执行顺序是<br>shutDownHook()-&gt;listener#contextDestroyed()-&gt;Bean#destroy()-&gt;BeanFactory#close()</p>
+<h2 id="ShutDownHook"><a href="#ShutDownHook" class="headerlink" title="ShutDownHook"></a>ShutDownHook</h2><p>在项目工程启动时候注册一个钩子方法，方法中执行调度的关闭<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">Runtime.getRuntime().addShutdownHook(<span class="keyword">new</span> Thread(<span class="keyword">new</span> Runnable() &#123;</span><br><span class="line">           <span class="meta">@Override</span></span><br><span class="line">           <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">               stopScheduler();</span><br><span class="line">           &#125;</span><br><span class="line">       &#125;));</span><br></pre></td></tr></table></figure></p>
+<p>最开始用的该方法，后来发现可能有问题。<br>我们发现Tomcat启动时候也会注册一个hook方法，代码如下<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">start</span><span class="params">()</span> </span>&#123;</span><br><span class="line"><span class="comment">//....</span></span><br><span class="line"><span class="keyword">if</span> (useShutdownHook) &#123;</span><br><span class="line"><span class="keyword">if</span> (shutdownHook == <span class="keyword">null</span>) &#123;</span><br><span class="line">    shutdownHook = <span class="keyword">new</span> CatalinaShutdownHook();</span><br><span class="line">&#125;</span><br><span class="line">Runtime.getRuntime().addShutdownHook(shutdownHook);</span><br><span class="line"><span class="comment">//....</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">protected</span> <span class="class"><span class="keyword">class</span> <span class="title">CatalinaShutdownHook</span> <span class="keyword">extends</span> <span class="title">Thread</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            <span class="keyword">if</span> (getServer() != <span class="keyword">null</span>) &#123;</span><br><span class="line">                Catalina.<span class="keyword">this</span>.stop();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125; <span class="keyword">catch</span> (Throwable ex) &#123;</span><br><span class="line">            log.error(sm.getString(<span class="string">"catalina.shutdownHookFail"</span>), ex);</span><br><span class="line">        &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">            <span class="comment">// If JULI is used, shut JULI down *after* the server shuts down</span></span><br><span class="line">            <span class="comment">// so log messages aren't lost</span></span><br><span class="line">            LogManager logManager = LogManager.getLogManager();</span><br><span class="line">            <span class="keyword">if</span> (logManager <span class="keyword">instanceof</span> ClassLoaderLogManager) &#123;</span><br><span class="line">                ((ClassLoaderLogManager) logManager).shutdown();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>上面代码中的<code>Catalina.this.stop()</code>会触发tomcat一系列组件的关闭，包括StandardWrapper，而该组件会触发Servlet的关闭，进而被特定的Listener监听到执行Spring的销毁工作。</p>
+<p>关于hook  java doc中这样描述的<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">When the virtual machine begins its shutdown sequence it will start all </span><br><span class="line">registered shutdown hooks in some unspecified order and let them run concurrently.</span><br></pre></td></tr></table></figure></p>
+<p>这意味着hook之间是并行执行的，所以通过该方法并不能完全保证，先关闭任务调度再关闭Spring容器，所以排除了该方法。</p>
+<h2 id="Bean的destroy"><a href="#Bean的destroy" class="headerlink" title="Bean的destroy()"></a>Bean的destroy()</h2><p>该方案利用了Spring在销毁BeanFactory之前会销毁所有单例的bean这一特性。编写自定义的bean，在destroy方法中实现关闭调度任务的逻辑。<br>该方法可行，但需要配置一个和业务无关的bean，有些不够优雅。</p>
+<h2 id="Spring-Application的事件发布与监听机制"><a href="#Spring-Application的事件发布与监听机制" class="headerlink" title="Spring Application的事件发布与监听机制"></a>Spring Application的事件发布与监听机制</h2><p>我们先看看Application的关闭方法<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">doClose</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            <span class="comment">// Publish shutdown event.</span></span><br><span class="line">            publishEvent(<span class="keyword">new</span> ContextClosedEvent(<span class="keyword">this</span>));</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">// Destroy all cached singletons in the context's BeanFactory.</span></span><br><span class="line">        destroyBeans();</span><br><span class="line">        <span class="comment">// Close the state of this context itself.</span></span><br><span class="line">        closeBeanFactory();</span><br><span class="line">        <span class="comment">// Let subclasses do some final clean-up if they wish...</span></span><br><span class="line">        onClose();</span><br><span class="line">        <span class="keyword">synchronized</span> (<span class="keyword">this</span>.activeMonitor) &#123;</span><br><span class="line">            <span class="keyword">this</span>.active = <span class="keyword">false</span>;</span><br><span class="line">        &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>我们看到在销毁Beans以及关闭BeanFactory之前会发布容器关闭的事件。我们可以在这里去自定义监听器，去实现停止调度的逻辑。<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Service</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MyListener</span> <span class="keyword">implements</span> <span class="title">ApplicationListener</span> </span>&#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onApplicationEvent</span><span class="params">(ApplicationEvent event)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span>(event <span class="keyword">instanceof</span> ContextClosedEvent) &#123;</span><br><span class="line">            stopScheduler();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>最终采用该方案，利用Application内置的监听机制，在容器关闭前执行一些业务的清理工作。</p>
 
       
     </div>
@@ -357,7 +364,7 @@
       
         <div class="post-tags">
           
-            <a href="/tags/Java/" rel="tag"># Java</a>
+            <a href="/tags/Spring/" rel="tag"># Spring</a>
           
         </div>
       
@@ -510,7 +517,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#背景"><span class="nav-number">1.</span> <span class="nav-text">背景</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#解决方法"><span class="nav-number">2.</span> <span class="nav-text">解决方法</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Listener"><span class="nav-number">2.1.</span> <span class="nav-text">Listener</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Bean的destroy"><span class="nav-number">2.2.</span> <span class="nav-text">Bean的destroy()</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#ShutDownHook"><span class="nav-number">2.3.</span> <span class="nav-text">ShutDownHook</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#执行流程"><span class="nav-number">3.</span> <span class="nav-text">执行流程</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#背景"><span class="nav-number">1.</span> <span class="nav-text">背景</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#解决方法"><span class="nav-number">2.</span> <span class="nav-text">解决方法</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Listener"><span class="nav-number">2.1.</span> <span class="nav-text">Listener</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#ShutDownHook"><span class="nav-number">2.2.</span> <span class="nav-text">ShutDownHook</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Bean的destroy"><span class="nav-number">2.3.</span> <span class="nav-text">Bean的destroy()</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Spring-Application的事件发布与监听机制"><span class="nav-number">2.4.</span> <span class="nav-text">Spring Application的事件发布与监听机制</span></a></li></ol></li></ol></div>
             
 
           </div>

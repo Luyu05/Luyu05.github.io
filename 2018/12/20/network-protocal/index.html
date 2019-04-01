@@ -98,7 +98,7 @@
 <meta property="og:image" content="http://yoursite.com/2018/12/20/network-protocal/009.png">
 <meta property="og:image" content="http://yoursite.com/2018/12/20/network-protocal/010.png">
 <meta property="og:image" content="http://yoursite.com/2018/12/20/network-protocal/011.png">
-<meta property="og:updated_time" content="2018-12-23T07:10:41.000Z">
+<meta property="og:updated_time" content="2019-03-29T09:24:01.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="网络协议(2)">
 <meta name="twitter:description" content="看了刘超大佬的课程记的一些笔记">
@@ -350,7 +350,7 @@
 <font color="red">只要是在网络上跑的包，都是完整的。可以有下层没上层，绝对不可能有上层没下层。所以对于TCP协议来说，三次握手/重试 只要想发出包，就要经过IP层和MAC层</font>
 
 <p>一个在网络传递的包如下所示<br><img src="/2018/12/20/network-protocal/002.jpg"></p>
-<h1 id="IP地址"><a href="#IP地址" class="headerlink" title="IP地址"></a>IP地址</h1><p>ip地址类比大学宿舍 mac地址类比身份证id<br>ip分为公有ip 和 私有ip  一般公司都会有一个统一的公有ip 和 许多私有ip</p>
+<h1 id="IP地址"><a href="#IP地址" class="headerlink" title="IP地址"></a>IP地址</h1><p>ip地址类比大学宿舍 mac地址类比身份证id<br>ip分为公有ip 和 私有ip  一般公司都会有一个统一的公有ip 和 许多私有ip<br>同一个局域网内的设备ip地址不能相同，不然ARP根本找不到目标机器</p>
 <h2 id="CIDR"><a href="#CIDR" class="headerlink" title="CIDR"></a>CIDR</h2><p>无类型域间选路（CIDR）<br>网络号 + 主机号 10.100.122.2/24 前24位是网络号 后8位是主机号<br>广播地址 10.100.122.255 发送到这个地址所有的10.100.122.x都能收到<br>子网掩码 255.255.255.0<br>子网掩码和IP地址执行AND 就可以得到网络号</p>
 <h2 id="DHCP"><a href="#DHCP" class="headerlink" title="DHCP"></a>DHCP</h2><p>自动分配ip-DHCP协议（池化思想，用后即还）</p>
 <ol>
@@ -403,7 +403,7 @@
 <li>如果最后一个ACK发送失败，右侧会重新发送FIN，左侧再次发送ACK </li>
 <li>另一个作用是保证，右侧发到左侧的包都在网络中彻底过期，不然可能该端口新的应用会收到混乱的消息（化身）</li>
 </ul>
-<p>【问题1】为什么连接的时候是三次握手，关闭的时候却是四次握手？<br>答：因为当Server端收到Client端的SYN连接请求报文后，可以直接发送SYN+ACK报文。其中ACK报文是用来应答的，SYN报文是用来同步的。但是关闭连接时，当Server端收到FIN报文时，很可能并不会立即关闭SOCKET，所以只能先回复一个ACK报文，告诉Client端，”你发的FIN报文我收到了”。只有等到我Server端所有的报文都发送完了，我才能发送FIN报文，因此不能一起发送。故需要四步握手。</p>
+<p>【问题1】为什么连接的时候是三次握手，关闭的时候却是四次握手？<br>答：因为当Server端收到Client端的SYN连接请求报文后，可以直接发送SYN+ACK报文。其中ACK报文是用来应答的，SYN报文是用来同步的。但是关闭连接时，当Server端收到FIN报文时，很可能并不会立即关闭SOCKET，所以只能先回复一个ACK报文，告诉Client端，”你发的FIN报文我收到了”。只有等到我Server端所有的报文都发送完了，我才能发送FIN报文，因此不能一起发送。故需要四步握手。<br>Client发送FIN表示，我没话想跟你说了，但是Server会先回一个我知道了，但是可能Server还有话对Client说，所以大多数时候FIN和ACK不会同时发送到Client端。</p>
 <p>【问题2】为什么TIME_WAIT状态需要经过2MSL(最大报文段生存时间)才能返回到CLOSE状态？<br>答：<br>1）2MSL可以保证从我这里发送的所有包都不会有『有效』应答了，那么我可以放心的closed了<br>2）注意client是在收到FIN后才变为time-wait状态的，假设网络状况极差ACK到达服务端已经过了MSL，这时候服务端要再次发送FIN而这个FIN的最大值也是MSL，所以这里取2MSL</p>
 <p>【问题3】 为什么seq要和时间戳挂钩？不能每次都从1递增？<br> 答：假如A发送了1，2，3到B，然后A下线了，不久又上线了如果再次从1发送可能会收到无效的B发来的应答</p>
 <h2 id="状态机"><a href="#状态机" class="headerlink" title="状态机"></a>状态机</h2><p><img src="/2018/12/20/network-protocal/007.png"></p>
@@ -581,7 +581,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">52</span>
+                  <span class="site-state-item-count">53</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -603,7 +603,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">14</span>
+                  <span class="site-state-item-count">15</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>

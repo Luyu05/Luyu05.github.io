@@ -89,7 +89,7 @@
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="http://yoursite.com/2018/09/12/tcp-window/001.jpeg">
 <meta property="og:image" content="http://yoursite.com/2018/09/12/tcp-window/002.jpeg">
-<meta property="og:updated_time" content="2018-09-15T05:26:39.000Z">
+<meta property="og:updated_time" content="2019-03-30T10:41:24.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="tcp window">
 <meta name="twitter:description" content="Outline1.对比了拥塞控制和流量控制2.拥塞控制的细节">
@@ -377,6 +377,7 @@
 </tr>
 </tbody>
 </table>
+<p>Ps：滑动窗口分为拥塞窗口和接收窗口两类</p>
 <h3 id="拥塞控制的一些细节"><a href="#拥塞控制的一些细节" class="headerlink" title="拥塞控制的一些细节"></a><font color="green" size="5">拥塞控制的一些细节</font></h3><p>拥塞控制的几种算法：慢开始( slow-start )、拥塞避免( congestion avoidance )、快重传( fast retransmit )和快恢复( fast recovery )<br>最开始指数增长阶段就是<font color="blue">慢开始算法</font>、而线性增长阶段是<font color="blue">拥塞避免算法</font><br>Ps:更新后的ssthresh值变为出现超时时的拥塞窗口数值的一半<br><img src="/2018/09/12/tcp-window/001.jpeg"></p>
 <p><font color="blue">快重传算法</font><br>1）首先要求接收方每收到一个<code>失序的报文段</code>后就立即发出重复确认（为的是使发送方及早知道有报文段没有到达对方）而不要等到自己发送数据时才进行捎带确认。</p>
 <p>2）算法还规定，发送方只要一连收到三个重复确认就应当立即重传对方尚未收到的报文段Mx，而不必继续等待Mx设置的重传计时器到期。由于发送方尽早重传未被确认的报文段，因此采用快重传后可以使整个网络吞吐量提高约20%。</p>
@@ -505,7 +506,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">52</span>
+                  <span class="site-state-item-count">53</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -527,7 +528,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">14</span>
+                  <span class="site-state-item-count">15</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>

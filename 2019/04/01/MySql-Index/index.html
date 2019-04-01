@@ -1,0 +1,799 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="MySQL," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="索引的概念、数据结构、原理等">
+<meta name="keywords" content="MySQL">
+<meta property="og:type" content="article">
+<meta property="og:title" content="深入理解MySQL索引">
+<meta property="og:url" content="http://yoursite.com/2019/04/01/MySql-Index/index.html">
+<meta property="og:site_name" content="鲁宇的技术博客">
+<meta property="og:description" content="索引的概念、数据结构、原理等">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2019-04-01T12:01:56.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="深入理解MySQL索引">
+<meta name="twitter:description" content="索引的概念、数据结构、原理等">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2019/04/01/MySql-Index/"/>
+
+
+
+
+
+  <title>深入理解MySQL索引 | 鲁宇的技术博客</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">鲁宇的技术博客</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/04/01/MySql-Index/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Luyu">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="鲁宇的技术博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">深入理解MySQL索引</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-04-01T13:14:01+08:00">
+                2019-04-01
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/数据库/" itemprop="url" rel="index">
+                    <span itemprop="name">数据库</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>索引的概念、数据结构、原理等<br><a id="more"></a></p>
+<h1 id="索引是啥"><a href="#索引是啥" class="headerlink" title="索引是啥"></a>索引是啥</h1><p>数据库索引可以类比为一本书的目录，主要的目的就是快速的定位到目标。这需要支持快速搜索的数据结构的支持，比如哈希表、有序数组和搜索树。</p>
+<hr>
+<h1 id="索引的几种形态"><a href="#索引的几种形态" class="headerlink" title="索引的几种形态"></a>索引的几种形态</h1><p>根据底层数据结构的不同，大致有三种类型的索引结构<br>1）基于哈希表的索引<br>适用于区间查找的场景<br>缺点：对区间查找不友好</p>
+<p>2）有序数组：<br>优点：利用二分查找，等值查询和范围查询性能都很好<br>缺点：对动态插入、删除、更新不友好<br>适用于静态数据或变动不频繁的场景</p>
+<p>3）搜索树<br>目前大部分数据库引擎都用的该方案，这里引出几个问题</p>
+<p>为什么不用二叉搜索树？<br>答：因为二叉树的高度很高，而索引会存放在磁盘上，这将导致数据查询过程需要多次访问磁盘，这会大幅降低搜索效率，所以使用多叉树</p>
+<p>B树和B+树的区别？<br>答：<br>B+树和B树相比，主要的不同点在以下3项：</p>
+<ul>
+<li>内部节点中，关键字的个数与其子树的个数相同，不像B树，子树的个数总比关键字个数多1个</li>
+<li>所有指向文件的关键字及其指针都在叶子节点中，不像B树，有的指向文件的关键字是在内部节点中。换句话说，B+树中，内部节点仅仅起到索引的作用，真正的数据都存储在叶子节点</li>
+<li>在搜索过程中，如果查询和内部节点的关键字一致，那么搜索过程不停止，而是继续向下搜索这个分支，直到叶子节点</li>
+</ul>
+<p>根据B+树的结构，我们可以发现B+树相比于B树，在文件系统，数据库系统当中，更有优势，原因如下：</p>
+<ul>
+<li><p>B+树的磁盘读写代价更低</p>
+<ul>
+<li>B+树的内部结点并没有指向关键字具体信息的指针。因此其内部结点相对B树更小。如果把所有同一内部结点的关键字存放在同一盘块中,那么盘块所能容纳的关键字数量也越多。一次性读入内存中的需要查找的关键字也就越多。相对来说I/O读写次数也就降低了。</li>
+</ul>
+</li>
+<li><p>B+树的查询效率更加稳定</p>
+<ul>
+<li>由于内部结点并不是最终指向文件内容的结点，而只是叶子结点中关键字的索引。所以任何关键字的查找必须走一条从根结点到叶子结点的路。所有关键字查询的路径长度相同，导致每一个数据的查询效率相当。</li>
+</ul>
+</li>
+<li><p>B+树更有利于对数据库的扫描</p>
+<ul>
+<li>B树在提高了磁盘IO性能的同时并没有解决元素遍历的效率低下的问题，而B+树只需要遍历叶子节点就可以解决对全部关键字信息的扫描，所以对于数据库中频繁使用的range query，B+树有着更高的性能。</li>
+</ul>
+</li>
+</ul>
+<hr>
+<h1 id="索引数据结构"><a href="#索引数据结构" class="headerlink" title="索引数据结构"></a>索引数据结构</h1><h2 id="InnoDB与MyISAM"><a href="#InnoDB与MyISAM" class="headerlink" title="InnoDB与MyISAM"></a>InnoDB与MyISAM</h2><p>MyISAM使用的是B+Tree，叶节点存放的数据是记录的地址，即一份映射关系。主键索引树和非主键索引树结构上没区别</p>
+<p>InnoDB使用的也是B+Tree，和MyISAM相比最大的区别是他的数据文件本身就是索引文件，而MyISAM索引文件和数据文件是分离的。非主键树叶子节点存放的是主键的值，而主键树叶子节点存放的是整条记录。因此InnoDB要求表必须要有主键，如果未配置那么会默认生成一个主键。同样的如果重建主键索引（先drop再add），相当于整个表都要重建（包括其他非聚合索引树）</p>
+<h2 id="页分裂与优化"><a href="#页分裂与优化" class="headerlink" title="页分裂与优化"></a>页分裂与优化</h2><ul>
+<li>B+树索引的维护<ul>
+<li>新插入数据，要在主键树节点（存放在Page中：类似数组）中插入<ul>
+<li>插入尾部无影响（追加操作；自增主键就是这样做的）</li>
+<li>插入中间需要移位</li>
+</ul>
+</li>
+<li>如果Page满了，还需要进行页分裂，要申请一个新的数据页并移动数据，性能很差<ul>
+<li>页分裂<ul>
+<li>分裂后，两个page数据各占50%</li>
+<li>会导致空间利用率下降，优点是适合于随机插入的场景</li>
+<li>目前InnoDB的优化策略（0%分裂策略）<ul>
+<li>页满了之后，申请新的空间并不移动老数据</li>
+<li>针对递增递减场景很合适，如果随机插入反而不如50%策略</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>InnoDB为每个索引页维护了一个上次插入的位置，以及上次的单调情况<ul>
+<li>根据这些信息判断插入到页面的记录是否满足单调条件，如果满足那么执行0%分裂，否则执行50%分裂</li>
+<li>这样会有bug，3,4,5,6在一个块且递增，接下来插入9-&gt;8-&gt;7都会执行0%策略导致页利用率极低</li>
+<li>优化策略，分裂时采用『1策略』，至少带着最后一位一起分裂</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>因删除操作而导致的页合并</li>
+<li>为什么经常要求table有一个自增主键？<ul>
+<li>如果是业务主键无法保证有序递增，这可能会导致移位（50%分裂） 降低空间利用率</li>
+<li>在其他非主键索引构成的树中，叶子存放的是主键，所以使用自增主键占用的空间更小</li>
+<li>主键长度越小，普通索引的叶子节点就越小，普通索引占用的空间就越小</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<hr>
+<h1 id="联合索引的原理"><a href="#联合索引的原理" class="headerlink" title="联合索引的原理"></a>联合索引的原理</h1><p>key ‘Index_Uni’ (‘name’,’age’) 假设根据name和age两个字段建立了联合索引，那么这颗树叶子节点应该是这样的<br>(‘luyu’,10) (‘luyu’,11) (‘luyu’,12) (‘mike’,10) (‘mike’,12) …<br>当我们执行如下查询<br><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> * <span class="keyword">from</span> <span class="keyword">table</span> <span class="keyword">where</span> <span class="keyword">name</span> = <span class="string">'luyu'</span> <span class="keyword">and</span> age = <span class="number">12</span>;</span><br></pre></td></tr></table></figure></p>
+<p>此时第一步会根据二分查找定位到’luyu’<br>Ps这里有个猜测，因为找到’luyu’之后如果要找age=12的记录采用遍历的话时间复杂度较高，所以找到’luyu’应该是第一个和最后一个，然后再根据age在[10,12]这里进行二分查找</p>
+<h2 id="联合索引实例"><a href="#联合索引实例" class="headerlink" title="联合索引实例"></a>联合索引实例</h2><p><code>只有待查询的数据在当前范围内有序才能使用索引</code></p>
+<p>a/b/c联合索引：<br>select <em> from table where a = 10 and b &lt;= 20 and c &gt; 20<br>a b会生效<br>select </em> from table where a &lt; 10 and b &lt;= 20 and c &gt; 20<br>a会生效</p>
+<p>name/age联合索引：<br>select * from table1 where name like ‘张%’ and age = 12;<br>只有name会生效</p>
+<h2 id="为什么会有最左匹配"><a href="#为什么会有最左匹配" class="headerlink" title="为什么会有最左匹配"></a>为什么会有最左匹配</h2><p>看了联合索引树叶子节点的排列形式应该就清楚为什么要最左匹配了<br>因为如果最左都不匹配根本无法获取当前列的有序数据，更别提使用算法去查找了</p>
+<hr>
+<h1 id="索引覆盖"><a href="#索引覆盖" class="headerlink" title="索引覆盖"></a>索引覆盖</h1><p>为了避免回表（额外访问1次主键树）<br>比如 select Id from t where k = 1 此时Id已经存在叶子节点了 无需回表</p>
+<p>select v from t where k = 1 如果存在 k v的联合索引，此时也无需回表查询<br>这也是常见的一种优化手段</p>
+<hr>
+<h1 id="索引下推"><a href="#索引下推" class="headerlink" title="索引下推"></a>索引下推</h1><p>key ‘Index_Uni’ (‘name’,’age’)<br>select * from tuser where name like ‘张%’ and age=10;<br>此时只有name的索引会生效，MySQL5.6之后采用了优化策略，在定位到’张%’后，无需立即回表查询对应age=10的记录，而是可以先在索引树上遍历age=10的记录再回表查询。</p>
+<hr>
+<h1 id="数据库索引的查询算法"><a href="#数据库索引的查询算法" class="headerlink" title="数据库索引的查询算法"></a>数据库索引的查询算法</h1><p>t1(a int primary key, b int key)<br><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> * <span class="keyword">from</span> t1 <span class="keyword">where</span> b &gt;= <span class="number">4</span>;</span><br></pre></td></tr></table></figure></p>
+<p>上面sql等价于查找最后一个b=4的位置</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> * <span class="keyword">from</span> t1 <span class="keyword">where</span> b &lt;= <span class="number">4</span>;</span><br></pre></td></tr></table></figure>
+<p>上面sql等价于查找第一个b=4的位置</p>
+<p>后续会单独写一篇二分查找的文章解决类似的问题</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/MySQL/" rel="tag"># MySQL</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/03/27/JVM-Close/" rel="next" title="Spring容器优雅关闭">
+                <i class="fa fa-chevron-left"></i> Spring容器优雅关闭
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">Luyu</p>
+              <p class="site-description motion-element" itemprop="description">知识广度是深度的副产品</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">53</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">12</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">15</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#索引是啥"><span class="nav-number">1.</span> <span class="nav-text">索引是啥</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#索引的几种形态"><span class="nav-number">2.</span> <span class="nav-text">索引的几种形态</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#索引数据结构"><span class="nav-number">3.</span> <span class="nav-text">索引数据结构</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#InnoDB与MyISAM"><span class="nav-number">3.1.</span> <span class="nav-text">InnoDB与MyISAM</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#页分裂与优化"><span class="nav-number">3.2.</span> <span class="nav-text">页分裂与优化</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#联合索引的原理"><span class="nav-number">4.</span> <span class="nav-text">联合索引的原理</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#联合索引实例"><span class="nav-number">4.1.</span> <span class="nav-text">联合索引实例</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#为什么会有最左匹配"><span class="nav-number">4.2.</span> <span class="nav-text">为什么会有最左匹配</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#索引覆盖"><span class="nav-number">5.</span> <span class="nav-text">索引覆盖</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#索引下推"><span class="nav-number">6.</span> <span class="nav-text">索引下推</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#数据库索引的查询算法"><span class="nav-number">7.</span> <span class="nav-text">数据库索引的查询算法</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Luyu</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Mist</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

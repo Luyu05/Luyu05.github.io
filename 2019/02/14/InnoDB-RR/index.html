@@ -89,7 +89,7 @@
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="http://yoursite.com/2019/02/14/InnoDB-RR/002.jpg">
 <meta property="og:image" content="http://yoursite.com/2019/02/14/InnoDB-RR/001.jpg">
-<meta property="og:updated_time" content="2019-05-16T07:04:03.000Z">
+<meta property="og:updated_time" content="2019-05-17T09:10:03.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="MySQL核心-事务、锁以及日志">
 <meta name="twitter:description" content="MySQL核心-事务、锁以及日志">
@@ -338,11 +338,11 @@
         <p>MySQL核心-事务、锁以及日志<br><a id="more"></a></p>
 <h1 id="锁分类"><a href="#锁分类" class="headerlink" title="锁分类"></a>锁分类</h1><p>粒度划分：表锁、行锁、范围锁（GAP）<br>锁的模式：共享、排他、意向</p>
 <h3 id="1-表-行（S锁、X锁）"><a href="#1-表-行（S锁、X锁）" class="headerlink" title="1.表/行（S锁、X锁）"></a>1.表/行（S锁、X锁）</h3><p>S:读锁<br>X:写锁</p>
-<h3 id="2-意向锁（IS锁、IX锁）"><a href="#2-意向锁（IS锁、IX锁）" class="headerlink" title="2.意向锁（IS锁、IX锁）"></a>2.意向锁（IS锁、IX锁）</h3><p>意向锁是表（共享锁、排它锁）和行（共享锁、排它锁）之间的桥梁<br>表级别的锁<br>一个事务A给某张表加了一个意向锁，暗示接下来要对该表的一行数据加行X锁，这样事务B如果要给整张表加X锁就不用遍历每一行查看是否能加X锁了。反过来，一个事务如果要给某张表的某一行加S锁，那么需要先获得整张表的IS（X同理）<br>IS和锁级别的S互斥，IX和锁级别的X互斥。</p>
+<h3 id="2-意向锁（IS锁、IX锁）"><a href="#2-意向锁（IS锁、IX锁）" class="headerlink" title="2.意向锁（IS锁、IX锁）"></a>2.意向锁（IS锁、IX锁）</h3><p>意向锁是表（共享锁、排它锁）和行（共享锁、排它锁）之间的桥梁<br>表级别的锁<br>一个事务A给某张表加了一个意向锁IX，暗示接下来要对该表的一行数据加行X锁，这样事务B如果要给整张表加X锁就不用遍历每一行查看是否能加X锁了。反过来，一个事务如果要给某张表的某一行加S锁，那么需要先获得整张表的IS（X同理）<br>IS和表级别的S互斥，IX和表级别的X互斥。</p>
 <h3 id="3-AI"><a href="#3-AI" class="headerlink" title="3.AI"></a>3.AI</h3><p>自增锁-&gt;表级别<br>保证同一个事务连续的insert操作的自增列（一般id）连续</p>
 <h3 id="4-Next-Key锁-临键锁-下文有详细介绍"><a href="#4-Next-Key锁-临键锁-下文有详细介绍" class="headerlink" title="4.Next-Key锁(临键锁/下文有详细介绍)"></a>4.Next-Key锁(临键锁/下文有详细介绍)</h3><hr>
 <h1 id="事务分类"><a href="#事务分类" class="headerlink" title="事务分类"></a>事务分类</h1><p><img src="/2019/02/14/InnoDB-RR/002.jpg"><br>这里重点强调下更新丢失</p>
-<h3 id="第一类更新丢失"><a href="#第一类更新丢失" class="headerlink" title="第一类更新丢失"></a>第一类更新丢失</h3><p>执行时间重合的两个事务，均更新了某条记录的fiedl1，第一个事务更新成功并commit，第二个事务却更新失败并执行回滚这时候如果没有任何处理措施，会将第一个事务的更新覆盖。这种情况称为第一类更新丢失，目前这四个隔离级别都没有这个问题了，具体解决方式不清楚，后续查下资料。</p>
+<h3 id="第一类更新丢失"><a href="#第一类更新丢失" class="headerlink" title="第一类更新丢失"></a>第一类更新丢失</h3><p>执行时间重合的两个事务，均更新了某条记录的field1，第一个事务更新成功并commit，第二个事务却更新失败并执行回滚这时候如果没有任何处理措施，会将第一个事务的更新覆盖。这种情况称为第一类更新丢失，目前这四个隔离级别都没有这个问题了，具体解决方式不清楚，后续查下资料。</p>
 <h3 id="第二类更新丢失"><a href="#第二类更新丢失" class="headerlink" title="第二类更新丢失"></a>第二类更新丢失</h3><p>就是业务上常见的场景，同样执行时间重合的两个事务，均更新了某条记录的fiedl1（均是先读取再更新），事务1和事务2读取到了当前db中记录的值，接着事务1对它进行了+1并commit，而事务2进行了-1并commit，这时候因为事务2读取的是旧值而将事务1的更新覆盖了。</p>
 <p>针对第二类更新丢失常见的解决方法如下</p>
 <h4 id="方法1：单条语句的原子性"><a href="#方法1：单条语句的原子性" class="headerlink" title="方法1：单条语句的原子性"></a>方法1：单条语句的原子性</h4><p>update T set account = account + 1 where userId = 1</p>
@@ -359,7 +359,7 @@
 <li><p>具体的实现方式<br> 1.事务启动时，会维持一个数组，用来保存启动瞬间，当前『活跃』的事务ID<br> 2.小于数组中最低ID的数据都是可见的；大于数组中最大ID的数据都是不可见的<br> 3.大于最低ID&amp;小于最高ID的数据，如果位于数组中那么是不可见的；反之可见</p>
 </li>
 </ul>
-<p>MVCC基于快照读，保证读读不加锁，读写不加锁，极大提升了性能 类似JUC里的CopyOnWriteLock</p>
+<p>MVCC基于快照读，保证读读不加锁，读写不加锁，极大提升了性能 类似JUC里的CopyOnWriteList</p>
 <h1 id="当前读"><a href="#当前读" class="headerlink" title="当前读"></a>当前读</h1><p>update/delete/select for update/select lock in share mode都属于当前读<br>前3个语句会对行加X锁，最后一个加S锁<br>Ps:如果存在unique index那么insert时候也会加锁</p>
 <hr>
 <h1 id="幻读"><a href="#幻读" class="headerlink" title="幻读"></a>幻读</h1><h2 id="条件"><a href="#条件" class="headerlink" title="条件"></a>条件</h2><ul>

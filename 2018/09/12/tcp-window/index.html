@@ -89,7 +89,7 @@
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="http://yoursite.com/2018/09/12/tcp-window/001.jpeg">
 <meta property="og:image" content="http://yoursite.com/2018/09/12/tcp-window/002.jpeg">
-<meta property="og:updated_time" content="2019-03-30T10:41:24.000Z">
+<meta property="og:updated_time" content="2019-04-04T08:05:43.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="tcp window">
 <meta name="twitter:description" content="Outline1.对比了拥塞控制和流量控制2.拥塞控制的细节">
@@ -340,7 +340,7 @@
 <p>TCP（Transmission Control Protocol 传输控制协议）是一种面向连接的、可靠的、基于字节流的传输层通信协议。</p>
 <p>三个概念：<br><code>面向连接</code>：必须在建立连接前确认对方链路可达并准备好才开始通信，建立后对状态的保持。（udp直接通信，不会询问接收端是否可达并准备接收数据）</p>
 <p><code>字节流</code>：tcp传输的是byte类型数据。</p>
-<p><code>可靠</code>：保证数据报能够到达接收端（超时重传机制、丢包重传及数据顺序一致）（真的一定可靠吗？）</p>
+<p><code>可靠</code>：保证数据报能够到达接收端（超时重传机制、丢包重传及数据顺序一致）</p>
 <h3 id="拥塞控制和流量控制对比"><a href="#拥塞控制和流量控制对比" class="headerlink" title="拥塞控制和流量控制对比"></a><font color="green" size="5">拥塞控制和流量控制对比</font></h3><table>
 <thead>
 <tr>
@@ -353,10 +353,10 @@
 <tr>
 <td>窗口</td>
 <td>拥塞窗口(cwnd)</td>
-<td>接收窗口(rwnd)</td>
+<td>滑动窗口(rwnd)</td>
 </tr>
 <tr>
-<td>窗口维持者</td>
+<td>窗口大小定义者</td>
 <td>发送方</td>
 <td>接收方</td>
 </tr>
@@ -377,7 +377,8 @@
 </tr>
 </tbody>
 </table>
-<p>Ps：滑动窗口分为拥塞窗口和接收窗口两类</p>
+<p>最早先有滑动窗口，接收方告知发送方当前可以接收的量，这在局域网一般没问题，但是一旦到网络中可能因为每个连接发送的数据量过大而导致出现堵塞的状况，而且如果再有重试机制可能会导致雪崩。为此引入了拥塞窗口，发送端根据当前的网络状况决定发送数据的多少。</p>
+<p>Ps滑动窗口和拥塞窗口接收发送两端都有</p>
 <h3 id="拥塞控制的一些细节"><a href="#拥塞控制的一些细节" class="headerlink" title="拥塞控制的一些细节"></a><font color="green" size="5">拥塞控制的一些细节</font></h3><p>拥塞控制的几种算法：慢开始( slow-start )、拥塞避免( congestion avoidance )、快重传( fast retransmit )和快恢复( fast recovery )<br>最开始指数增长阶段就是<font color="blue">慢开始算法</font>、而线性增长阶段是<font color="blue">拥塞避免算法</font><br>Ps:更新后的ssthresh值变为出现超时时的拥塞窗口数值的一半<br><img src="/2018/09/12/tcp-window/001.jpeg"></p>
 <p><font color="blue">快重传算法</font><br>1）首先要求接收方每收到一个<code>失序的报文段</code>后就立即发出重复确认（为的是使发送方及早知道有报文段没有到达对方）而不要等到自己发送数据时才进行捎带确认。</p>
 <p>2）算法还规定，发送方只要一连收到三个重复确认就应当立即重传对方尚未收到的报文段Mx，而不必继续等待Mx设置的重传计时器到期。由于发送方尽早重传未被确认的报文段，因此采用快重传后可以使整个网络吞吐量提高约20%。</p>
@@ -506,7 +507,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">53</span>
+                  <span class="site-state-item-count">51</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>

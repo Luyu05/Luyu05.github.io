@@ -79,20 +79,21 @@
 
 
 
-<meta name="description" content="Mysql InnoDB引擎下 RR隔离级别的一些特性">
+<meta name="description" content="MySQL核心-事务、锁以及日志">
 <meta name="keywords" content="数据库">
 <meta property="og:type" content="article">
-<meta property="og:title" content="InnoDB引擎">
+<meta property="og:title" content="MySQL核心-事务、锁以及日志">
 <meta property="og:url" content="http://yoursite.com/2019/02/14/InnoDB-RR/index.html">
 <meta property="og:site_name" content="Get The Real Thing">
-<meta property="og:description" content="Mysql InnoDB引擎下 RR隔离级别的一些特性">
+<meta property="og:description" content="MySQL核心-事务、锁以及日志">
 <meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://yoursite.com/2019/02/14/InnoDB-RR/002.jpg">
 <meta property="og:image" content="http://yoursite.com/2019/02/14/InnoDB-RR/001.jpg">
-<meta property="og:updated_time" content="2019-02-15T10:37:37.000Z">
+<meta property="og:updated_time" content="2019-05-16T07:04:03.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="InnoDB引擎">
-<meta name="twitter:description" content="Mysql InnoDB引擎下 RR隔离级别的一些特性">
-<meta name="twitter:image" content="http://yoursite.com/2019/02/14/InnoDB-RR/001.jpg">
+<meta name="twitter:title" content="MySQL核心-事务、锁以及日志">
+<meta name="twitter:description" content="MySQL核心-事务、锁以及日志">
+<meta name="twitter:image" content="http://yoursite.com/2019/02/14/InnoDB-RR/002.jpg">
 
 
 
@@ -128,7 +129,7 @@
 
 
 
-  <title>InnoDB引擎 | Get The Real Thing</title>
+  <title>MySQL核心-事务、锁以及日志 | Get The Real Thing</title>
   
 
 
@@ -262,7 +263,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">InnoDB引擎</h1>
+          <h1 class="post-title" itemprop="name headline">MySQL核心-事务、锁以及日志</h1>
         
 
         <div class="post-meta">
@@ -334,36 +335,57 @@
       
 
       
-        <p>Mysql InnoDB引擎下 RR隔离级别的一些特性<br><a id="more"></a></p>
-<h1 id="快照读"><a href="#快照读" class="headerlink" title="快照读"></a>快照读</h1><p>RR隔离级别，事务启动时会创建一个整个库的视图</p>
+        <p>MySQL核心-事务、锁以及日志<br><a id="more"></a></p>
+<h1 id="锁分类"><a href="#锁分类" class="headerlink" title="锁分类"></a>锁分类</h1><p>粒度划分：表锁、行锁、范围锁（GAP）<br>锁的模式：共享、排他、意向</p>
+<h3 id="1-表-行（S锁、X锁）"><a href="#1-表-行（S锁、X锁）" class="headerlink" title="1.表/行（S锁、X锁）"></a>1.表/行（S锁、X锁）</h3><p>S:读锁<br>X:写锁</p>
+<h3 id="2-意向锁（IS锁、IX锁）"><a href="#2-意向锁（IS锁、IX锁）" class="headerlink" title="2.意向锁（IS锁、IX锁）"></a>2.意向锁（IS锁、IX锁）</h3><p>意向锁是表（共享锁、排它锁）和行（共享锁、排它锁）之间的桥梁<br>表级别的锁<br>一个事务A给某张表加了一个意向锁，暗示接下来要对该表的一行数据加行X锁，这样事务B如果要给整张表加X锁就不用遍历每一行查看是否能加X锁了。反过来，一个事务如果要给某张表的某一行加S锁，那么需要先获得整张表的IS（X同理）<br>IS和锁级别的S互斥，IX和锁级别的X互斥。</p>
+<h3 id="3-AI"><a href="#3-AI" class="headerlink" title="3.AI"></a>3.AI</h3><p>自增锁-&gt;表级别<br>保证同一个事务连续的insert操作的自增列（一般id）连续</p>
+<h3 id="4-Next-Key锁-临键锁-下文有详细介绍"><a href="#4-Next-Key锁-临键锁-下文有详细介绍" class="headerlink" title="4.Next-Key锁(临键锁/下文有详细介绍)"></a>4.Next-Key锁(临键锁/下文有详细介绍)</h3><hr>
+<h1 id="事务分类"><a href="#事务分类" class="headerlink" title="事务分类"></a>事务分类</h1><p><img src="/2019/02/14/InnoDB-RR/002.jpg"><br>这里重点强调下更新丢失</p>
+<h3 id="第一类更新丢失"><a href="#第一类更新丢失" class="headerlink" title="第一类更新丢失"></a>第一类更新丢失</h3><p>执行时间重合的两个事务，均更新了某条记录的fiedl1，第一个事务更新成功并commit，第二个事务却更新失败并执行回滚这时候如果没有任何处理措施，会将第一个事务的更新覆盖。这种情况称为第一类更新丢失，目前这四个隔离级别都没有这个问题了，具体解决方式不清楚，后续查下资料。</p>
+<h3 id="第二类更新丢失"><a href="#第二类更新丢失" class="headerlink" title="第二类更新丢失"></a>第二类更新丢失</h3><p>就是业务上常见的场景，同样执行时间重合的两个事务，均更新了某条记录的fiedl1（均是先读取再更新），事务1和事务2读取到了当前db中记录的值，接着事务1对它进行了+1并commit，而事务2进行了-1并commit，这时候因为事务2读取的是旧值而将事务1的更新覆盖了。</p>
+<p>针对第二类更新丢失常见的解决方法如下</p>
+<h4 id="方法1：单条语句的原子性"><a href="#方法1：单条语句的原子性" class="headerlink" title="方法1：单条语句的原子性"></a>方法1：单条语句的原子性</h4><p>update T set account = account + 1 where userId = 1</p>
+<p>Ps：update Ticket set count = count -  1 where ticketId = 1 and count &gt; 0</p>
+<h4 id="方法2：悲观锁"><a href="#方法2：悲观锁" class="headerlink" title="方法2：悲观锁"></a>方法2：悲观锁</h4><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">start</span> <span class="keyword">transaction</span></span><br><span class="line"><span class="built_in">int</span> b = <span class="keyword">select</span> <span class="keyword">account</span> <span class="keyword">from</span> T <span class="keyword">where</span> userId = <span class="number">1</span> <span class="keyword">for</span> <span class="keyword">update</span></span><br><span class="line">b = b + <span class="number">1</span></span><br><span class="line"><span class="keyword">update</span> T <span class="keyword">set</span> <span class="keyword">account</span> = b <span class="keyword">where</span> userId = <span class="number">1</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">start</span> <span class="keyword">transaction</span></span><br><span class="line"><span class="built_in">int</span> b = <span class="keyword">select</span> <span class="keyword">account</span> <span class="keyword">from</span> T <span class="keyword">where</span> userId = <span class="number">1</span> <span class="keyword">for</span> <span class="keyword">update</span></span><br><span class="line">b = b - <span class="number">1</span></span><br><span class="line"><span class="keyword">update</span> T <span class="keyword">set</span> <span class="keyword">account</span> = b <span class="keyword">where</span> userId = <span class="number">1</span></span><br></pre></td></tr></table></figure>
+<h4 id="方法3：乐观锁"><a href="#方法3：乐观锁" class="headerlink" title="方法3：乐观锁"></a>方法3：乐观锁</h4><p>一般和while循环一起使用<br><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">start</span> <span class="keyword">transaction</span></span><br><span class="line"><span class="built_in">int</span> b,v1 = <span class="keyword">select</span> <span class="keyword">account</span>, <span class="keyword">version</span> <span class="keyword">from</span> T <span class="keyword">where</span> userId = <span class="number">1</span> <span class="keyword">for</span> <span class="keyword">update</span></span><br><span class="line">b = b + <span class="number">1</span></span><br><span class="line"><span class="keyword">update</span> T <span class="keyword">set</span> <span class="keyword">account</span> = b <span class="keyword">where</span> userId = <span class="number">1</span> <span class="keyword">and</span> <span class="keyword">version</span> = v1;</span><br></pre></td></tr></table></figure></p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">start</span> <span class="keyword">transaction</span></span><br><span class="line"><span class="built_in">int</span> b,v1 = <span class="keyword">select</span> <span class="keyword">account</span>, <span class="keyword">version</span> <span class="keyword">from</span> T <span class="keyword">where</span> userId = <span class="number">1</span> <span class="keyword">for</span> <span class="keyword">update</span></span><br><span class="line">b = b - <span class="number">1</span></span><br><span class="line"><span class="keyword">update</span> T <span class="keyword">set</span> <span class="keyword">account</span> = b <span class="keyword">where</span> userId = <span class="number">1</span> <span class="keyword">and</span> <span class="keyword">version</span> = v1;</span><br></pre></td></tr></table></figure>
+<hr>
+<h1 id="快照读"><a href="#快照读" class="headerlink" title="快照读"></a>快照读</h1><p>RR隔离级别，事务启动时会创建一个整个库的视图<br>Ps RC隔离级别，每条sql单独创建一个视图</p>
 <ul>
 <li><p>辅助知识点<br> db中每行数据都有多个版本，每个版本有自己的row trx_id（对其修改的事务id）</p>
 </li>
 <li><p>具体的实现方式<br> 1.事务启动时，会维持一个数组，用来保存启动瞬间，当前『活跃』的事务ID<br> 2.小于数组中最低ID的数据都是可见的；大于数组中最大ID的数据都是不可见的<br> 3.大于最低ID&amp;小于最高ID的数据，如果位于数组中那么是不可见的；反之可见</p>
 </li>
 </ul>
-<hr>
+<p>MVCC基于快照读，保证读读不加锁，读写不加锁，极大提升了性能 类似JUC里的CopyOnWriteLock</p>
 <h1 id="当前读"><a href="#当前读" class="headerlink" title="当前读"></a>当前读</h1><p>update/delete/select for update/select lock in share mode都属于当前读<br>前3个语句会对行加X锁，最后一个加S锁<br>Ps:如果存在unique index那么insert时候也会加锁</p>
 <hr>
 <h1 id="幻读"><a href="#幻读" class="headerlink" title="幻读"></a>幻读</h1><h2 id="条件"><a href="#条件" class="headerlink" title="条件"></a>条件</h2><ul>
 <li>插入</li>
 <li>当前读</li>
 </ul>
+<p>本质：无法对未来插入的符合加锁条件的行加锁，从而产生一些『不可控的状况』</p>
 <h2 id="举例"><a href="#举例" class="headerlink" title="举例"></a>举例</h2><p>Ps：假设此时并未引入Next-Key Lock(其实就是RC隔离级别的做法)<br>table(id key, name) </p>
 <table>
 <thead>
 <tr>
 <th>id</th>
-<th>1</th>
-<th>5</th>
-<th>10</th>
+<th>name</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td>name</td>
+<td>1</td>
 <td>mike</td>
+</tr>
+<tr>
+<td>5</td>
 <td>luyu</td>
+</tr>
+<tr>
+<td>10</td>
 <td>jack</td>
 </tr>
 </tbody>
@@ -401,28 +423,32 @@
 <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">insert</span> <span class="keyword">into</span> <span class="keyword">table</span> <span class="keyword">values</span>(<span class="number">5</span>, john);</span><br><span class="line"><span class="keyword">update</span> <span class="keyword">table</span> <span class="keyword">set</span> <span class="keyword">name</span>=<span class="string">'jack'</span> <span class="keyword">where</span> <span class="keyword">name</span> = <span class="string">'john'</span>;</span><br><span class="line"><span class="keyword">update</span> <span class="keyword">table</span> <span class="keyword">set</span> <span class="keyword">id</span>=<span class="number">2</span> <span class="keyword">where</span> <span class="keyword">id</span>=<span class="number">5</span>;</span><br></pre></td></tr></table></figure>
 <p>如果这个binlog拿去从库执行，就会出现主从数据的不一致</p>
 <hr>
-<h1 id="如何解决幻读"><a href="#如何解决幻读" class="headerlink" title="如何解决幻读"></a>如何解决幻读</h1><h2 id="GAP锁"><a href="#GAP锁" class="headerlink" title="GAP锁"></a>GAP锁</h2><p>归根结底，问题出现的原因就是，session2中insert语句的执行<br>此时需要引入next-key lock(RR默认)，对可能执行id=5插入的区间加锁，在上面例子中RR级别下id位于[1,10)的记录的insert操作都将会block</p>
+<h1 id="如何解决幻读"><a href="#如何解决幻读" class="headerlink" title="如何解决幻读"></a>如何解决幻读</h1><h2 id="Next-Key锁"><a href="#Next-Key锁" class="headerlink" title="Next-Key锁"></a>Next-Key锁</h2><p>归根结底，问题出现的原因就是，session2中insert语句的执行<br>此时需要引入next-key lock(RR默认)，对可能执行id=5插入的区间加锁，在上面例子中RR级别下id位于[1,10)的记录的insert操作都将会block</p>
 <h2 id="加锁举例"><a href="#加锁举例" class="headerlink" title="加锁举例"></a>加锁举例</h2><p>RR隔离级别<br>table(id key, name) </p>
 <table>
 <thead>
 <tr>
 <th>id</th>
-<th>1</th>
-<th>5</th>
-<th>10</th>
+<th>name</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td>name</td>
+<td>1</td>
 <td>mike</td>
+</tr>
+<tr>
+<td>5</td>
 <td>luyu</td>
+</tr>
+<tr>
+<td>10</td>
 <td>jack</td>
 </tr>
 </tbody>
 </table>
 <p>select * from table where id = 5 for update;</p>
-<p>表中横轴代表id是哪种类型的索引，纵轴代表sql语句执行的结果<br><img src="/2019/02/14/InnoDB-RR/001.jpg"></p>
+<p>表中横轴代表id是哪种类型的索引，纵轴代表sql语句执行的结果（范围锁一般只针对非唯一索引）<br><img src="/2019/02/14/InnoDB-RR/001.jpg"></p>
 <hr>
 <h1 id="索引"><a href="#索引" class="headerlink" title="索引"></a>索引</h1><h2 id="数据结构的演进"><a href="#数据结构的演进" class="headerlink" title="数据结构的演进"></a>数据结构的演进</h2><h3 id="从二叉树到B树"><a href="#从二叉树到B树" class="headerlink" title="从二叉树到B树"></a>从二叉树到B树</h3><p>B树其实就是多叉树，当数据量较大时二叉树的深度过大，而索引可能是存储在磁盘上的，这可能会导致某个具体数据的定位过程耗时较长，为此引入了B树（多叉树）</p>
 <h3 id="从B树到B-树"><a href="#从B树到B-树" class="headerlink" title="从B树到B+树"></a>从B树到B+树</h3><p>相比B树，B+树只有叶子节点才存储具体的数据，这意味着非叶子节点可以存储更多的索引意味着树的高度会相应降低；而且因为所有的data都存储在叶子节点，range查询变得更为方便</p>
@@ -431,6 +457,11 @@
 <li>InnoDB的数据文件本身就是索引文件;MyISAM索引文件和数据文件是分离的，索引文件仅保存数据记录的地址</li>
 <li>InnoDB的辅助索引data域存储相应记录主键的值而不是地址</li>
 </ul>
+<hr>
+<h1 id="MySQL-log"><a href="#MySQL-log" class="headerlink" title="MySQL log"></a>MySQL log</h1><h2 id="redo-log"><a href="#redo-log" class="headerlink" title="redo log"></a>redo log</h2><p>前滚日志、物理日志记录数据页的修改<br>事务1，执行了多个update操作，需要修改不同的磁盘Page，如果直接去修改磁盘那么性能简直爆炸。为此不直接写磁盘，而是在内存中进行事务提交，然后再通过后台线程异步地把内存中的数据写到磁盘中。<br>but，如果宕机，会出现数据丢失问题<br>为此，我们在提交到内存后-》会去写日志（Write-Ahead log）-》后台线程异步地把内存中的数据写到磁盘中<br>如果宕机的话可以通过日志降低数据丢失量</p>
+<p>InnoDB引擎的Write-Ahead log就是Redo Log。而Redo log的刷盘也是异步的（Redo buffer 到 Redo log），可以配置三种刷盘策略<br>1）秒级别    /s<br>2）事务级别  /transaction 一般使用该策略 几乎不会丢失数据 但是性能较差<br>3）不刷盘（指定时间）</p>
+<h2 id="undo-log"><a href="#undo-log" class="headerlink" title="undo log"></a>undo log</h2><p>回滚日志、逻辑日志、记录行记录的变更<br>本质：『备份数据』，事务未提交之前的时间里的备份数据，提交事务后，如果没有其他事务引用历史版本，就可以删除了</p>
+<h2 id="bin-log"><a href="#bin-log" class="headerlink" title="bin  log"></a>bin  log</h2><p>位于Server层，所有引擎通用<br>逻辑日志，常用于归档<br>bin log和redo log是二阶段提交</p>
 <hr>
 <p>参考文章：<br><a href="http://blog.jobbole.com/24006/" target="_blank" rel="noopener">http://blog.jobbole.com/24006/</a><br><a href="http://hedengcheng.com/?p=771#_%E7%BB%84%E5%90%88%E4%B8%80%EF%BC%9Aid%E4%B8%BB%E9%94%AE+RC" target="_blank" rel="noopener">http://hedengcheng.com/?p=771#_%E7%BB%84%E5%90%88%E4%B8%80%EF%BC%9Aid%E4%B8%BB%E9%94%AE+RC</a></p>
 
@@ -552,7 +583,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">53</span>
+                  <span class="site-state-item-count">51</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -607,7 +638,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#快照读"><span class="nav-number">1.</span> <span class="nav-text">快照读</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#当前读"><span class="nav-number">2.</span> <span class="nav-text">当前读</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#幻读"><span class="nav-number">3.</span> <span class="nav-text">幻读</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#条件"><span class="nav-number">3.1.</span> <span class="nav-text">条件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#举例"><span class="nav-number">3.2.</span> <span class="nav-text">举例</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#问题"><span class="nav-number">3.3.</span> <span class="nav-text">问题</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#如何解决幻读"><span class="nav-number">4.</span> <span class="nav-text">如何解决幻读</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#GAP锁"><span class="nav-number">4.1.</span> <span class="nav-text">GAP锁</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#加锁举例"><span class="nav-number">4.2.</span> <span class="nav-text">加锁举例</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#索引"><span class="nav-number">5.</span> <span class="nav-text">索引</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#数据结构的演进"><span class="nav-number">5.1.</span> <span class="nav-text">数据结构的演进</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#从二叉树到B树"><span class="nav-number">5.1.1.</span> <span class="nav-text">从二叉树到B树</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#从B树到B-树"><span class="nav-number">5.1.2.</span> <span class="nav-text">从B树到B+树</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#InnoDB-VS-MyISAM"><span class="nav-number">5.2.</span> <span class="nav-text">InnoDB VS MyISAM</span></a></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#锁分类"><span class="nav-number">1.</span> <span class="nav-text">锁分类</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-表-行（S锁、X锁）"><span class="nav-number">1.0.1.</span> <span class="nav-text">1.表/行（S锁、X锁）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-意向锁（IS锁、IX锁）"><span class="nav-number">1.0.2.</span> <span class="nav-text">2.意向锁（IS锁、IX锁）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-AI"><span class="nav-number">1.0.3.</span> <span class="nav-text">3.AI</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-Next-Key锁-临键锁-下文有详细介绍"><span class="nav-number">1.0.4.</span> <span class="nav-text">4.Next-Key锁(临键锁/下文有详细介绍)</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#事务分类"><span class="nav-number">2.</span> <span class="nav-text">事务分类</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#第一类更新丢失"><span class="nav-number">2.0.1.</span> <span class="nav-text">第一类更新丢失</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#第二类更新丢失"><span class="nav-number">2.0.2.</span> <span class="nav-text">第二类更新丢失</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#方法1：单条语句的原子性"><span class="nav-number">2.0.2.1.</span> <span class="nav-text">方法1：单条语句的原子性</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#方法2：悲观锁"><span class="nav-number">2.0.2.2.</span> <span class="nav-text">方法2：悲观锁</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#方法3：乐观锁"><span class="nav-number">2.0.2.3.</span> <span class="nav-text">方法3：乐观锁</span></a></li></ol></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#快照读"><span class="nav-number">3.</span> <span class="nav-text">快照读</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#当前读"><span class="nav-number">4.</span> <span class="nav-text">当前读</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#幻读"><span class="nav-number">5.</span> <span class="nav-text">幻读</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#条件"><span class="nav-number">5.1.</span> <span class="nav-text">条件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#举例"><span class="nav-number">5.2.</span> <span class="nav-text">举例</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#问题"><span class="nav-number">5.3.</span> <span class="nav-text">问题</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#如何解决幻读"><span class="nav-number">6.</span> <span class="nav-text">如何解决幻读</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Next-Key锁"><span class="nav-number">6.1.</span> <span class="nav-text">Next-Key锁</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#加锁举例"><span class="nav-number">6.2.</span> <span class="nav-text">加锁举例</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#索引"><span class="nav-number">7.</span> <span class="nav-text">索引</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#数据结构的演进"><span class="nav-number">7.1.</span> <span class="nav-text">数据结构的演进</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#从二叉树到B树"><span class="nav-number">7.1.1.</span> <span class="nav-text">从二叉树到B树</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#从B树到B-树"><span class="nav-number">7.1.2.</span> <span class="nav-text">从B树到B+树</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#InnoDB-VS-MyISAM"><span class="nav-number">7.2.</span> <span class="nav-text">InnoDB VS MyISAM</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#MySQL-log"><span class="nav-number">8.</span> <span class="nav-text">MySQL log</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#redo-log"><span class="nav-number">8.1.</span> <span class="nav-text">redo log</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#undo-log"><span class="nav-number">8.2.</span> <span class="nav-text">undo log</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#bin-log"><span class="nav-number">8.3.</span> <span class="nav-text">bin  log</span></a></li></ol></li></ol></div>
             
 
           </div>

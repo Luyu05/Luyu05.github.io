@@ -82,14 +82,14 @@
 <meta name="description" content="索引的概念、数据结构、原理等">
 <meta name="keywords" content="MySQL">
 <meta property="og:type" content="article">
-<meta property="og:title" content="深入理解MySQL索引">
+<meta property="og:title" content="MySQL核心-索引">
 <meta property="og:url" content="http://yoursite.com/2019/04/01/MySql-Index/index.html">
 <meta property="og:site_name" content="Get The Real Thing">
 <meta property="og:description" content="索引的概念、数据结构、原理等">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2019-04-02T01:48:09.000Z">
+<meta property="og:updated_time" content="2019-05-16T07:03:58.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="深入理解MySQL索引">
+<meta name="twitter:title" content="MySQL核心-索引">
 <meta name="twitter:description" content="索引的概念、数据结构、原理等">
 
 
@@ -126,7 +126,7 @@
 
 
 
-  <title>深入理解MySQL索引 | Get The Real Thing</title>
+  <title>MySQL核心-索引 | Get The Real Thing</title>
   
 
 
@@ -260,7 +260,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">深入理解MySQL索引</h1>
+          <h1 class="post-title" itemprop="name headline">MySQL核心-索引</h1>
         
 
         <div class="post-meta">
@@ -418,9 +418,9 @@
 <h1 id="索引下推"><a href="#索引下推" class="headerlink" title="索引下推"></a><font color="green" size="5">索引下推</font></h1><p>key ‘Index_Uni’ (‘name’,’age’)<br>select * from tuser where name like ‘张%’ and age=10;<br>此时只有name的索引会生效，MySQL5.6之后采用了优化策略，在定位到’张%’后，无需立即回表查询对应age=10的记录，而是可以先在索引树上遍历age=10的记录再回表查询。</p>
 <hr>
 <h1 id="数据库索引的查询算法"><a href="#数据库索引的查询算法" class="headerlink" title="数据库索引的查询算法"></a><font color="green" size="5">数据库索引的查询算法</font></h1><p>t1(a int primary key, b int key)<br><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> * <span class="keyword">from</span> t1 <span class="keyword">where</span> b &gt;= <span class="number">4</span>;</span><br></pre></td></tr></table></figure></p>
-<p>上面sql等价于查找最后一个b=4的位置</p>
-<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> * <span class="keyword">from</span> t1 <span class="keyword">where</span> b &lt;= <span class="number">4</span>;</span><br></pre></td></tr></table></figure>
 <p>上面sql等价于查找第一个b=4的位置</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> * <span class="keyword">from</span> t1 <span class="keyword">where</span> b &lt;= <span class="number">4</span>;</span><br></pre></td></tr></table></figure>
+<p>上面sql等价于查找最后一个b=4的位置</p>
 <p>后续会单独写一篇二分查找的文章解决类似的问题</p>
 
       
@@ -537,7 +537,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">53</span>
+                  <span class="site-state-item-count">51</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>

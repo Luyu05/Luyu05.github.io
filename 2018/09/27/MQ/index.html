@@ -89,7 +89,7 @@
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="http://yoursite.com/2018/09/27/MQ/001.jpg">
 <meta property="og:image" content="http://yoursite.com/2018/09/27/MQ/001.jpg">
-<meta property="og:updated_time" content="2018-09-28T01:40:31.000Z">
+<meta property="og:updated_time" content="2019-04-17T02:22:40.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="MQ-入门">
 <meta name="twitter:description" content="Outline1.使用场景2.如何保证消息可靠到达3.如何保证幂等4.如何削峰填谷">
@@ -356,7 +356,7 @@
 <p><code>下半场的超时与重传</code></p>
 <p>MQ下半场的4或者5或者6如果丢失或者超时，MQ-server内的timer会重发消息，直到收到5并且成功执行6，这个过程可能会重发很多次消息，一般采用指数退避的策略，先隔x秒重发，2x秒重发，4x秒重发，以此类推，需要注意的是，这个过程中MQ-client-receiver也可能会收到同一条消息的多次重发。</p>
 <h2 id="如何保证幂等"><a href="#如何保证幂等" class="headerlink" title="如何保证幂等"></a><font color="green">如何保证幂等</font></h2><p><img src="/2018/09/27/MQ/001.jpg"></p>
-<h3 id="上半场幂等的设计"><a href="#上半场幂等的设计" class="headerlink" title="上半场幂等的设计"></a>上半场幂等的设计</h3><p>此时重发是MQ-client发起的，消息的处理是MQ-server，为了避免步骤2落地重复的消息，对每条消息，MQ系统内部必须生成一个inner-msg-id，作为去重和幂等的依据，这个内部消息ID的特性是：</p>
+<h3 id="上半场幂等的设计"><a href="#上半场幂等的设计" class="headerlink" title="上半场幂等的设计"></a>上半场幂等的设计</h3><p>此时重发是MQ-client发起的，消息的处理是MQ-server，为了避免步骤2落地重复的消息，对每条消息，MQ系统内部必须生成一个inner-msg-id(该id在MQ-client端生成，当需要重试的时候使用同样的消息Id，而不要在server端自动生成消息)，作为去重和幂等的依据，这个内部消息ID的特性是：</p>
 <p>（1）全局唯一</p>
 <p>（2）MQ生成，具备业务无关性，对消息发送方和消息接收方屏蔽</p>
 <p>Ps：上半场的幂等不涉及到调用方的工作，主要保证不会落地重复</p>
@@ -369,6 +369,9 @@
 <h2 id="MQ削峰填谷"><a href="#MQ削峰填谷" class="headerlink" title="MQ削峰填谷"></a><font color="green">MQ削峰填谷</font></h2><p>传统的rpc框架，服务提供方会有限流以及鉴权措施<br>对于通过mq传递引用的场景，如何防止流量过大造成下游服务雪崩？</p>
 <p>1）原来，MQ-client-reciver除了推送模式，还有一种拉模式，reciver每隔一定时间从server拉取一定的消息，以实现流量控制，保护自身。这个是MQ提供的通用功能，无须上下游修改代码。</p>
 <p>2）于此同时，对于批量拉取的消息，消费放最好能够做到批量消费，这需要对原有的1对1的代码进行修改，以实现批量处理</p>
+<h2 id="如何保证业务操作和消息发送的一致性"><a href="#如何保证业务操作和消息发送的一致性" class="headerlink" title="如何保证业务操作和消息发送的一致性"></a><font color="green">如何保证业务操作和消息发送的一致性</font></h2><p>正向：<br>1）业务将消息投递到消息中间件<br>2）中间件收到消息后，将消息存入db，标记消息状态为待处理<br>3）中间件返回消息处理的结果（入库结果）<br>4）业务收到入库结果，如果成功执行业务操作；反之，放弃业务处理，结束<br>5）业务操作完成，将业务操作结果发送到中间件<br>6）如果业务成功，更新消息状态为待发送，并进行消息投递；如果失败，删除db中的消息，结束</p>
+<p>问题：可能出现的问题，全流程执行后（可能有fail）消息仍然处于待处理状态，此时需要反向操作</p>
+<p>反向：<br>1）中间件主动询问业务执行结果<br>2）检查业务执行结果<br>3）如果成功，那么更新消息为待发送；反之删除</p>
 <p>原文链接：<a href="https://mp.weixin.qq.com/s/CIPosICgva9haqstMDIHag" target="_blank" rel="noopener">https://mp.weixin.qq.com/s/CIPosICgva9haqstMDIHag</a></p>
 
       
@@ -489,7 +492,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">53</span>
+                  <span class="site-state-item-count">51</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -544,7 +547,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#使用场景"><span class="nav-number">1.</span> <span class="nav-text">使用场景</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#MQ核心架构"><span class="nav-number">2.</span> <span class="nav-text">MQ核心架构</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#MQ运转流程"><span class="nav-number">3.</span> <span class="nav-text">MQ运转流程</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#如何保证消息可靠到达"><span class="nav-number">4.</span> <span class="nav-text">如何保证消息可靠到达</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#机制"><span class="nav-number">4.1.</span> <span class="nav-text">机制</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#具体措施"><span class="nav-number">4.2.</span> <span class="nav-text">具体措施</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#如何保证幂等"><span class="nav-number">5.</span> <span class="nav-text">如何保证幂等</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#上半场幂等的设计"><span class="nav-number">5.1.</span> <span class="nav-text">上半场幂等的设计</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#下半场幂等的设计"><span class="nav-number">5.2.</span> <span class="nav-text">下半场幂等的设计</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#MQ削峰填谷"><span class="nav-number">6.</span> <span class="nav-text">MQ削峰填谷</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#使用场景"><span class="nav-number">1.</span> <span class="nav-text">使用场景</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#MQ核心架构"><span class="nav-number">2.</span> <span class="nav-text">MQ核心架构</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#MQ运转流程"><span class="nav-number">3.</span> <span class="nav-text">MQ运转流程</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#如何保证消息可靠到达"><span class="nav-number">4.</span> <span class="nav-text">如何保证消息可靠到达</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#机制"><span class="nav-number">4.1.</span> <span class="nav-text">机制</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#具体措施"><span class="nav-number">4.2.</span> <span class="nav-text">具体措施</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#如何保证幂等"><span class="nav-number">5.</span> <span class="nav-text">如何保证幂等</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#上半场幂等的设计"><span class="nav-number">5.1.</span> <span class="nav-text">上半场幂等的设计</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#下半场幂等的设计"><span class="nav-number">5.2.</span> <span class="nav-text">下半场幂等的设计</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#MQ削峰填谷"><span class="nav-number">6.</span> <span class="nav-text">MQ削峰填谷</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#如何保证业务操作和消息发送的一致性"><span class="nav-number">7.</span> <span class="nav-text">如何保证业务操作和消息发送的一致性</span></a></li></ol></div>
             
 
           </div>

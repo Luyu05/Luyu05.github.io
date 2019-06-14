@@ -87,13 +87,14 @@
 <meta property="og:site_name" content="Get The Real Thing">
 <meta property="og:description" content="MySQL核心-事务、锁以及日志">
 <meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://yoursite.com/2019/02/14/InnoDB-RR/003.jpg">
 <meta property="og:image" content="http://yoursite.com/2019/02/14/InnoDB-RR/002.jpg">
 <meta property="og:image" content="http://yoursite.com/2019/02/14/InnoDB-RR/001.jpg">
-<meta property="og:updated_time" content="2019-05-17T09:10:03.000Z">
+<meta property="og:updated_time" content="2019-06-14T09:24:50.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="MySQL核心-事务、锁以及日志">
 <meta name="twitter:description" content="MySQL核心-事务、锁以及日志">
-<meta name="twitter:image" content="http://yoursite.com/2019/02/14/InnoDB-RR/002.jpg">
+<meta name="twitter:image" content="http://yoursite.com/2019/02/14/InnoDB-RR/003.jpg">
 
 
 
@@ -338,7 +339,8 @@
         <p>MySQL核心-事务、锁以及日志<br><a id="more"></a></p>
 <h1 id="锁分类"><a href="#锁分类" class="headerlink" title="锁分类"></a>锁分类</h1><p>粒度划分：表锁、行锁、范围锁（GAP）<br>锁的模式：共享、排他、意向</p>
 <h3 id="1-表-行（S锁、X锁）"><a href="#1-表-行（S锁、X锁）" class="headerlink" title="1.表/行（S锁、X锁）"></a>1.表/行（S锁、X锁）</h3><p>S:读锁<br>X:写锁</p>
-<h3 id="2-意向锁（IS锁、IX锁）"><a href="#2-意向锁（IS锁、IX锁）" class="headerlink" title="2.意向锁（IS锁、IX锁）"></a>2.意向锁（IS锁、IX锁）</h3><p>意向锁是表（共享锁、排它锁）和行（共享锁、排它锁）之间的桥梁<br>表级别的锁<br>一个事务A给某张表加了一个意向锁IX，暗示接下来要对该表的一行数据加行X锁，这样事务B如果要给整张表加X锁就不用遍历每一行查看是否能加X锁了。反过来，一个事务如果要给某张表的某一行加S锁，那么需要先获得整张表的IS（X同理）<br>IS和表级别的S互斥，IX和表级别的X互斥。</p>
+<h3 id="2-意向锁（IS锁、IX锁）"><a href="#2-意向锁（IS锁、IX锁）" class="headerlink" title="2.意向锁（IS锁、IX锁）"></a>2.意向锁（IS锁、IX锁）</h3><p>意向锁是表（共享锁、排它锁）和行（共享锁、排它锁）之间的桥梁<br>表级别的锁<br>一个事务A给某张表加了一个意向锁IX，暗示接下来要对该表的一行数据加行X锁，这样事务B如果要给整张表加X锁就不用遍历每一行查看是否能加X锁了。反过来，一个事务如果要给某张表的某一行加S锁，那么需要先获得整张表的IS（X同理）<br>IS和表级别的S不互斥，IX和表级别的X互斥。</p>
+<p><img src="/2019/02/14/InnoDB-RR/003.jpg"></p>
 <h3 id="3-AI"><a href="#3-AI" class="headerlink" title="3.AI"></a>3.AI</h3><p>自增锁-&gt;表级别<br>保证同一个事务连续的insert操作的自增列（一般id）连续</p>
 <h3 id="4-Next-Key锁-临键锁-下文有详细介绍"><a href="#4-Next-Key锁-临键锁-下文有详细介绍" class="headerlink" title="4.Next-Key锁(临键锁/下文有详细介绍)"></a>4.Next-Key锁(临键锁/下文有详细介绍)</h3><hr>
 <h1 id="事务分类"><a href="#事务分类" class="headerlink" title="事务分类"></a>事务分类</h1><p><img src="/2019/02/14/InnoDB-RR/002.jpg"><br>这里重点强调下更新丢失</p>
@@ -349,8 +351,8 @@
 <p>Ps：update Ticket set count = count -  1 where ticketId = 1 and count &gt; 0</p>
 <h4 id="方法2：悲观锁"><a href="#方法2：悲观锁" class="headerlink" title="方法2：悲观锁"></a>方法2：悲观锁</h4><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">start</span> <span class="keyword">transaction</span></span><br><span class="line"><span class="built_in">int</span> b = <span class="keyword">select</span> <span class="keyword">account</span> <span class="keyword">from</span> T <span class="keyword">where</span> userId = <span class="number">1</span> <span class="keyword">for</span> <span class="keyword">update</span></span><br><span class="line">b = b + <span class="number">1</span></span><br><span class="line"><span class="keyword">update</span> T <span class="keyword">set</span> <span class="keyword">account</span> = b <span class="keyword">where</span> userId = <span class="number">1</span></span><br></pre></td></tr></table></figure>
 <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">start</span> <span class="keyword">transaction</span></span><br><span class="line"><span class="built_in">int</span> b = <span class="keyword">select</span> <span class="keyword">account</span> <span class="keyword">from</span> T <span class="keyword">where</span> userId = <span class="number">1</span> <span class="keyword">for</span> <span class="keyword">update</span></span><br><span class="line">b = b - <span class="number">1</span></span><br><span class="line"><span class="keyword">update</span> T <span class="keyword">set</span> <span class="keyword">account</span> = b <span class="keyword">where</span> userId = <span class="number">1</span></span><br></pre></td></tr></table></figure>
-<h4 id="方法3：乐观锁"><a href="#方法3：乐观锁" class="headerlink" title="方法3：乐观锁"></a>方法3：乐观锁</h4><p>一般和while循环一起使用<br><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">start</span> <span class="keyword">transaction</span></span><br><span class="line"><span class="built_in">int</span> b,v1 = <span class="keyword">select</span> <span class="keyword">account</span>, <span class="keyword">version</span> <span class="keyword">from</span> T <span class="keyword">where</span> userId = <span class="number">1</span> <span class="keyword">for</span> <span class="keyword">update</span></span><br><span class="line">b = b + <span class="number">1</span></span><br><span class="line"><span class="keyword">update</span> T <span class="keyword">set</span> <span class="keyword">account</span> = b <span class="keyword">where</span> userId = <span class="number">1</span> <span class="keyword">and</span> <span class="keyword">version</span> = v1;</span><br></pre></td></tr></table></figure></p>
-<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">start</span> <span class="keyword">transaction</span></span><br><span class="line"><span class="built_in">int</span> b,v1 = <span class="keyword">select</span> <span class="keyword">account</span>, <span class="keyword">version</span> <span class="keyword">from</span> T <span class="keyword">where</span> userId = <span class="number">1</span> <span class="keyword">for</span> <span class="keyword">update</span></span><br><span class="line">b = b - <span class="number">1</span></span><br><span class="line"><span class="keyword">update</span> T <span class="keyword">set</span> <span class="keyword">account</span> = b <span class="keyword">where</span> userId = <span class="number">1</span> <span class="keyword">and</span> <span class="keyword">version</span> = v1;</span><br></pre></td></tr></table></figure>
+<h4 id="方法3：乐观锁"><a href="#方法3：乐观锁" class="headerlink" title="方法3：乐观锁"></a>方法3：乐观锁</h4><p>一般和while循环一起使用<br><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">start</span> <span class="keyword">transaction</span></span><br><span class="line"><span class="built_in">int</span> b,v1 = <span class="keyword">select</span> <span class="keyword">account</span>, <span class="keyword">version</span> <span class="keyword">from</span> T <span class="keyword">where</span> userId = <span class="number">1</span> </span><br><span class="line">b = b + <span class="number">1</span></span><br><span class="line"><span class="keyword">update</span> T <span class="keyword">set</span> <span class="keyword">account</span> = b, <span class="keyword">version</span> = v1 + <span class="number">1</span> <span class="keyword">where</span> userId = <span class="number">1</span> <span class="keyword">and</span> <span class="keyword">version</span> = v1;</span><br></pre></td></tr></table></figure></p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">start</span> <span class="keyword">transaction</span></span><br><span class="line"><span class="built_in">int</span> b,v1 = <span class="keyword">select</span> <span class="keyword">account</span>, <span class="keyword">version</span> <span class="keyword">from</span> T <span class="keyword">where</span> userId = <span class="number">1</span> </span><br><span class="line">b = b - <span class="number">1</span></span><br><span class="line"><span class="keyword">update</span> T <span class="keyword">set</span> <span class="keyword">account</span> = b, <span class="keyword">version</span> = v1 + <span class="number">1</span> <span class="keyword">where</span> userId = <span class="number">1</span> <span class="keyword">and</span> <span class="keyword">version</span> = v1;</span><br></pre></td></tr></table></figure>
 <hr>
 <h1 id="快照读"><a href="#快照读" class="headerlink" title="快照读"></a>快照读</h1><p>RR隔离级别，事务启动时会创建一个整个库的视图<br>Ps RC隔离级别，每条sql单独创建一个视图</p>
 <ul>
@@ -460,6 +462,7 @@
 <hr>
 <h1 id="MySQL-log"><a href="#MySQL-log" class="headerlink" title="MySQL log"></a>MySQL log</h1><h2 id="redo-log"><a href="#redo-log" class="headerlink" title="redo log"></a>redo log</h2><p>前滚日志、物理日志记录数据页的修改<br>事务1，执行了多个update操作，需要修改不同的磁盘Page，如果直接去修改磁盘那么性能简直爆炸。为此不直接写磁盘，而是在内存中进行事务提交，然后再通过后台线程异步地把内存中的数据写到磁盘中。<br>but，如果宕机，会出现数据丢失问题<br>为此，我们在提交到内存后-》会去写日志（Write-Ahead log）-》后台线程异步地把内存中的数据写到磁盘中<br>如果宕机的话可以通过日志降低数据丢失量</p>
 <p>InnoDB引擎的Write-Ahead log就是Redo Log。而Redo log的刷盘也是异步的（Redo buffer 到 Redo log），可以配置三种刷盘策略<br>1）秒级别    /s<br>2）事务级别  /transaction 一般使用该策略 几乎不会丢失数据 但是性能较差<br>3）不刷盘（指定时间）</p>
+<p>log刷盘一般是刷到同一块盘，性能比刷内存提交要好，这就是redo log存在的意义</p>
 <h2 id="undo-log"><a href="#undo-log" class="headerlink" title="undo log"></a>undo log</h2><p>回滚日志、逻辑日志、记录行记录的变更<br>本质：『备份数据』，事务未提交之前的时间里的备份数据，提交事务后，如果没有其他事务引用历史版本，就可以删除了</p>
 <h2 id="bin-log"><a href="#bin-log" class="headerlink" title="bin  log"></a>bin  log</h2><p>位于Server层，所有引擎通用<br>逻辑日志，常用于归档<br>bin log和redo log是二阶段提交</p>
 <hr>
@@ -494,8 +497,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2018/12/20/network-protocal/" rel="next" title="网络协议(2)">
-                <i class="fa fa-chevron-left"></i> 网络协议(2)
+              <a href="/2019/01/15/01-Bag/" rel="next" title="01-Bag">
+                <i class="fa fa-chevron-left"></i> 01-Bag
               </a>
             
           </div>
@@ -583,7 +586,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">51</span>
+                  <span class="site-state-item-count">54</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -594,7 +597,7 @@
               
               <div class="site-state-item site-state-categories">
                 <a href="/categories/index.html">
-                  <span class="site-state-item-count">12</span>
+                  <span class="site-state-item-count">13</span>
                   <span class="site-state-item-name">分类</span>
                 </a>
               </div>
@@ -605,7 +608,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">15</span>
+                  <span class="site-state-item-count">17</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>

@@ -87,7 +87,7 @@
 <meta property="og:site_name" content="Get The Real Thing">
 <meta property="og:description" content="索引的概念、数据结构、原理等">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2019-05-16T07:03:58.000Z">
+<meta property="og:updated_time" content="2019-05-20T11:25:25.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="MySQL核心-索引">
 <meta name="twitter:description" content="索引的概念、数据结构、原理等">
@@ -422,6 +422,9 @@
 <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> * <span class="keyword">from</span> t1 <span class="keyword">where</span> b &lt;= <span class="number">4</span>;</span><br></pre></td></tr></table></figure>
 <p>上面sql等价于查找最后一个b=4的位置</p>
 <p>后续会单独写一篇二分查找的文章解决类似的问题</p>
+<hr>
+<h1 id="一条SQL语句慢的原因"><a href="#一条SQL语句慢的原因" class="headerlink" title="一条SQL语句慢的原因"></a><font color="green" size="5">一条SQL语句慢的原因</font></h1><h2 id="偶尔慢"><a href="#偶尔慢" class="headerlink" title="偶尔慢"></a>偶尔慢</h2><p>1.数据库在刷页，redo log和内存中的事务刷到磁盘中<br>2.拿不到锁，block住</p>
+<h2 id="日常慢"><a href="#日常慢" class="headerlink" title="日常慢"></a>日常慢</h2><p>1.没有索引<br>2.有索引但是没用到<br>    2.1 索引field函数操作/不符合最左匹配<br>    2.2 数据库选错索引<br>        有时候即使一个字段上有索引也不会走，数据库会判断走索引和全表扫描的优劣，判断是通过采样来决定的（这意味着有可能判断错误），此时可以使用force index(xx)</p>
 
       
     </div>
@@ -537,7 +540,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">51</span>
+                  <span class="site-state-item-count">54</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -548,7 +551,7 @@
               
               <div class="site-state-item site-state-categories">
                 <a href="/categories/index.html">
-                  <span class="site-state-item-count">12</span>
+                  <span class="site-state-item-count">13</span>
                   <span class="site-state-item-name">分类</span>
                 </a>
               </div>
@@ -559,7 +562,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">15</span>
+                  <span class="site-state-item-count">17</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
@@ -592,7 +595,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#索引是啥"><span class="nav-number">1.</span> <span class="nav-text">索引是啥</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#索引的几种形态"><span class="nav-number">2.</span> <span class="nav-text">索引的几种形态</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#索引数据结构"><span class="nav-number">3.</span> <span class="nav-text">索引数据结构</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#InnoDB与MyISAM"><span class="nav-number">3.1.</span> <span class="nav-text">InnoDB与MyISAM</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#页分裂与优化"><span class="nav-number">3.2.</span> <span class="nav-text">页分裂与优化</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#联合索引的原理"><span class="nav-number">4.</span> <span class="nav-text">联合索引的原理</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#联合索引实例"><span class="nav-number">4.1.</span> <span class="nav-text">联合索引实例</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#为什么会有最左匹配"><span class="nav-number">4.2.</span> <span class="nav-text">为什么会有最左匹配</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#索引覆盖"><span class="nav-number">5.</span> <span class="nav-text">索引覆盖</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#索引下推"><span class="nav-number">6.</span> <span class="nav-text">索引下推</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#数据库索引的查询算法"><span class="nav-number">7.</span> <span class="nav-text">数据库索引的查询算法</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#索引是啥"><span class="nav-number">1.</span> <span class="nav-text">索引是啥</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#索引的几种形态"><span class="nav-number">2.</span> <span class="nav-text">索引的几种形态</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#索引数据结构"><span class="nav-number">3.</span> <span class="nav-text">索引数据结构</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#InnoDB与MyISAM"><span class="nav-number">3.1.</span> <span class="nav-text">InnoDB与MyISAM</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#页分裂与优化"><span class="nav-number">3.2.</span> <span class="nav-text">页分裂与优化</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#联合索引的原理"><span class="nav-number">4.</span> <span class="nav-text">联合索引的原理</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#联合索引实例"><span class="nav-number">4.1.</span> <span class="nav-text">联合索引实例</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#为什么会有最左匹配"><span class="nav-number">4.2.</span> <span class="nav-text">为什么会有最左匹配</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#索引覆盖"><span class="nav-number">5.</span> <span class="nav-text">索引覆盖</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#索引下推"><span class="nav-number">6.</span> <span class="nav-text">索引下推</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#数据库索引的查询算法"><span class="nav-number">7.</span> <span class="nav-text">数据库索引的查询算法</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#一条SQL语句慢的原因"><span class="nav-number">8.</span> <span class="nav-text">一条SQL语句慢的原因</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#偶尔慢"><span class="nav-number">8.1.</span> <span class="nav-text">偶尔慢</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#日常慢"><span class="nav-number">8.2.</span> <span class="nav-text">日常慢</span></a></li></ol></li></ol></div>
             
 
           </div>

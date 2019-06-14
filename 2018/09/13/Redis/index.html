@@ -87,10 +87,12 @@
 <meta property="og:site_name" content="Get The Real Thing">
 <meta property="og:description" content="Outline1.Redis常用的数据结构2.Redis的持久化3.Redis主从复制4.Redis集群5.Redis应用场景6.redis为啥这么快">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2018-09-14T07:16:34.000Z">
+<meta property="og:image" content="http://yoursite.com/2018/09/13/Redis/001.jpg">
+<meta property="og:updated_time" content="2019-06-14T09:24:49.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="内存数据库-Redis">
 <meta name="twitter:description" content="Outline1.Redis常用的数据结构2.Redis的持久化3.Redis主从复制4.Redis集群5.Redis应用场景6.redis为啥这么快">
+<meta name="twitter:image" content="http://yoursite.com/2018/09/13/Redis/001.jpg">
 
 
 
@@ -337,13 +339,13 @@
 <h4 id="String"><a href="#String" class="headerlink" title="String"></a>String</h4><p>String 是 redis 最基本的类型，你可以理解成与 Memcached 一模一样的类型，一个 key 对应一个 value。（<code>Ps:redis相比memcached新增了很多类型</code>）<br>String 可以包含任何数据。比如jpg图片或者序列化的对象。<br>String 类型是 Redis 最基本的数据类型，String 类型的值最大能存储 512MB。<br><code>Ps：value较小、模型简单的 value可以使用String类型存储，对于一些特殊的数据结构，比如List、Set等，建议采用相应的下面介绍的List和Set数据结构进行存储，这样不仅可以节省存储空间还可以提高操作效率。</code></p>
 <h4 id="List"><a href="#List" class="headerlink" title="List"></a>List</h4><p>List类型是按照插入顺序排序的字符串链表。<br>和数据结构中的<font color="blue">普通链表</font>一样，可以在其头部(left)和尾部(right)添加新的元素。在插入时，如果该键并不存在，Redis将为该键创建一个新的链表。与此相反，如果链表中所有的元素均被移除，那么该键也将会被从数据库中删除。</p>
 <h4 id="Set"><a href="#Set" class="headerlink" title="Set"></a>Set</h4><p>Set是String类型的无序集合。<br>集合是通过哈希表实现的，所以添加，删除，查找的复杂度都是O(1)。</p>
-<h4 id="zset"><a href="#zset" class="headerlink" title="zset"></a>zset</h4><p>Redis zset 和 set 一样也是String类型元素的集合,且不允许重复的成员。<br>不同的是每个元素都会关联一个double类型的分数。redis正是通过分数来为集合中的成员进行从小到大的排序。<br>zset的成员是唯一的,但分数(score)却可以重复。</p>
+<h4 id="zset"><a href="#zset" class="headerlink" title="zset"></a>zset</h4><p>Redis zset 和 set 一样也是String类型元素的集合,且不允许重复的成员。<br>不同的是每个元素都会关联一个double类型的分数。redis正是通过分数来为集合中的成员进行从小到大的排序。<br>zset的成员是唯一的,但分数(score)却可以重复。<br>底层数据结构是跳表（快速插入、查询、删除，且支持范围查询）</p>
 <h3 id="Redis的持久化（单机）"><a href="#Redis的持久化（单机）" class="headerlink" title="Redis的持久化（单机）"></a>Redis的持久化（单机）</h3><h4 id="RDB-amp-AOF-简介"><a href="#RDB-amp-AOF-简介" class="headerlink" title="RDB &amp; AOF 简介"></a><font color="blue" size="4">RDB &amp; AOF 简介</font></h4><p>1）RDB 持久化机制，会在一段时间内生成指定时间点的数据集快照(snapshot)<br>2）AOF 持久化机制(<code>Ps：类似数据库日志，全量日志</code>)，记录 server 端收到的每一条写命令，当 <font color="blue">server 重启时</font>会以此来重建之前的数据集。<br>3）如果仅使用 Redis 作为缓存加速访问，可以关闭这两个持久化设置<br>4）也可以同时开启这两个持久化设置，但是在这种情况下，Redis 重启时会使用 AOF 文件来重建数据集，因为 AOF 文件保存的数据往往更加完整</p>
 <h4 id="详解RDB"><a href="#详解RDB" class="headerlink" title="详解RDB"></a><font color="blue" size="4">详解RDB</font></h4><h4 id="RDB-创建与载入"><a href="#RDB-创建与载入" class="headerlink" title="RDB 创建与载入"></a><font color="green" size="3">RDB 创建与载入</font></h4><p>Redis 提供了 SAVE 和 BGSAVE 两个命令来生成 RDB 文件，区别是前者是阻塞的，后者是后台 fork 子进程进行不会阻塞主进程处理命令请求。载入 RDB 文件不需要手工运行，而是 server 端自动进行，<font color="blue">只要启动时</font>检测到 RDB 文件存在 server 端便会载入 RDB 文件重建数据集。当然上面简介中已经提到，如果 同时存在 AOF 的话会优先使用 AOF 重建数据集因为其保存的数据更完整。</p>
 <h4 id="RDB-相关配置"><a href="#RDB-相关配置" class="headerlink" title="RDB 相关配置"></a><font color="green" size="3">RDB 相关配置</font></h4><p>SAVE POINT配置：save seconds changes<br>xx秒内发生了xx次变化，那么执行一次快照保存</p>
-<h4 id="RDB-的优点"><a href="#RDB-的优点" class="headerlink" title="RDB 的优点"></a><font color="green" size="3">RDB 的优点</font></h4><p>1）RDB文件是一个很简洁的单文件，它保存了某个时间点的 Redis 数据集，很适合用于做备份。你可以设定一个时间点对 RDB 文件进行归档（备份保存），这样就能在需要的时候很轻易的把数据恢复到不同的版本。<br>2）基于上面所描述的特性，RDB 文件很适合用于灾备，因为单文件可以很方便地传输到另外的数据中心。<br>3）RDB的性能很好，需要进行持久化时，主进程会 fork 一个子进程出来，然后把持久化的工作交给子进程，自己不会有相关的 I/O 操作。<br>4）比起 AOF，在数据量比较大的情况下，RDB的启动速度更快。（<code>Ps:可能redis本身存放的内容还不如变动点多</code>）</p>
-<h4 id="RDB-的缺点"><a href="#RDB-的缺点" class="headerlink" title="RDB 的缺点"></a><font color="green" size="3">RDB 的缺点</font></h4><p>1）RDB容易造成数据的丢失，当你希望在 Redis 停止工作时<font color="blue">尽量减少数据丢失</font>的话，那 RDB 不适用。假设每5分钟保存一次快照，如果Redis因为某些原因不能正常工作，那么从上次产生快照到 Redis 出现问题这段时间的数据就会丢失了。你可以通过配置不同的 save point 来减轻数据丢失的程度，但是越紧凑的 save point 会越频繁地触发 RDB 生成操作，从而对 Redis 性能产生影响<br>2）RDB 使用 fork 子进程进行数据的持久化，如果数据比较大的话可能就会花费点时间，造成 Redis 停止服务几毫秒。AOF 也需要 fork 但是你可以自己调整 rewrite 的频率，它不会造成数据丢失<br>3）在 Linux 系统中，fork 会拷贝进程的 page table。随着进程占用的内存越大，进程的 page table 也会越大，那么 fork 也会占用更多的时间。 如果 Redis 占用的内存很大 (例如 20 GB)，那么在 fork 子进程时，会出现明显的停顿现象（无法处理 client 的请求）<br>4）Linux fork 子进程采用的是 copy-on-write 的方式。在 Redis 执行 RDB 持久化期间，如果 client 写入数据很频繁，那么将增加 Redis 占用的内存</p>
-<h4 id="详解-AOF"><a href="#详解-AOF" class="headerlink" title="详解 AOF"></a><font color="blue" size="4">详解 AOF</font></h4><h4 id="AOF-实现"><a href="#AOF-实现" class="headerlink" title="AOF 实现"></a><font color="green" size="3">AOF 实现</font></h4><p>和 RDB 持久化数据库键值对来记录数据库状态不同，AOF 是通过保存对数据库的写命令集来记录数据库状态的。AOF 持久化实现可以分为命令追加(append)、文件写入(write)、文件同步(fsync) 三个步骤。<br>Append 追加命令到<font color="blue">aof_buf 缓冲区</font> ，Write 将缓冲区的内容写入到<font color="blue">AOF文件缓冲区</font>，Fsync 将程序缓冲区的内容写入到<font color="blue">文件</font>。 </p>
+<h4 id="RDB-的优点"><a href="#RDB-的优点" class="headerlink" title="RDB 的优点"></a><font color="green" size="3">RDB 的优点</font></h4><p>1）RDB文件是一个很简洁的单文件，它保存了某个时间点的 Redis 数据集，很适合用于做备份。你可以设定一个时间点对 RDB 文件进行归档（备份保存），这样就能在需要的时候很轻易的把数据恢复到不同的版本。<br>2）基于上面所描述的特性，RDB 文件很适合用于灾备，因为单文件可以很方便地传输到另外的数据中心。<br>3）RDB的性能很好，需要进行持久化时，主进程会 fork 一个子进程出来，然后把持久化的工作交给子进程，自己不会有相关的 I/O 操作。</p>
+<h4 id="RDB-的缺点"><a href="#RDB-的缺点" class="headerlink" title="RDB 的缺点"></a><font color="green" size="3">RDB 的缺点</font></h4><p>1）RDB容易造成数据的丢失，当你希望在 Redis 停止工作时<font color="blue">尽量减少数据丢失</font>的话，那 RDB 不适用。假设每5分钟保存一次快照，如果Redis因为某些原因不能正常工作，那么从上次产生快照到 Redis 出现问题这段时间的数据就会丢失了。<br>2）RDB 使用 fork 子进程进行数据的持久化，如果数据比较大的话可能就会花费点时间，造成 Redis 停止服务几毫秒。<br>3）在 Linux 系统中，fork 会拷贝进程的 page table。随着进程占用的内存越大，进程的 page table 也会越大，那么 fork 也会占用更多的时间。 如果 Redis 占用的内存很大 (例如 20 GB)，那么在 fork 子进程时，会出现明显的停顿现象（无法处理 client 的请求）<br>4）Linux fork 子进程采用的是 copy-on-write 的方式。在 Redis 执行 RDB 持久化期间，如果 client 写入数据很频繁，那么将增加 Redis 占用的内存</p>
+<h4 id="详解-AOF"><a href="#详解-AOF" class="headerlink" title="详解 AOF"></a><font color="blue" size="4">详解 AOF</font></h4><h4 id="AOF-实现"><a href="#AOF-实现" class="headerlink" title="AOF 实现"></a><font color="green" size="3">AOF 实现</font></h4><p>和 RDB 持久化数据库键值对来记录数据库状态不同，AOF 是通过保存对数据库的写命令集来记录数据库状态的。AOF 持久化实现可以分为命令追加(append)、文件写入(write)、文件同步(fsync) 三个步骤。<br>Ps 和RDB不同的是 AOF并非异步的 而是和处理客户端请求的进程是同一个进程<br>Append 追加命令到<font color="blue">aof_buf 缓冲区</font> ，Write 将缓冲区的内容写入到<font color="blue">AOF文件缓冲区</font>，Fsync 将程序缓冲区的内容写入到<font color="blue">文件</font>。 </p>
 <h4 id="命令追加"><a href="#命令追加" class="headerlink" title="命令追加"></a><font color="red">命令追加</font></h4><p>当 AOF 持久化功能打开时，server 端每执行完一个写命令，会以协议格式将被执行的写命令追加到 server 端 redisServer 结构体中的 aof_buf 缓冲区末尾。</p>
 <h4 id="文件写入与同步"><a href="#文件写入与同步" class="headerlink" title="文件写入与同步"></a><font color="red">文件写入与同步</font></h4><p>Redis server 进程是一个事件循环(event loop)，server 每结束一个事件循环之前都会调用 flushAppendOnlyFile 函数，考虑是否将 aof_buf 缓冲区中的内容吸入和保存到 AOF 文件，而 flushAppendOnlyFile 函数的行为由 appendfsync 选项来控制</p>
 <table>
@@ -369,13 +371,15 @@
 </tbody>
 </table>
 <p><code>Ps：文件的写入和同步（fsync）</code><br>为了提高文件的写入效率， 在现代操作系统中， 当用户调用 write 函数， 将一些数据写入到文件的时候， 操作系统通常会将写入数据暂时保存在一个内存缓冲区里面， 等到缓冲区的空间被填满、或者超过了指定的时限之后， 才真正地将缓冲区中的数据写入到磁盘里面。<br>这种做法虽然提高了效率， 但也为写入数据带来了安全问题， 因为如果计算机发生停机， 那么保存在内存缓冲区里面的写入数据将会丢失。<br>为此， 系统提供了 fsync 和 fdatasync 两个同步函数， 它们可以强制让操作系统立即将缓冲区中的数据写入到硬盘里面， 从而确保写入数据的安全性。</p>
+<p><img src="/2018/09/13/Redis/001.jpg"></p>
+<p>上图可以看出，appendfsync的值会很大的影响redis的性能，append、写入、同步到磁盘都是同步的</p>
 <h4 id="AOF-重写"><a href="#AOF-重写" class="headerlink" title="AOF 重写"></a><font color="green" size="3">AOF 重写</font></h4><p>AOF 持久化并不是没有缺点的，Redis 会不断将接收到的写命令追加到 AOF 文件中，导致 AOF 文件越来越大。过大的 AOF 文件会消耗磁盘空间，并且导致 Redis 重启时更加缓慢。为了解决这个问题，在适当情况下，Redis 会对 AOF 文件进行重写，去除文件中冗余的命令，以减小 AOF 文件的体积（<code>Ps：比如对某个key执行了两次写操作，第二次会覆盖第一次，那么AOF再保存第一次的写操作其实意义并不大</code>）。</p>
 <p>AOF的重写会执行大量的写入操作，Redis是单线程的，所以如果有服务器直接调用重写，服务器就不能处理其他命令了，因此Redis服务器新起了单独一个进程来执行AOF重写。</p>
-<p>在子进程执行AOF重写时，服务端接收到客户端的命令之后，先执行客户端发来的命令，然后将执行后的写命令追加到AOF缓冲区中，同时将执行后的写命令追加到AOF重写缓冲区中。 等到子进程完成了重写工作后(<code>Ps都是写到重写缓冲区</code>)，会发一个完成的信号给服务器，服务器就将AOF重写缓冲区中的所有内容追加到AOF文件中，然后原子性地覆盖现有的AOF文件（<code>Ps注意这里强调的原子性</code>）。</p>
+<p>在子进程执行AOF重写时，服务端接收到客户端的命令之后，先执行客户端发来的命令，然后将执行后的写命令追加到AOF缓冲区中，同时将执行后的写命令追加到<code>AOF重写缓冲区</code>中。 等到子进程完成了重写工作后(<code>Ps都是写到重写缓冲区</code>)，会发一个完成的信号给服务器，服务器就将AOF重写缓冲区中的所有内容追加到AOF文件中，然后原子性地覆盖现有的AOF文件（<code>Ps注意这里强调的原子性</code>）。</p>
 <p>题外话：提到IO经常要提到缓存，这个缓存是干啥的？<br>进程执行I/O操作，就是向操作系统发出请求，让它要么把缓冲区的数据排干（写），要么用数据把缓冲区填满（读）。进程使用这一机制处理所有数据进出操作。<br>简单地说，数据在内核空间和用户空间『穿梭』成本较高，所以无论是读还是写都希望能够凑齐一波一起去执行，这样可以均摊『跨空间』的成本。而在凑齐一波之前数据在的区域就是缓冲区</p>
 <h4 id="AOF优点"><a href="#AOF优点" class="headerlink" title="AOF优点"></a><font color="green" size="3">AOF优点</font></h4><p>1）比RDB可靠。你可以制定不同的 fsync 策略：no、everysec 和 always。默认是 everysec。这意味着你最多丢失一秒钟的数据。<br>2）AOF日志文件是一个纯追加的文件。就算是遇到突然停电的情况，也不会出现日志的定位或者损坏问题。<br>3）当AOF文件太大时，Redis 会自动在后台进行重写。重写很安全（<code>Ps：原子性</code>），因为重写是在一个新的文件上进行，同时 Redis 会继续往旧的文件追加数据。新文件上会写入能重建当前数据集的最小操作命令的集合（<code>Ps：AOF瘦身</code>）。当新文件重写完，Redis 会把新旧文件进行切换，然后开始把数据写到新文件上（<code>Ps：原子性</code>）。<br>4）AOF 把操作命令以简单易懂的格式一条接一条的保存在文件里，很容易导出来用于恢复数据。例如我们不小心用 FLUSHALL 命令把所有数据刷掉了，只要文件没有被重写，我们可以把服务停掉，把最后那条命令删掉，然后重启服务，这样就能把被刷掉的数据恢复回来。</p>
 <h4 id="AOF-的缺点"><a href="#AOF-的缺点" class="headerlink" title="AOF 的缺点"></a><font color="green" size="3">AOF 的缺点</font></h4><p>1）在相同的数据集下，AOF 文件的大小一般会比 RDB 文件大。</p>
-<p>2）在某些 fsync 策略下，AOF 的速度会比 RDB 慢。通常 fsync 设置为每秒一次就能获得比较高的性能，而在禁止 fsync 的情况下速度可以达到 RDB 的水平。</p>
+<p>2）在某些 fsync 策略下，AOF 的速度会比 RDB 慢(非异步)。通常 fsync 设置为每秒一次就能获得比较高的性能，而在禁止 fsync 的情况下速度可以达到 RDB 的水平。</p>
 <p>小结：RDB和AOF的优缺点</p>
 <table>
 <thead>
@@ -393,8 +397,8 @@
 </tr>
 <tr>
 <td>缺点</td>
-<td>容易造成数据丢失；如果数据较大，fork子进程会占用较多cpu时间，甚至造成redis停止服务几毫米；fork是基于写时拷贝，如果客户端频繁的写，那么将增加redis占用的内存</td>
-<td>相同数据集下，AOF文件一般比RDB大；AOF的速度一般比RDB慢（同步频率较高）</td>
+<td>容易造成数据丢失；如果数据较大，fork子进程会占用较多cpu时间，甚至造成redis停止服务几毫秒；fork是基于写时拷贝，如果客户端频繁的写，那么将增加redis占用的内存</td>
+<td>相同数据集下，AOF文件一般比RDB大；AOF的速度一般比RDB慢（同步）</td>
 </tr>
 </tbody>
 </table>
@@ -535,7 +539,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">51</span>
+                  <span class="site-state-item-count">54</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -546,7 +550,7 @@
               
               <div class="site-state-item site-state-categories">
                 <a href="/categories/index.html">
-                  <span class="site-state-item-count">12</span>
+                  <span class="site-state-item-count">13</span>
                   <span class="site-state-item-name">分类</span>
                 </a>
               </div>
@@ -557,7 +561,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">15</span>
+                  <span class="site-state-item-count">17</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>

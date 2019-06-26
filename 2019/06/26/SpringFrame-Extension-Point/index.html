@@ -1,0 +1,768 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Spring," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="本文主要介绍Spring Framework常见扩展点及其在工程上的应用">
+<meta name="keywords" content="Spring">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Spring Framework常见扩展点及其应用">
+<meta property="og:url" content="http://yoursite.com/2019/06/26/SpringFrame-Extension-Point/index.html">
+<meta property="og:site_name" content="Get The Real Thing">
+<meta property="og:description" content="本文主要介绍Spring Framework常见扩展点及其在工程上的应用">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://yoursite.com/2019/06/26/SpringFrame-Extension-Point/001.jpg">
+<meta property="og:image" content="http://yoursite.com/2019/06/26/SpringFrame-Extension-Point/002.jpg">
+<meta property="og:updated_time" content="2019-06-26T11:59:20.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Spring Framework常见扩展点及其应用">
+<meta name="twitter:description" content="本文主要介绍Spring Framework常见扩展点及其在工程上的应用">
+<meta name="twitter:image" content="http://yoursite.com/2019/06/26/SpringFrame-Extension-Point/001.jpg">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2019/06/26/SpringFrame-Extension-Point/"/>
+
+
+
+
+
+  <title>Spring Framework常见扩展点及其应用 | Get The Real Thing</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Get The Real Thing</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/06/26/SpringFrame-Extension-Point/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Luyu">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Get The Real Thing">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Spring Framework常见扩展点及其应用</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-06-26T19:04:35+08:00">
+                2019-06-26
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Spring/" itemprop="url" rel="index">
+                    <span itemprop="name">Spring</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>本文主要介绍Spring Framework常见扩展点及其在工程上的应用<br><a id="more"></a></p>
+<h1 id="综述"><a href="#综述" class="headerlink" title="综述"></a><font color="green">综述</font></h1><p>Spring Framework包含两个核心概念，IOC(Inversion of Control)和AOP(Aspect Oriented Programming)</p>
+<p><code>Spring Framework的设计理念：解耦</code></p>
+<h2 id="为什么引入IOC？"><a href="#为什么引入IOC？" class="headerlink" title="为什么引入IOC？"></a><font color="#0099ff">为什么引入IOC？</font></h2><p>先来看一个例子<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Programer</span> </span>&#123;</span><br><span class="line">    Computer computer = <span class="keyword">new</span> Mac2015();</span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">work</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        computer.help();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>此时有一个问题就是programer和computer耦合在一起，这个programer不具备扩展性（它只会用mac2015），如果此时公司换了一批电脑Mac2016，那么需要换一批新的程序员，这显然是不合理的。<br>从设计的角度来讲，<font color="red">类本身就是定义的一个模板亦或是一种抽象</font>，如果抽象和具体的实现绑定或者耦合在一起，那么就不是纯粹的抽象了。这也违背了设计模式中的don’t call me法则。</p>
+<p>所以这个时候要把computer和programer解耦。解耦的方法很简单，computer的具体实现由调用方指定就ok，而不是在类内部自行指定。那么类就需要暴露一些点供外界实现注入功能。</p>
+<p>常见的方法有三种<br>1)构造函数注入<br>2)set注入<br>3)接口注入</p>
+<p>这就是Spring 依赖注入的基本思路<br>那么选择何种注入方式以及需要注入哪些属性是怎么通知到Spring的呢？</p>
+<p>常见的方法有两种<br>1)注解（@resource/@autowire）<br>2)配置文件（xml/properties）</p>
+<p>举个例子<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Service</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">TestService</span> </span>&#123;</span><br><span class="line">    <span class="meta">@Resource</span> <span class="comment">//注解方式通知Spring 1.通过set注入方式 2.注入userService属性</span></span><br><span class="line">    <span class="keyword">private</span> UserService userService;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">bean</span> <span class="attr">id</span>=<span class="string">'testService'</span> <span class="attr">class</span>=<span class="string">'com.luyu.TestService'</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">"userService"</span> <span class="attr">ref</span>=<span class="string">"userService"</span>&gt;</span> //配置文件方式通知Spring 通过set注入方式 注入serviceName属性</span><br><span class="line"><span class="tag">&lt;<span class="name">bean</span> /&gt;</span></span><br></pre></td></tr></table></figure>
+<p><code>Spring Framework的设计理念：解耦</code></p>
+<h2 id="为什么引入AOP？"><a href="#为什么引入AOP？" class="headerlink" title="为什么引入AOP？"></a><font color="#0099ff">为什么引入AOP？</font></h2><p>AOP旨在将辅助逻辑（日志、安全、监控等）从业务主体逻辑中进行剥离，实现关注点分离，以提高程序的模块化程度</p>
+<p>举个例子，下面是一个向db提交任务的简单方法，该方法在提交到db前需要放到blocking queue中，后台启动线程将queue中的任务插入es中<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">long</span> <span class="title">addTask</span><span class="params">(DispatchTaskEntity taskEntity)</span> </span>&#123;</span><br><span class="line">    <span class="comment">//...</span></span><br><span class="line">    taskDao.addTask(entity);</span><br><span class="line">    <span class="comment">//...</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">bean</span> <span class="attr">id</span>=<span class="string">"myIntercepter"</span> <span class="attr">class</span>=<span class="string">"com.MyIntercepter"</span>/&gt;</span></span><br><span class="line"><span class="comment">&lt;!-- 新增任务aop --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">bean</span> <span class="attr">id</span>=<span class="string">"addOfdispatchTaskAdvisor"</span> <span class="attr">class</span>=<span class="string">"org.springframework.aop.aspectj.AspectJExpressionPointcutAdvisor"</span>&gt;</span> </span><br><span class="line">  <span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">"advice"</span> <span class="attr">ref</span>=<span class="string">"myIntercepter"</span> /&gt;</span> </span><br><span class="line">  <span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">"expression"</span> <span class="attr">value</span>=<span class="string">"execution(* com.TaskDaoImpl.addTask(..))"</span> /&gt;</span> </span><br><span class="line"><span class="tag">&lt;/<span class="name">bean</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MyIntercepter</span> <span class="keyword">implements</span> <span class="title">MethodInterceptor</span></span>&#123;</span><br><span class="line">  </span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Object <span class="title">invoke</span><span class="params">(MethodInvocation invocation)</span> <span class="keyword">throws</span> Throwable </span>&#123;</span><br><span class="line">        Method method = invocation.getMethod();</span><br><span class="line">        String methodName = method.getName();</span><br><span class="line">        <span class="keyword">if</span>(<span class="string">"addTask"</span>.equalsIgnoreCase(methodName))&#123;</span><br><span class="line">            <span class="keyword">return</span> dealAdd(invocation);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">//origin method</span></span><br><span class="line">        <span class="keyword">return</span> invocation.proceed();</span><br><span class="line">    &#125;</span><br><span class="line">  </span><br><span class="line">  <span class="function"><span class="keyword">private</span> Object <span class="title">dealAdd</span><span class="params">(MethodInvocation invocation)</span> <span class="keyword">throws</span> Throwable </span>&#123;</span><br><span class="line">        Object result = invocation.proceed();</span><br><span class="line">        Long taskId = (Long) result;</span><br><span class="line">        <span class="keyword">if</span>(taskId &gt; <span class="number">0</span>)&#123;</span><br><span class="line">            TaskDo taskEntity = taskDao.loadTaskById(taskId);</span><br><span class="line">            <span class="comment">//异步插入es，通过先插入bq实现</span></span><br><span class="line">            EsHelper.recordDetail(taskEntity, MonitorType.Add);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> result;</span><br><span class="line">    &#125;</span><br><span class="line">  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><code>AOP：实现了业务逻辑与辅助逻辑之间的解耦</code></p>
+<h1 id="Bean的生命周期"><a href="#Bean的生命周期" class="headerlink" title="Bean的生命周期"></a><font color="green">Bean的生命周期</font></h1><h2 id="结论"><a href="#结论" class="headerlink" title="结论"></a><font color="#0099ff">结论</font></h2><p>简单地将Bean的生命周期分为五个主干流程<br>1.容器启动阶段（严格来讲这个不属于Bean的生命周期）<br>2.Bean（单例非懒加载）的实例化阶段<br>3.Bean的属性注入阶段<br>4.Bean的初始化阶段<br>5.Bean的销毁阶段<br>下图是整个Spring容器的启动流程，可以看到除了上述五个主干流程外，Spring还提供了很多扩展点（这部分将在第三节讲述）<br><img src="/2019/06/26/SpringFrame-Extension-Point/001.jpg"></p>
+<h2 id="验证"><a href="#验证" class="headerlink" title="验证"></a><font color="#0099ff">验证</font></h2><p>通过一个实际的例子验证上图<br>首先定义一个业务Bean，实现了诸多上述的扩展点接口<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Car</span> <span class="keyword">implements</span> <span class="title">BeanFactoryAware</span>, <span class="title">BeanNameAware</span>,</span></span><br><span class="line"><span class="class">        <span class="title">InitializingBean</span>, <span class="title">DisposableBean</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> String carName;</span><br><span class="line">    <span class="keyword">private</span> BeanFactory beanFactory;</span><br><span class="line">    <span class="keyword">private</span> String beanName;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">Car</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">"bean的构造函数"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setCarName</span><span class="params">(String carName)</span> </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">"属性注入"</span>);</span><br><span class="line">        <span class="keyword">this</span>.carName = carName;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 这是BeanFactoryAware接口方法</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setBeanFactory</span><span class="params">(BeanFactory arg0)</span> <span class="keyword">throws</span> BeansException </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">"BeanFactoryAware.setBeanFactory()"</span>);</span><br><span class="line">        <span class="keyword">this</span>.beanFactory = arg0;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 这是BeanNameAware接口方法</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setBeanName</span><span class="params">(String arg0)</span> </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">"BeanNameAware.setBeanName()"</span>);</span><br><span class="line">        <span class="keyword">this</span>.beanName = arg0;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 这是InitializingBean接口方法</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">afterPropertiesSet</span><span class="params">()</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">"InitializingBean.afterPropertiesSet()"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 这是DiposibleBean接口方法</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">destroy</span><span class="params">()</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">"DiposibleBean.destory()"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 通过&lt;bean&gt;的init-method属性指定的初始化方法</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">myInit</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">"&lt;bean&gt;的init-method属性指定的初始化方法"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 通过&lt;bean&gt;的destroy-method属性指定的初始化方法</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">myDestory</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">"&lt;bean&gt;的destroy-method属性指定的初始化方法"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>自定义了一个特殊的BeanPostProcessor类型的Bean<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MyBeanPostProcessor</span> <span class="keyword">implements</span> <span class="title">BeanPostProcessor</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">MyBeanPostProcessor</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">super</span>();</span><br><span class="line">        System.out.println(<span class="string">"BeanPostProcessor构造函数"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> Object <span class="title">postProcessAfterInitialization</span><span class="params">(Object arg0, String arg1)</span></span></span><br><span class="line"><span class="function">            <span class="keyword">throws</span> BeansException </span>&#123;</span><br><span class="line">        <span class="comment">//可以针对指定的Bean做一些操作</span></span><br><span class="line">        <span class="keyword">if</span> (arg1.equals(<span class="string">"car"</span>)) &#123;</span><br><span class="line">            System.out.println(<span class="string">"BeanPostProcessor.postProcessAfterInitialization()"</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> arg0;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> Object <span class="title">postProcessBeforeInitialization</span><span class="params">(Object arg0, String arg1)</span></span></span><br><span class="line"><span class="function">            <span class="keyword">throws</span> BeansException </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (arg1.equals(<span class="string">"car"</span>)) &#123;</span><br><span class="line">            System.out.println(<span class="string">"BeanPostProcessor.postProcessBeforeInitialization()"</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> arg0;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>自定义了一个特殊的BeanFactoryPostProcessor类型的Bean<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MyBeanFactoryPostProcessor</span> <span class="keyword">implements</span> <span class="title">BeanFactoryPostProcessor</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">MyBeanFactoryPostProcessor</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">super</span>();</span><br><span class="line">        System.out.println(<span class="string">"BeanFactoryPostProcessor构造函数"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">postProcessBeanFactory</span><span class="params">(ConfigurableListableBeanFactory arg0)</span></span></span><br><span class="line"><span class="function">            <span class="keyword">throws</span> BeansException </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">"BeanFactoryPostProcessor.postProcessBeanFactory()"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>自定义了一个特殊的InstantiationAwareBeanPostProcessor类型的Bean<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MyInstantiationAwareBeanPostProcessor</span> <span class="keyword">extends</span></span></span><br><span class="line"><span class="class">        <span class="title">InstantiationAwareBeanPostProcessorAdapter</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">MyInstantiationAwareBeanPostProcessor</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">super</span>();</span><br><span class="line">        System.out.println(<span class="string">"InstantiationAwareBeanPostProcessor的构造函数"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 接口方法、实例化Bean之前调用</span></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Object <span class="title">postProcessBeforeInstantiation</span><span class="params">(Class beanClass, String beanName)</span> <span class="keyword">throws</span> BeansException </span>&#123;</span><br><span class="line">        <span class="keyword">if</span>(beanName.equals(<span class="string">"car"</span>)) &#123;</span><br><span class="line">            System.out.println(<span class="string">"InstantiationAwareBeanPostProcessor.postProcessBeforeInstantiation()"</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 接口方法、实例化Bean之后调用</span></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">postProcessAfterInstantiation</span><span class="params">(Object bean, String beanName)</span> <span class="keyword">throws</span> BeansException </span>&#123;</span><br><span class="line">        <span class="keyword">if</span>(beanName.equals(<span class="string">"car"</span>)) &#123;</span><br><span class="line">            System.out.println(<span class="string">"InstantiationAwareBeanPostProcessor.postProcessAfterInstantiation()"</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 接口方法、设置某个属性时调用</span></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> PropertyValues <span class="title">postProcessPropertyValues</span><span class="params">(PropertyValues pvs,</span></span></span><br><span class="line"><span class="function"><span class="params">                                                    PropertyDescriptor[] pds, Object bean, String beanName)</span> <span class="keyword">throws</span> BeansException </span>&#123;</span><br><span class="line">        <span class="keyword">if</span>(beanName.equals(<span class="string">"car"</span>)) &#123;</span><br><span class="line">            System.out.println(<span class="string">"InstantiationAwareBeanPostProcessor.postProcessPropertyValues()"</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> pvs;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>将上述1个业务Bean和3个特殊的Bean 配置到xml中<br><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">bean</span> <span class="attr">id</span>=<span class="string">"beanPostProcessor"</span> <span class="attr">class</span>=<span class="string">"test.MyBeanPostProcessor"</span>/&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">bean</span> <span class="attr">id</span>=<span class="string">"instantiationAwareBeanPostProcessor"</span> <span class="attr">class</span>=<span class="string">"test.MyInstantiationAwareBeanPostProcessor"</span>/&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">bean</span> <span class="attr">id</span>=<span class="string">"beanFactoryPostProcessor"</span> <span class="attr">class</span>=<span class="string">"test.MyBeanFactoryPostProcessor"</span>/&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">bean</span> <span class="attr">id</span>=<span class="string">"car"</span> <span class="attr">class</span>=<span class="string">"test.Car"</span> <span class="attr">init-method</span>=<span class="string">"myInit"</span> <span class="attr">destroy-method</span>=<span class="string">"myDestory"</span> <span class="attr">scope</span>=<span class="string">"singleton"</span> <span class="attr">p:carName</span>=<span class="string">"BMW"</span>/&gt;</span></span><br></pre></td></tr></table></figure></p>
+<p>下面来见证下整个流程<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">     ClassPathXmlApplicationContext factory = <span class="keyword">new</span> ClassPathXmlApplicationContext(<span class="string">"spring/applicationContext.xml"</span>);</span><br><span class="line">     factory.destroy();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>控制台输出如下<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">BeanFactoryPostProcessor构造函数</span><br><span class="line">BeanFactoryPostProcessor.postProcessBeanFactory()</span><br><span class="line">InstantiationAwareBeanPostProcessor的构造函数</span><br><span class="line">BeanPostProcessor构造函数</span><br><span class="line">InstantiationAwareBeanPostProcessor.postProcessBeforeInstantiation()</span><br><span class="line">bean的构造函数</span><br><span class="line">InstantiationAwareBeanPostProcessor.postProcessAfterInstantiation()</span><br><span class="line">InstantiationAwareBeanPostProcessor.postProcessPropertyValues()</span><br><span class="line">属性注入</span><br><span class="line">BeanNameAware.setBeanName()</span><br><span class="line">BeanFactoryAware.setBeanFactory()</span><br><span class="line">BeanPostProcessor.postProcessBeforeInitialization()</span><br><span class="line">InitializingBean.afterPropertiesSet()</span><br><span class="line">&lt;bean&gt;的init-method属性指定的初始化方法</span><br><span class="line">BeanPostProcessor.postProcessAfterInitialization()</span><br><span class="line">DisposableBean.destory()</span><br><span class="line">&lt;bean&gt;的destroy-method属性指定的初始化方法</span><br></pre></td></tr></table></figure></p>
+<h1 id="Spring-Framework扩展点及其应用"><a href="#Spring-Framework扩展点及其应用" class="headerlink" title="Spring Framework扩展点及其应用"></a><font color="green">Spring Framework扩展点及其应用</font></h1><p><code>日常开发中几乎用不到这些『屠龙技』，但是当阅读Java中间件源码的时候经常会见到它们</code></p>
+<p><img src="/2019/06/26/SpringFrame-Extension-Point/002.jpg"></p>
+<h2 id="BeanFactoryPostProcessor-postProcessBeanFactory"><a href="#BeanFactoryPostProcessor-postProcessBeanFactory" class="headerlink" title="BeanFactoryPostProcessor#postProcessBeanFactory"></a><font color="#0099ff">BeanFactoryPostProcessor#postProcessBeanFactory</font></h2><p>背景：由于历史原因，团队有些service项目很臃肿，整个工程中bean的数量有上百个，而大部分单测依赖都是整个工程的xml，导致单测执行时需要很长时间（大部分时间耗费在xml中数百个单例非懒加载的bean的实例化及初始化过程）<br>解决方法：利用Spring提供的扩展点将xml中的bean设置为懒加载模式，省去了Bean的实例化与初始化时间<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@RunWith</span>(SpringJUnit4ClassRunner.class)</span><br><span class="line"><span class="meta">@ContextConfiguration</span>(locations = &#123;<span class="string">"a.xml"</span>,<span class="string">"b.xml"</span>&#125;)</span><br><span class="line"><span class="keyword">public</span> <span class="keyword">abstract</span> <span class="class"><span class="keyword">class</span> <span class="title">AbstractLightTest</span> </span>&#123;&#125;</span><br></pre></td></tr></table></figure></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//a.xml</span></span><br><span class="line">&lt;bean id=<span class="string">"myBeanFactoryPostProcessor"</span> <span class="class"><span class="keyword">class</span></span>=<span class="string">"com.luyu.LazyBeanFactoryProcessor"</span>/&gt;</span><br></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">LazyBeanFactoryProcessor</span> <span class="keyword">implements</span> <span class="title">BeanFactoryPostProcessor</span> </span>&#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">postProcessBeanFactory</span><span class="params">(ConfigurableListableBeanFactory beanFactory)</span> <span class="keyword">throws</span> BeansException </span>&#123;</span><br><span class="line">        DefaultListableBeanFactory fac = (DefaultListableBeanFactory) beanFactory;</span><br><span class="line">        Map&lt;String, AbstractBeanDefinition&gt; map = (Map&lt;String, AbstractBeanDefinition&gt;) ReflectionTestUtils.getField(fac, <span class="string">"beanDefinitionMap"</span>);</span><br><span class="line">        <span class="keyword">for</span> (Map.Entry&lt;String, AbstractBeanDefinition&gt; entry : map.entrySet()) &#123;</span><br><span class="line">            <span class="comment">//设置为懒加载</span></span><br><span class="line">            entry.getValue().setLazyInit(<span class="keyword">true</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>提速非常明显，原来启动测试要1min多钟，懒加载的话只要十几秒就好了<br>Ps：这个问题建议通过xml环境隔离解决，这里只是提供一个通过Spring扩展点解决的思路</p>
+<h2 id="InstantiationAwareBeanPostProcessor-postProcessPropertyValues"><a href="#InstantiationAwareBeanPostProcessor-postProcessPropertyValues" class="headerlink" title="InstantiationAwareBeanPostProcessor#postProcessPropertyValues"></a><font color="#0099ff">InstantiationAwareBeanPostProcessor#postProcessPropertyValues</font></h2><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">Tips：</span><br><span class="line">在容器启动阶段，除了实例化容器，还会针对指定的xml中的bean进行注册</span><br><span class="line">（所谓注册就是以BeanDefination的形式放到容器的BeanDefinationMap中）</span><br><span class="line">流程大体可以概括为：1）解析xml中的元素 2）注册Bean</span><br><span class="line">对于常规的配置项<span class="tag">&lt;<span class="name">bean</span>/&gt;</span>  Spring会有默认的解析器对其进行解析并注册</span><br><span class="line">而非常规的配置项比如，<span class="tag">&lt;<span class="name">context:component-scan</span> <span class="attr">base-package</span>=<span class="string">"com.luyu"</span> /&gt;</span></span><br><span class="line"> <span class="tag">&lt;<span class="name">aop:aspectj-autoproxy</span>/&gt;</span> Spring也提供了与之对应的特殊解析器</span><br><span class="line">正是通过这些特殊的解析器才使得对应的配置项能够生效</span><br><span class="line">Ps：xml中的每一个配置项都有与之对应的解析器</span><br></pre></td></tr></table></figure>
+<p>举个例子<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Service</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">MyServiceImpl</span> <span class="keyword">implements</span> <span class="title">MyService</span> </span>&#123;</span><br><span class="line">	<span class="meta">@Resource</span></span><br><span class="line">    <span class="keyword">private</span> ThirdService thirdService;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>我们知道当使用@Service以及@Resource注解时候，需要在xml中配置如下项<br><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">context:component-scan</span> <span class="attr">base-package</span>=<span class="string">"com.luyu"</span> /&gt;</span></span><br></pre></td></tr></table></figure></p>
+<p>而针对这个特殊注解的解析器为 ComponentScanBeanDefinitionParser<br>在这个解析器(parser)的解析方法(parse)中，注册了很多特殊的Bean，下面代码只截取了针对@Resource和@Autowire注解的bean<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> BeanDefinition <span class="title">parse</span><span class="params">(Element element, ParserContext parserContext)</span> </span>&#123;</span><br><span class="line">    <span class="comment">//...</span></span><br><span class="line">    registerComponents(parserContext.getReaderContext(), beanDefinitions, element);</span><br><span class="line">    <span class="comment">//...</span></span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> Set&lt;BeanDefinitionHolder&gt; <span class="title">registerAnnotationConfigProcessors</span><span class="params">(</span></span></span><br><span class="line"><span class="function"><span class="params">			BeanDefinitionRegistry registry, Object source)</span> </span>&#123;</span><br><span class="line">    Set&lt;BeanDefinitionHolder&gt; beanDefs = <span class="keyword">new</span> LinkedHashSet&lt;BeanDefinitionHolder&gt;(<span class="number">4</span>);</span><br><span class="line">    <span class="comment">//...</span></span><br><span class="line">    <span class="comment">//@Autowire</span></span><br><span class="line">    <span class="keyword">if</span> (!registry.containsBeanDefinition(AUTOWIRED_ANNOTATION_PROCESSOR_BEAN_NAME)) &#123;</span><br><span class="line">        RootBeanDefinition def = <span class="keyword">new</span> RootBeanDefinition(AutowiredAnnotationBeanPostProcessor.class);</span><br><span class="line">        def.setSource(source);</span><br><span class="line">        beanDefs.add(registerPostProcessor(registry, def, AUTOWIRED_ANNOTATION_PROCESSOR_BEAN_NAME));</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Check for JSR-250 support, and if present add the CommonAnnotationBeanPostProcessor.</span></span><br><span class="line">    <span class="comment">//@Resource</span></span><br><span class="line">    <span class="keyword">if</span> (jsr250Present &amp;&amp; !registry.containsBeanDefinition(COMMON_ANNOTATION_PROCESSOR_BEAN_NAME)) &#123;</span><br><span class="line">        <span class="comment">//特殊的Bean</span></span><br><span class="line">        RootBeanDefinition def = <span class="keyword">new</span> RootBeanDefinition(CommonAnnotationBeanPostProcessor.class);</span><br><span class="line">        def.setSource(source);</span><br><span class="line">        beanDefs.add(registerPostProcessor(registry, def, COMMON_ANNOTATION_PROCESSOR_BEAN_NAME));</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">//...</span></span><br><span class="line">    <span class="keyword">return</span> beanDefs;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>我们这里以@Resource为例，看看这个特殊的bean做了啥<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">CommonAnnotationBeanPostProcessor</span> <span class="keyword">extends</span> <span class="title">InitDestroyAnnotationBeanPostProcessor</span></span></span><br><span class="line"><span class="class">		<span class="keyword">implements</span> <span class="title">InstantiationAwareBeanPostProcessor</span>, <span class="title">BeanFactoryAware</span>, <span class="title">Serializable</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> PropertyValues <span class="title">postProcessPropertyValues</span><span class="params">(PropertyValues pvs, PropertyDescriptor[] pds, </span></span></span><br><span class="line"><span class="function"><span class="params">    Object bean, String beanName)</span> <span class="keyword">throws</span> BeansException </span>&#123;</span><br><span class="line">        InjectionMetadata metadata = findResourceMetadata(beanName, bean.getClass());</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">        <span class="comment">//属性注入</span></span><br><span class="line">        metadata.inject(bean, beanName, pvs);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">catch</span> (Throwable ex) &#123;</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> BeanCreationException(beanName, <span class="string">"Injection of resource dependencies failed"</span>, ex);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> pvs;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>我们看到在postProcessPropertyValues方法中，进行了属性注入</p>
+<h2 id="invokeAware"><a href="#invokeAware" class="headerlink" title="invokeAware"></a><font color="#0099ff">invokeAware</font></h2><p>这里截取了一段Spring启动过程中的代码，可以看到包含了我们上面3~6四个步骤<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">protected</span> Object <span class="title">initializeBean</span><span class="params">(<span class="keyword">final</span> String beanName, <span class="keyword">final</span> Object bean, RootBeanDefinition mbd)</span> </span>&#123;</span><br><span class="line">    <span class="comment">//③</span></span><br><span class="line">    invokeAwareMethods(beanName, bean);</span><br><span class="line">    Object wrappedBean = bean;</span><br><span class="line">    <span class="keyword">if</span> (mbd == <span class="keyword">null</span> || !mbd.isSynthetic()) &#123;</span><br><span class="line">    <span class="comment">//④</span></span><br><span class="line">        wrappedBean = applyBeanPostProcessorsBeforeInitialization(wrappedBean, beanName);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">    <span class="comment">//⑤</span></span><br><span class="line">        invokeInitMethods(beanName, wrappedBean, mbd);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (mbd == <span class="keyword">null</span> || !mbd.isSynthetic()) &#123;</span><br><span class="line">    <span class="comment">//⑥</span></span><br><span class="line">        wrappedBean = applyBeanPostProcessorsAfterInitialization(wrappedBean, beanName);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> wrappedBean;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>这里关注下invokeAwareMethods方法<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">invokeAwareMethods</span><span class="params">(<span class="keyword">final</span> String beanName, <span class="keyword">final</span> Object bean)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (bean <span class="keyword">instanceof</span> Aware) &#123;</span><br><span class="line">        <span class="comment">//...</span></span><br><span class="line">        <span class="keyword">if</span> (bean <span class="keyword">instanceof</span> BeanFactoryAware) &#123;</span><br><span class="line">            ((BeanFactoryAware) bean).setBeanFactory(AbstractAutowireCapableBeanFactory.<span class="keyword">this</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>举个例子：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Bean</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">BeanFactoryHolder</span> <span class="keyword">implements</span> <span class="title">BeanFactoryAware</span></span>&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> BeanFactory beanFactory;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setBeanFactory</span><span class="params">(BeanFactory beanFactory)</span> <span class="keyword">throws</span> BeansException </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.beanFactory = beanFactory;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>实现BeanFactoryAware接口的类，会由容器执行setBeanFactory方法将当前的容器BeanFactory注入到类中</p>
+<h2 id="BeanPostProcessor-postProcessBeforeInitialization"><a href="#BeanPostProcessor-postProcessBeforeInitialization" class="headerlink" title="BeanPostProcessor#postProcessBeforeInitialization"></a><font color="#0099ff">BeanPostProcessor#postProcessBeforeInitialization</font></h2><p>实现ApplicationContextAware接口的类，会由容器执行setApplicationContext方法将当前的容器applicationContext注入到类中，而该方法调用处位于ApplicationContextAwareProcessor#postProcessBeforeInitialization中<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Bean</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">ApplicationContextAwareProcessor</span> <span class="keyword">implements</span> <span class="title">BeanPostProcessor</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> ConfigurableApplicationContext applicationContext;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">ApplicationContextAwareProcessor</span><span class="params">(ConfigurableApplicationContext applicationContext)</span> </span>&#123;</span><br><span class="line">      <span class="keyword">this</span>.applicationContext = applicationContext;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Object <span class="title">postProcessBeforeInitialization</span><span class="params">(<span class="keyword">final</span> Object bean, String beanName)</span> <span class="keyword">throws</span> BeansException </span>&#123;</span><br><span class="line">      <span class="comment">//...</span></span><br><span class="line">      invokeAwareInterfaces(bean);</span><br><span class="line">      <span class="keyword">return</span> bean;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">invokeAwareInterfaces</span><span class="params">(Object bean)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (bean <span class="keyword">instanceof</span> ApplicationContextAware) &#123;</span><br><span class="line">          ((ApplicationContextAware) bean).setApplicationContext(<span class="keyword">this</span>.applicationContext);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>我们看到正是在BeanPostProcessor的postProcessBeforeInitialization中进行了setApplicationContext方法的调用<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">ApplicationContextHolder</span> <span class="keyword">implements</span> <span class="title">ApplicationContextAware</span></span>&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> ApplicationContext applicationContext;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setApplicationContext</span><span class="params">(ApplicationContext applicationContext)</span> <span class="keyword">throws</span> BeansException </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.applicationContext = applicationContext;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h2 id="afterPropertySet-init-method"><a href="#afterPropertySet-init-method" class="headerlink" title="afterPropertySet() / init-method"></a><font color="#0099ff">afterPropertySet() / init-method</font></h2><p>目前很多Java中间件都是基本Spring Framework搭建的，而这些中间件经常把入口放到afterPropertySet或者自定义的init中，比如大众点评开源的rpc框架pigeon(<a href="https://github.com/dianping/pigeon)入口就是配置的bean的init" target="_blank" rel="noopener">https://github.com/dianping/pigeon)入口就是配置的bean的init</a> 方法，即ProxyBeanFactory#init（如下）<br><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">bean</span> <span class="attr">id</span>=<span class="string">"remoteService"</span> <span class="attr">class</span>=<span class="string">"com.luyu.ProxyBeanFactory"</span></span></span><br><span class="line"><span class="tag">       <span class="attr">init-method</span>=<span class="string">"init"</span>&gt;</span></span><br><span class="line">     <span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">"serviceName"</span> <span class="attr">value</span>=<span class="string">"xxx"</span> /&gt;</span></span><br><span class="line">     <span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">"iface"</span> <span class="attr">value</span>=<span class="string">"xxx"</span> /&gt;</span></span><br><span class="line">     <span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">"serialize"</span> <span class="attr">value</span>=<span class="string">"xxx"</span> /&gt;</span></span><br><span class="line">     <span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">"callMethod"</span> <span class="attr">value</span>=<span class="string">"xxx"</span> /&gt;</span></span><br><span class="line">     <span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">"timeout"</span> <span class="attr">value</span>=<span class="string">"1000"</span> /&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">bean</span>&gt;</span></span><br></pre></td></tr></table></figure></p>
+<p>此外，值得一提的是Pigeon的ProxyBeanFactory类本身是FactoryBean接口的一个实现，而FactoryBean也是Spring提供的一个扩展点，实现该接口的类在作为bean被实例化的时候会返回该接口getObject方法返回的值<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">FactoryBean</span>&lt;<span class="title">T</span>&gt; </span>&#123;</span><br><span class="line">  	<span class="function">T <span class="title">getObject</span><span class="params">()</span> <span class="keyword">throws</span> Exception</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>熟悉aop的同学应该知道，aop底层是通过动态代理实现的，不知道大家有没有思考过动态代理是如何在调用方无感知情况下替换原始对象的？<br>这里提供Spring解决该问题的两种思路，思路1：通过覆写FactoryBean的getObject方法实现的，该方法返回对应的动态代理对象，该过程对调用方全部透明；思路2见3.6<br>举个例子（思路1）<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">MyService</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">test</span><span class="params">()</span></span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MyServiceImpl</span> <span class="keyword">implements</span> <span class="title">MyService</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">test</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">"i am service test()"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MyAfterAdvice</span> <span class="keyword">implements</span> <span class="title">AfterReturningAdvice</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">afterReturning</span><span class="params">(Object returnValue, Method method, Object[] args, Object target)</span> <span class="keyword">throws</span> Throwable </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">"after method advice"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MyBeforeAdvice</span> <span class="keyword">implements</span> <span class="title">MethodBeforeAdvice</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">before</span><span class="params">(Method method, Object[] args, Object target)</span> <span class="keyword">throws</span> Throwable </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">"before method advice"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">bean</span> <span class="attr">id</span>=<span class="string">"myService"</span> <span class="attr">class</span>=<span class="string">"com.techlab.spring.aop.MyServiceImpl"</span>/&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">bean</span> <span class="attr">id</span>=<span class="string">"beforeAdvice"</span> <span class="attr">class</span>=<span class="string">"com.techlab.spring.aop.MyBeforeAdvice"</span>/&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">bean</span> <span class="attr">id</span>=<span class="string">"afterAdvice"</span> <span class="attr">class</span>=<span class="string">"com.techlab.spring.aop.MyAfterAdvice"</span>/&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">bean</span> <span class="attr">id</span>=<span class="string">"testAop"</span> <span class="attr">class</span>=<span class="string">"org.springframework.aop.framework.ProxyFactoryBean"</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">"interfaces"</span> <span class="attr">value</span>=<span class="string">"com.techlab.spring.aop.MyService"</span>/&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">"target"</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">ref</span> <span class="attr">bean</span>=<span class="string">"myService"</span>/&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">property</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">"interceptorNames"</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">list</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">value</span>&gt;</span>beforeAdvice<span class="tag">&lt;/<span class="name">value</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">value</span>&gt;</span>afterAdvice<span class="tag">&lt;/<span class="name">value</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">list</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">property</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">bean</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">EntranceApp</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">        ApplicationContext context = <span class="keyword">new</span> ClassPathXmlApplicationContext(<span class="string">"beans.xml"</span>);</span><br><span class="line">        <span class="comment">//此时b是ProxyFactoryBean#getObject方法返回的动态代理对象</span></span><br><span class="line">        MyService b = (MyService)context.getBean(<span class="string">"testAop"</span>);</span><br><span class="line">        b.test();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>控制台输出<br>before method advice<br>i am service test()<br>after method advice</p>
+<h2 id="BeanPostProcessor-postProcessAfterInitialization"><a href="#BeanPostProcessor-postProcessAfterInitialization" class="headerlink" title="BeanPostProcessor#postProcessAfterInitialization"></a><font color="#0099ff">BeanPostProcessor#postProcessAfterInitialization</font></h2><p>我们知道当配置了&lt;aop:aspectj-autoproxy/&gt;时候，默认开启aop功能，相应地调用方需要被aop织入的对象也需要替换为动态代理对象，和上文显式地通过FactoryBean偷梁换柱不同，此时通过BeanPostProcessor的postProcessAfterInitialization实现『偷梁换柱』<br>在3.2节中提到了针对&lt;aop:aspectj-autoproxy/&gt; Spring也提供了特殊的解析器，和其他的解析器类似，在核心的parse方法中注册了特殊的bean，这里是一个BeanPostProcessor类型的bean<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">AspectJAutoProxyBeanDefinitionParser</span> <span class="keyword">implements</span> <span class="title">BeanDefinitionParser</span> </span>&#123;</span><br><span class="line">	<span class="meta">@Override</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> BeanDefinition <span class="title">parse</span><span class="params">(Element element, ParserContext parserContext)</span> </span>&#123;</span><br><span class="line">        <span class="comment">//注册特殊的bean</span></span><br><span class="line">		AopNamespaceUtils.registerAspectJAnnotationAutoProxyCreatorIfNecessary(parserContext, element);</span><br><span class="line">		extendBeanDefinition(element, parserContext);</span><br><span class="line">		<span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>我们看到该扩展点的方法的返回值时Object，只要将于当前bean对应的动态代理对象返回即可，该过程对调用方全部透明<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">AnnotationAwareAspectJAutoProxyCreator</span> <span class="keyword">extends</span> <span class="title">AspectJAwareAdvisorAutoProxyCreator</span> </span>&#123;</span><br><span class="line">		<span class="function"><span class="keyword">public</span> Object <span class="title">postProcessAfterInitialization</span><span class="params">(Object bean, String beanName)</span> <span class="keyword">throws</span> BeansException </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (bean != <span class="keyword">null</span>) &#123;</span><br><span class="line">          Object cacheKey = getCacheKey(bean.getClass(), beanName);</span><br><span class="line">          <span class="keyword">if</span> (!<span class="keyword">this</span>.earlyProxyReferences.containsKey(cacheKey)) &#123;</span><br><span class="line">            <span class="comment">//如果该类需要被代理，返回动态代理对象；反之，返回原对象</span></span><br><span class="line">            <span class="keyword">return</span> wrapIfNecessary(bean, beanName, cacheKey);</span><br><span class="line">          &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> bean;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>正是利用Spring的这个扩展点实现了动态代理对象的替换</p>
+<h2 id="destroy-destroy-method"><a href="#destroy-destroy-method" class="headerlink" title="destroy() / destroy-method"></a><font color="#0099ff">destroy() / destroy-method</font></h2><p>bean生命周期的最后一个扩展点，该方法用于执行一些bean销毁前的准备工作，比如将当前bean持有的一些资源释放掉</p>
+<h1 id="资料推荐"><a href="#资料推荐" class="headerlink" title="资料推荐"></a><font color="green">资料推荐</font></h1><p>官网：<a href="https://docs.spring.io/spring/docs/4.3.18.RELEASE/spring-framework-reference/htmlsingle/" target="_blank" rel="noopener">https://docs.spring.io/spring/docs/4.3.18.RELEASE/spring-framework-reference/htmlsingle/</a><br>《Spring 3.x企业应用与开发实战》<br>《Spring揭秘》<br>《Spring技术内幕》<br>《Spring源码深度解析》<br>Ps：建议阅读顺序从上至下</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Spring/" rel="tag"># Spring</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/04/01/MySql-Index/" rel="next" title="MySQL核心-索引">
+                <i class="fa fa-chevron-left"></i> MySQL核心-索引
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">Luyu</p>
+              <p class="site-description motion-element" itemprop="description">知识广度是深度的副产品</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">55</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">13</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">17</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#综述"><span class="nav-number">1.</span> <span class="nav-text">综述</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#为什么引入IOC？"><span class="nav-number">1.1.</span> <span class="nav-text">为什么引入IOC？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#为什么引入AOP？"><span class="nav-number">1.2.</span> <span class="nav-text">为什么引入AOP？</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Bean的生命周期"><span class="nav-number">2.</span> <span class="nav-text">Bean的生命周期</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#结论"><span class="nav-number">2.1.</span> <span class="nav-text">结论</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#验证"><span class="nav-number">2.2.</span> <span class="nav-text">验证</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Spring-Framework扩展点及其应用"><span class="nav-number">3.</span> <span class="nav-text">Spring Framework扩展点及其应用</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#BeanFactoryPostProcessor-postProcessBeanFactory"><span class="nav-number">3.1.</span> <span class="nav-text">BeanFactoryPostProcessor#postProcessBeanFactory</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#InstantiationAwareBeanPostProcessor-postProcessPropertyValues"><span class="nav-number">3.2.</span> <span class="nav-text">InstantiationAwareBeanPostProcessor#postProcessPropertyValues</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#invokeAware"><span class="nav-number">3.3.</span> <span class="nav-text">invokeAware</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#BeanPostProcessor-postProcessBeforeInitialization"><span class="nav-number">3.4.</span> <span class="nav-text">BeanPostProcessor#postProcessBeforeInitialization</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#afterPropertySet-init-method"><span class="nav-number">3.5.</span> <span class="nav-text">afterPropertySet() / init-method</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#BeanPostProcessor-postProcessAfterInitialization"><span class="nav-number">3.6.</span> <span class="nav-text">BeanPostProcessor#postProcessAfterInitialization</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#destroy-destroy-method"><span class="nav-number">3.7.</span> <span class="nav-text">destroy() / destroy-method</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#资料推荐"><span class="nav-number">4.</span> <span class="nav-text">资料推荐</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Luyu</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Mist</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

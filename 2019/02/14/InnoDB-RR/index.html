@@ -90,7 +90,8 @@
 <meta property="og:image" content="http://yoursite.com/2019/02/14/InnoDB-RR/003.jpg">
 <meta property="og:image" content="http://yoursite.com/2019/02/14/InnoDB-RR/002.jpg">
 <meta property="og:image" content="http://yoursite.com/2019/02/14/InnoDB-RR/001.jpg">
-<meta property="og:updated_time" content="2019-06-14T09:24:50.000Z">
+<meta property="og:image" content="http://yoursite.com/2019/02/14/InnoDB-RR/004.jpg">
+<meta property="og:updated_time" content="2019-07-02T07:53:24.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="MySQL核心-事务、锁以及日志">
 <meta name="twitter:description" content="MySQL核心-事务、锁以及日志">
@@ -463,7 +464,7 @@
 <h1 id="MySQL-log"><a href="#MySQL-log" class="headerlink" title="MySQL log"></a>MySQL log</h1><h2 id="redo-log"><a href="#redo-log" class="headerlink" title="redo log"></a>redo log</h2><p>前滚日志、物理日志记录数据页的修改<br>事务1，执行了多个update操作，需要修改不同的磁盘Page，如果直接去修改磁盘那么性能简直爆炸。为此不直接写磁盘，而是在内存中进行事务提交，然后再通过后台线程异步地把内存中的数据写到磁盘中。<br>but，如果宕机，会出现数据丢失问题<br>为此，我们在提交到内存后-》会去写日志（Write-Ahead log）-》后台线程异步地把内存中的数据写到磁盘中<br>如果宕机的话可以通过日志降低数据丢失量</p>
 <p>InnoDB引擎的Write-Ahead log就是Redo Log。而Redo log的刷盘也是异步的（Redo buffer 到 Redo log），可以配置三种刷盘策略<br>1）秒级别    /s<br>2）事务级别  /transaction 一般使用该策略 几乎不会丢失数据 但是性能较差<br>3）不刷盘（指定时间）</p>
 <p>log刷盘一般是刷到同一块盘，性能比刷内存提交要好，这就是redo log存在的意义</p>
-<h2 id="undo-log"><a href="#undo-log" class="headerlink" title="undo log"></a>undo log</h2><p>回滚日志、逻辑日志、记录行记录的变更<br>本质：『备份数据』，事务未提交之前的时间里的备份数据，提交事务后，如果没有其他事务引用历史版本，就可以删除了</p>
+<h2 id="undo-log"><a href="#undo-log" class="headerlink" title="undo log"></a>undo log</h2><p>回滚日志、逻辑日志、记录行记录的变更<br>本质：『备份数据』，事务未提交之前的时间里的备份数据，提交事务后，如果没有其他事务引用历史版本，就可以删除了<br>如下图，当T100（事务100）完成时候就可以删除V95了。UNDO LOG是MVCC的基础，和JUC中的CopuOnWrite思想很像，实现了读读不加锁，读写不冲突。<br>RR隔离级别下，事务启动瞬时会去寻找小于当前事务id的最新的数据视图，当事务修改数据后会将新的数据放到链表尾部<br><img src="/2019/02/14/InnoDB-RR/004.jpg"><br>显然，当比较耗时的事务执行过程中会使得很多数据的老版本无法删除（这条链可能会很长）</p>
 <h2 id="bin-log"><a href="#bin-log" class="headerlink" title="bin  log"></a>bin  log</h2><p>位于Server层，所有引擎通用<br>逻辑日志，常用于归档<br>bin log和redo log是二阶段提交</p>
 <hr>
 <p>参考文章：<br><a href="http://blog.jobbole.com/24006/" target="_blank" rel="noopener">http://blog.jobbole.com/24006/</a><br><a href="http://hedengcheng.com/?p=771#_%E7%BB%84%E5%90%88%E4%B8%80%EF%BC%9Aid%E4%B8%BB%E9%94%AE+RC" target="_blank" rel="noopener">http://hedengcheng.com/?p=771#_%E7%BB%84%E5%90%88%E4%B8%80%EF%BC%9Aid%E4%B8%BB%E9%94%AE+RC</a></p>

@@ -88,7 +88,7 @@
 <meta property="og:description" content="Outline1.Redis常用的数据结构2.Redis的持久化3.Redis主从复制4.Redis集群5.Redis应用场景6.redis为啥这么快">
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="http://yoursite.com/2018/09/13/Redis/001.jpg">
-<meta property="og:updated_time" content="2019-06-14T09:24:49.000Z">
+<meta property="og:updated_time" content="2019-07-16T03:31:22.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="内存数据库-Redis">
 <meta name="twitter:description" content="Outline1.Redis常用的数据结构2.Redis的持久化3.Redis主从复制4.Redis集群5.Redis应用场景6.redis为啥这么快">
@@ -418,7 +418,7 @@
 <h3 id="Redis为啥这么快？"><a href="#Redis为啥这么快？" class="headerlink" title="Redis为啥这么快？"></a>Redis为啥这么快？</h3><p>Redis采用的是基于内存的采用的是单进程单线程模型的 KV 数据库，由C语言编写，官方提供的数据是可以达到100000+的QPS（每秒内查询次数）<br>1、完全基于内存，绝大部分请求是纯粹的内存操作，非常快速。数据存在内存中，类似于HashMap，HashMap的优势就是查找和操作的时间复杂度都是O(1)；</p>
 <p>2、数据结构简单，对数据操作也简单，Redis中的数据结构是专门进行设计的；</p>
 <p>3、采用单线程，避免了不必要的上下文切换和竞争条件，也不存在多进程或者多线程导致的切换而消耗 CPU，不用去考虑各种锁的问题，不存在加锁释放锁操作，没有因为可能出现死锁而导致的性能消耗；</p>
-<p>4、使用多路I/O复用模型，非阻塞IO；</p>
+<p>4、使用多路I/O复用模型，非阻塞IO；(nio单线程模型的为数不多的应用)</p>
 <p>Ps<br>1）作为一个内存数据库，所需要的一切数据都在内存中显然单线程就是最快的<br>2）当需要使用下层存储的时候（比如磁盘）这个时候推荐使用多线程方案</p>
 
       
@@ -539,7 +539,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">53</span>
+                  <span class="site-state-item-count">54</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>

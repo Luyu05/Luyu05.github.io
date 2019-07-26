@@ -91,7 +91,7 @@
 <meta property="og:image" content="http://yoursite.com/2019/02/14/InnoDB-RR/002.jpg">
 <meta property="og:image" content="http://yoursite.com/2019/02/14/InnoDB-RR/001.jpg">
 <meta property="og:image" content="http://yoursite.com/2019/02/14/InnoDB-RR/004.jpg">
-<meta property="og:updated_time" content="2019-07-02T07:53:24.000Z">
+<meta property="og:updated_time" content="2019-07-16T03:31:23.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="MySQL核心-事务、锁以及日志">
 <meta name="twitter:description" content="MySQL核心-事务、锁以及日志">
@@ -466,6 +466,10 @@
 <p>log刷盘一般是刷到同一块盘，性能比刷内存提交要好，这就是redo log存在的意义</p>
 <h2 id="undo-log"><a href="#undo-log" class="headerlink" title="undo log"></a>undo log</h2><p>回滚日志、逻辑日志、记录行记录的变更<br>本质：『备份数据』，事务未提交之前的时间里的备份数据，提交事务后，如果没有其他事务引用历史版本，就可以删除了<br>如下图，当T100（事务100）完成时候就可以删除V95了。UNDO LOG是MVCC的基础，和JUC中的CopuOnWrite思想很像，实现了读读不加锁，读写不冲突。<br>RR隔离级别下，事务启动瞬时会去寻找小于当前事务id的最新的数据视图，当事务修改数据后会将新的数据放到链表尾部<br><img src="/2019/02/14/InnoDB-RR/004.jpg"><br>显然，当比较耗时的事务执行过程中会使得很多数据的老版本无法删除（这条链可能会很长）</p>
 <h2 id="bin-log"><a href="#bin-log" class="headerlink" title="bin  log"></a>bin  log</h2><p>位于Server层，所有引擎通用<br>逻辑日志，常用于归档<br>bin log和redo log是二阶段提交</p>
+<p>为啥需要二阶段提交？<br>1）假如（执行了一条update后）先写redo再写binlog，写binlog时MySQL crash了，进程恢复后可以根据redo log恢复上次的update操作</p>
+<p>但是binlog中没有记录这次变更，如果拿这个binlog去备库执行，那么会丢失数据</p>
+<p>2）先写bin log再写redo log，同样crash崩溃恢复后会丢失本次更新，但是bin log已经记录，再拿去备库执行，备库会比主库多一次数据变更</p>
+<p>和redo log的异同？<br>1）redo时InnoDB引擎特有；binlog时MySQL的Server层实现的，所有引擎都可以适用<br>2）redo是物理日志，记录数据页变更；binlog是逻辑日志，记录的是语句的逻辑，比如更新id=2的记录</p>
 <hr>
 <p>参考文章：<br><a href="http://blog.jobbole.com/24006/" target="_blank" rel="noopener">http://blog.jobbole.com/24006/</a><br><a href="http://hedengcheng.com/?p=771#_%E7%BB%84%E5%90%88%E4%B8%80%EF%BC%9Aid%E4%B8%BB%E9%94%AE+RC" target="_blank" rel="noopener">http://hedengcheng.com/?p=771#_%E7%BB%84%E5%90%88%E4%B8%80%EF%BC%9Aid%E4%B8%BB%E9%94%AE+RC</a></p>
 
@@ -587,7 +591,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">53</span>
+                  <span class="site-state-item-count">54</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
